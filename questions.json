@@ -1,0 +1,1091 @@
+{
+  "levels": [
+    {
+      "id": 1,
+      "name": "Pallet Town",
+      "description": "The beginning of your SQL journey",
+      "questions": [
+        {
+          "id": 1,
+          "npc": "Professor Oak",
+          "text": "Welcome, young trainer! Every great DBA starts here. In SQL, what command do we use to retrieve data from a table?",
+          "options": ["SELECT", "GET", "FETCH", "RETRIEVE"],
+          "answer": 0,
+          "explanation": "SELECT is the fundamental command for retrieving data from a SQL table. You'll use it in almost every query you write!"
+        },
+        {
+          "id": 2,
+          "npc": "Professor Oak",
+          "text": "Excellent! Now, if I want to see ALL columns from a table called Employees, what would I write after SELECT?",
+          "options": ["ALL", "EVERY", "*", "#"],
+          "answer": 2,
+          "explanation": "The asterisk (*) is a wildcard that means 'all columns'. SELECT * FROM Employees returns every column in the table."
+        },
+        {
+          "id": 3,
+          "npc": "Professor Oak",
+          "text": "Brilliant! After SELECT and the columns, which keyword tells SQL which table to look in?",
+          "options": ["IN", "FROM", "AT", "USING"],
+          "answer": 1,
+          "explanation": "FROM tells SQL which table to pull data from. A basic query looks like: SELECT * FROM TableName"
+        },
+        {
+          "id": 4,
+          "npc": "Rival Gary",
+          "text": "Oh, you're learning SQL too? Fine. What keyword do we use to filter rows in a query? I bet you don't know!",
+          "options": ["FILTER", "SEARCH", "WHERE", "LIMIT"],
+          "answer": 2,
+          "explanation": "WHERE is used to filter rows based on a condition. Example: SELECT * FROM Employees WHERE Department = 'Sales'"
+        },
+        {
+          "id": 5,
+          "npc": "Rival Gary",
+          "text": "Lucky guess! What operator checks if a value EQUALS something in a WHERE clause?",
+          "options": ["==", "=>", ":=", "="],
+          "answer": 3,
+          "explanation": "In T-SQL, a single equals sign (=) is used for equality comparison in WHERE clauses. Unlike most programming languages, SQL doesn't use ==."
+        },
+        {
+          "id": 6,
+          "npc": "Old Man Bob",
+          "text": "Hmm, I remember learning SQL back in my day. Do you know how to sort results from lowest to highest? That's... what order?",
+          "options": ["ASCENDING", "ASC", "INCREASING", "LOW"],
+          "answer": 1,
+          "explanation": "ASC (short for ASCENDING) sorts results from lowest to highest. Example: SELECT * FROM Products ORDER BY Price ASC"
+        },
+        {
+          "id": 7,
+          "npc": "Old Man Bob",
+          "text": "And from highest to lowest would be... DESC, right? What does DESC stand for?",
+          "options": ["Description", "Decrease", "Descending", "Destination"],
+          "answer": 2,
+          "explanation": "DESC stands for DESCENDING. It sorts results from highest to lowest. Example: SELECT * FROM Sales ORDER BY Amount DESC"
+        },
+        {
+          "id": 8,
+          "npc": "Nurse Joy",
+          "text": "Hello! When sorting, which keyword do you use before ASC or DESC?",
+          "options": ["SORT BY", "ORDER BY", "ARRANGE BY", "GROUP BY"],
+          "answer": 1,
+          "explanation": "ORDER BY is the keyword used to sort results. Example: SELECT * FROM Employees ORDER BY LastName ASC"
+        },
+        {
+          "id": 9,
+          "npc": "Nurse Joy",
+          "text": "What keyword limits how many rows are returned in T-SQL (Microsoft SQL Server)?",
+          "options": ["LIMIT", "ROWCOUNT", "TOP", "MAX"],
+          "answer": 2,
+          "explanation": "In T-SQL, TOP limits rows returned. Example: SELECT TOP 10 * FROM Employees. Note: MySQL uses LIMIT instead, but T-SQL uses TOP!"
+        },
+        {
+          "id": 10,
+          "npc": "Officer Jenny",
+          "text": "I'm checking identities here! Which SQL keyword means 'is not equal to'?",
+          "options": ["!=", "<>", "NOT =", "Both A and B"],
+          "answer": 3,
+          "explanation": "In T-SQL, both != and <> mean 'not equal to'. <> is the ANSI standard and older style, while != also works. Both are valid!"
+        },
+        {
+          "id": 11,
+          "npc": "Officer Jenny",
+          "text": "What keyword checks if a value falls within a range? For example: Price ___ 10 AND 50",
+          "options": ["BETWEEN", "WITHIN", "RANGE", "FROM"],
+          "answer": 0,
+          "explanation": "BETWEEN checks if a value is within a range (inclusive on both ends). Example: WHERE Price BETWEEN 10 AND 50"
+        },
+        {
+          "id": 12,
+          "npc": "Brock",
+          "text": "I'm a Gym Leader AND a DBA hobbyist! What keyword searches for a pattern in text data?",
+          "options": ["SEARCH", "FIND", "LIKE", "MATCH"],
+          "answer": 2,
+          "explanation": "LIKE is used for pattern matching. The % wildcard means 'any characters'. Example: WHERE LastName LIKE 'Sm%' finds names starting with 'Sm'."
+        },
+        {
+          "id": 13,
+          "npc": "Brock",
+          "text": "In a LIKE pattern, what wildcard character represents any SINGLE character?",
+          "options": ["%", "*", "_", "?"],
+          "answer": 2,
+          "explanation": "The underscore (_) represents exactly ONE character in a LIKE pattern. Example: WHERE Name LIKE '_ohn' matches 'John', 'Bohn', etc. % matches any number of characters."
+        },
+        {
+          "id": 14,
+          "npc": "Brock",
+          "text": "What keyword checks if a value is in a list? Example: WHERE Color ___ ('Red', 'Blue', 'Green')",
+          "options": ["CONTAINS", "WITHIN", "IN", "FROM"],
+          "answer": 2,
+          "explanation": "IN checks if a value matches any value in a list. Example: WHERE Department IN ('Sales', 'HR', 'Finance'). This is cleaner than multiple OR conditions."
+        },
+        {
+          "id": 15,
+          "npc": "Misty",
+          "text": "Water-type queries are my specialty! What is a NULL value in SQL?",
+          "options": ["Zero (0)", "An empty string", "No value / unknown", "False"],
+          "answer": 2,
+          "explanation": "NULL means the absence of any value — it's unknown or missing data. NULL is NOT zero, NOT an empty string, and NOT false. It's the complete absence of a value."
+        },
+        {
+          "id": 16,
+          "npc": "Misty",
+          "text": "How do you correctly check if a column IS NULL in a WHERE clause?",
+          "options": ["WHERE Column = NULL", "WHERE Column IS NULL", "WHERE Column == NULL", "WHERE NULL(Column)"],
+          "answer": 1,
+          "explanation": "You must use IS NULL, not = NULL. NULL cannot be compared with = because NULL is unknown. WHERE Column = NULL will never return rows!"
+        },
+        {
+          "id": 17,
+          "npc": "Misty",
+          "text": "And to find rows where a column has a value (is NOT empty), you use?",
+          "options": ["WHERE Column != NULL", "WHERE Column <> NULL", "WHERE Column IS NOT NULL", "WHERE NOT NULL(Column)"],
+          "answer": 2,
+          "explanation": "IS NOT NULL checks that a column has an actual value. Example: WHERE Email IS NOT NULL returns only rows where Email has been filled in."
+        },
+        {
+          "id": 18,
+          "npc": "Giovanni",
+          "text": "...You dare enter my domain? Tell me — what function counts the number of rows returned?",
+          "options": ["TOTAL()", "SUM()", "COUNT()", "NUMBER()"],
+          "answer": 2,
+          "explanation": "COUNT() counts rows. COUNT(*) counts all rows including NULLs. COUNT(ColumnName) counts only non-NULL values in that column."
+        },
+        {
+          "id": 19,
+          "npc": "Giovanni",
+          "text": "What function returns the total SUM of numeric values in a column?",
+          "options": ["TOTAL()", "ADD()", "SUM()", "CALC()"],
+          "answer": 2,
+          "explanation": "SUM() adds up all values in a numeric column. Example: SELECT SUM(Salary) FROM Employees returns the total payroll."
+        },
+        {
+          "id": 20,
+          "npc": "Giovanni",
+          "text": "What function returns the AVERAGE value of a numeric column?",
+          "options": ["MEAN()", "AVG()", "MID()", "AVERAGE()"],
+          "answer": 1,
+          "explanation": "AVG() calculates the average. Example: SELECT AVG(Salary) FROM Employees. AVG ignores NULL values automatically."
+        },
+        {
+          "id": 21,
+          "npc": "Team Rocket Grunt",
+          "text": "Prepare for trouble! What function returns the largest value in a column?",
+          "options": ["HIGHEST()", "TOP()", "MAX()", "LARGEST()"],
+          "answer": 2,
+          "explanation": "MAX() returns the maximum value. Works on numbers, dates, and text. Example: SELECT MAX(Salary) FROM Employees"
+        },
+        {
+          "id": 22,
+          "npc": "Team Rocket Grunt",
+          "text": "Make it double! What function returns the SMALLEST value?",
+          "options": ["LOWEST()", "BOTTOM()", "MIN()", "FIRST()"],
+          "answer": 2,
+          "explanation": "MIN() returns the minimum value. Example: SELECT MIN(HireDate) FROM Employees returns the earliest hire date."
+        },
+        {
+          "id": 23,
+          "npc": "Scientist Bill",
+          "text": "I've been studying GROUP BY! What does GROUP BY do in a query?",
+          "options": ["Sorts results", "Groups rows with same values for aggregate functions", "Joins tables together", "Filters results"],
+          "answer": 1,
+          "explanation": "GROUP BY groups rows that have the same values in specified columns, allowing aggregate functions (COUNT, SUM, AVG) to be applied to each group."
+        },
+        {
+          "id": 24,
+          "npc": "Scientist Bill",
+          "text": "When using GROUP BY, what keyword filters GROUPS (not individual rows)?",
+          "options": ["WHERE", "FILTER", "HAVING", "GROUPWHERE"],
+          "answer": 2,
+          "explanation": "HAVING filters groups after GROUP BY. WHERE filters rows BEFORE grouping. Example: SELECT Dept, COUNT(*) FROM Employees GROUP BY Dept HAVING COUNT(*) > 5"
+        },
+        {
+          "id": 25,
+          "npc": "Scientist Bill",
+          "text": "What is the correct ORDER of these SQL clauses? SELECT, FROM, WHERE, GROUP BY, HAVING, ORDER BY",
+          "options": [
+            "SELECT, FROM, WHERE, GROUP BY, HAVING, ORDER BY",
+            "FROM, SELECT, WHERE, GROUP BY, HAVING, ORDER BY",
+            "SELECT, WHERE, FROM, GROUP BY, HAVING, ORDER BY",
+            "SELECT, FROM, GROUP BY, WHERE, HAVING, ORDER BY"
+          ],
+          "answer": 0,
+          "explanation": "The correct SQL clause order is: SELECT → FROM → WHERE → GROUP BY → HAVING → ORDER BY. Think of it as: what, from where, filtered how, grouped by, group filtered by, sorted by."
+        },
+        {
+          "id": 26,
+          "npc": "Fisherman Ralph",
+          "text": "I catch data like fish! What is an ALIAS in SQL?",
+          "options": ["A table backup", "A temporary name for a column or table", "A type of JOIN", "A stored procedure"],
+          "answer": 1,
+          "explanation": "An alias gives a column or table a temporary name in your query. Example: SELECT FirstName AS 'First Name' FROM Employees. The AS keyword is optional but makes it readable."
+        },
+        {
+          "id": 27,
+          "npc": "Fisherman Ralph",
+          "text": "What keyword is used to create an alias for a column?",
+          "options": ["NAMED", "CALLED", "AS", "ALIAS"],
+          "answer": 2,
+          "explanation": "AS creates an alias. Example: SELECT COUNT(*) AS TotalEmployees FROM Employees. You can also omit AS: SELECT COUNT(*) TotalEmployees — both work in T-SQL."
+        },
+        {
+          "id": 28,
+          "npc": "Hiker Taro",
+          "text": "Climbing data mountains! What does DISTINCT do in a SELECT query?",
+          "options": ["Sorts results alphabetically", "Removes duplicate rows from results", "Selects only NULL values", "Limits to 1 row"],
+          "answer": 1,
+          "explanation": "DISTINCT removes duplicate rows. Example: SELECT DISTINCT Department FROM Employees returns each department name only once, even if many employees share a department."
+        },
+        {
+          "id": 29,
+          "npc": "Hiker Taro",
+          "text": "What is the purpose of a JOIN in SQL?",
+          "options": ["To delete rows", "To combine rows from two or more tables based on a related column", "To group data together", "To sort multiple columns"],
+          "answer": 1,
+          "explanation": "JOIN combines rows from two or more tables based on a related column (usually a key). This is how relational databases link related data together."
+        },
+        {
+          "id": 30,
+          "npc": "Hiker Taro",
+          "text": "What type of JOIN returns only rows where there is a MATCH in BOTH tables?",
+          "options": ["LEFT JOIN", "RIGHT JOIN", "FULL JOIN", "INNER JOIN"],
+          "answer": 3,
+          "explanation": "INNER JOIN (or just JOIN) returns only rows where the join condition matches in BOTH tables. Rows with no match on either side are excluded."
+        },
+        {
+          "id": 31,
+          "npc": "Gym Leader Surge",
+          "text": "SHOCKING! What does a LEFT JOIN return?",
+          "options": [
+            "Only rows with matches in both tables",
+            "All rows from the LEFT table, plus matching rows from the right (NULLs if no match)",
+            "All rows from the RIGHT table only",
+            "All rows from both tables"
+          ],
+          "answer": 1,
+          "explanation": "LEFT JOIN returns ALL rows from the left table, and matching rows from the right table. If no match exists on the right side, NULLs fill those columns."
+        },
+        {
+          "id": 32,
+          "npc": "Gym Leader Surge",
+          "text": "What does a RIGHT JOIN return?",
+          "options": [
+            "Only matching rows",
+            "All rows from the LEFT table",
+            "All rows from the RIGHT table, plus matching left rows (NULLs if no match)",
+            "Only NULL rows"
+          ],
+          "answer": 2,
+          "explanation": "RIGHT JOIN returns ALL rows from the right table, and matching rows from the left table. NULLs appear for unmatched left-side columns. RIGHT JOIN is less common — most prefer LEFT JOIN for readability."
+        },
+        {
+          "id": 33,
+          "npc": "Gym Leader Surge",
+          "text": "What does a FULL OUTER JOIN return?",
+          "options": [
+            "Only matching rows",
+            "All rows from the left table only",
+            "All rows from both tables, with NULLs where there's no match",
+            "Only non-matching rows"
+          ],
+          "answer": 2,
+          "explanation": "FULL OUTER JOIN returns ALL rows from BOTH tables. Where there's no match, NULLs fill the missing side. It combines LEFT and RIGHT JOIN results."
+        },
+        {
+          "id": 34,
+          "npc": "Erika",
+          "text": "Grass-type patience is needed here. What is a PRIMARY KEY?",
+          "options": [
+            "The first column in a table",
+            "A column that uniquely identifies each row and cannot be NULL",
+            "A password for the database",
+            "The most important column"
+          ],
+          "answer": 1,
+          "explanation": "A PRIMARY KEY uniquely identifies each row in a table. It must be unique and cannot be NULL. A table can only have ONE primary key (though it can span multiple columns)."
+        },
+        {
+          "id": 35,
+          "npc": "Erika",
+          "text": "What is a FOREIGN KEY?",
+          "options": [
+            "A key from another database system",
+            "A column that links to the PRIMARY KEY of another table",
+            "A backup primary key",
+            "An encrypted column"
+          ],
+          "answer": 1,
+          "explanation": "A FOREIGN KEY in one table points to the PRIMARY KEY of another table. This creates a relationship between tables. Example: Orders.CustomerID is a FK referencing Customers.CustomerID."
+        },
+        {
+          "id": 36,
+          "npc": "Koga",
+          "text": "The art of subtlety... What data type stores whole numbers in T-SQL?",
+          "options": ["NUMBER", "INT", "WHOLE", "DECIMAL"],
+          "answer": 1,
+          "explanation": "INT (integer) stores whole numbers. T-SQL also has TINYINT (0-255), SMALLINT, BIGINT for different ranges. INT is the most commonly used for IDs and counts."
+        },
+        {
+          "id": 37,
+          "npc": "Koga",
+          "text": "What T-SQL data type stores text of variable length, commonly used for names and descriptions?",
+          "options": ["TEXT", "CHAR", "VARCHAR", "STRING"],
+          "answer": 2,
+          "explanation": "VARCHAR(n) stores variable-length text up to n characters. Example: VARCHAR(255) stores up to 255 characters but only uses space for actual characters. NVARCHAR supports Unicode."
+        },
+        {
+          "id": 38,
+          "npc": "Koga",
+          "text": "What T-SQL data type is best for storing money / currency values?",
+          "options": ["FLOAT", "CURRENCY", "MONEY", "DECIMAL"],
+          "answer": 2,
+          "explanation": "MONEY is a T-SQL-specific type for currency (precise to 4 decimal places). DECIMAL(p,s) is also used. Avoid FLOAT for money — it can introduce rounding errors!"
+        },
+        {
+          "id": 39,
+          "npc": "Sabrina",
+          "text": "I can see your future queries! What type stores a date AND time combined in T-SQL?",
+          "options": ["DATE", "TIME", "DATETIME", "TIMESTAMP"],
+          "answer": 2,
+          "explanation": "DATETIME stores both date and time. T-SQL also has DATE (date only), TIME (time only), and DATETIME2 (more precision). GETDATE() returns the current DATETIME."
+        },
+        {
+          "id": 40,
+          "npc": "Sabrina",
+          "text": "What T-SQL function returns the current date and time?",
+          "options": ["NOW()", "CURRENT_DATE()", "GETDATE()", "TODAY()"],
+          "answer": 2,
+          "explanation": "GETDATE() returns the current date and time in T-SQL. Example: SELECT GETDATE() returns something like '2024-03-15 14:23:45.000'. This is T-SQL specific — MySQL uses NOW()."
+        },
+        {
+          "id": 41,
+          "npc": "Blaine",
+          "text": "Hot like a fire quiz! What SQL statement is used to INSERT new data into a table?",
+          "options": ["ADD INTO", "INSERT INTO", "PUT INTO", "CREATE ROW"],
+          "answer": 1,
+          "explanation": "INSERT INTO adds new rows. Example: INSERT INTO Employees (FirstName, LastName) VALUES ('Ash', 'Ketchum'). You specify columns, then values."
+        },
+        {
+          "id": 42,
+          "npc": "Blaine",
+          "text": "What SQL statement MODIFIES existing data in a table?",
+          "options": ["MODIFY", "CHANGE", "UPDATE", "EDIT"],
+          "answer": 2,
+          "explanation": "UPDATE modifies existing rows. Example: UPDATE Employees SET Salary = 50000 WHERE EmployeeID = 1. ALWAYS use WHERE with UPDATE or you'll change EVERY row!"
+        },
+        {
+          "id": 43,
+          "npc": "Blaine",
+          "text": "What SQL statement REMOVES rows from a table?",
+          "options": ["REMOVE", "ERASE", "DROP", "DELETE"],
+          "answer": 3,
+          "explanation": "DELETE removes rows. Example: DELETE FROM Employees WHERE EmployeeID = 1. Like UPDATE, ALWAYS use WHERE with DELETE — without it, you'll delete ALL rows in the table!"
+        },
+        {
+          "id": 44,
+          "npc": "Giovanni",
+          "text": "You've returned. What's the difference between DELETE and TRUNCATE?",
+          "options": [
+            "They are identical",
+            "DELETE removes specific rows with WHERE; TRUNCATE removes ALL rows and is faster (cannot be rolled back easily)",
+            "TRUNCATE uses WHERE; DELETE doesn't",
+            "DELETE is for tables; TRUNCATE is for databases"
+          ],
+          "answer": 1,
+          "explanation": "DELETE removes specific rows (can use WHERE) and is logged row-by-row. TRUNCATE removes ALL rows instantly, is faster, and resets identity columns. TRUNCATE cannot be WHERE filtered."
+        },
+        {
+          "id": 45,
+          "npc": "Lorelei",
+          "text": "Ice-cold logic! What is a VIEW in SQL?",
+          "options": [
+            "A visual chart of the data",
+            "A saved SELECT query that acts like a virtual table",
+            "A backup copy of a table",
+            "A report export"
+          ],
+          "answer": 1,
+          "explanation": "A VIEW is a saved SELECT query stored in the database. It acts like a virtual table. Example: CREATE VIEW HighEarners AS SELECT * FROM Employees WHERE Salary > 100000"
+        },
+        {
+          "id": 46,
+          "npc": "Lorelei",
+          "text": "What is the benefit of using a VIEW?",
+          "options": [
+            "Stores data permanently",
+            "Simplifies complex queries, improves security by hiding columns, and can be reused",
+            "Makes queries run faster always",
+            "Replaces the need for tables"
+          ],
+          "answer": 1,
+          "explanation": "VIEWs simplify complex queries (hide joins/logic), improve security (hide sensitive columns like salaries), and can be reused across applications. They don't store data — they run the underlying query each time."
+        },
+        {
+          "id": 47,
+          "npc": "Bruno",
+          "text": "Strong queries come from practice! What is a Stored Procedure?",
+          "options": [
+            "A saved SELECT query",
+            "A precompiled set of SQL statements saved in the database that can accept parameters",
+            "A type of table",
+            "A database backup process"
+          ],
+          "answer": 1,
+          "explanation": "A Stored Procedure (SP) is precompiled SQL code saved in the database. It can accept input/output parameters, contain logic, and be executed with EXEC ProcName. Common in T-SQL!"
+        },
+        {
+          "id": 48,
+          "npc": "Bruno",
+          "text": "How do you EXECUTE a stored procedure called 'GetEmployees' in T-SQL?",
+          "options": ["RUN GetEmployees", "CALL GetEmployees", "EXEC GetEmployees", "START GetEmployees"],
+          "answer": 2,
+          "explanation": "EXEC (or EXECUTE) runs a stored procedure. Example: EXEC GetEmployeesByDept @DeptName = 'Sales'. T-SQL uses EXEC; other databases use CALL."
+        },
+        {
+          "id": 49,
+          "npc": "Agatha",
+          "text": "Ghosts from the past! What is a TRANSACTION in SQL?",
+          "options": [
+            "A financial record in the database",
+            "A single SQL statement",
+            "A group of SQL operations treated as one unit — all succeed or all fail",
+            "A stored procedure"
+          ],
+          "answer": 2,
+          "explanation": "A TRANSACTION groups multiple SQL statements so they all succeed or all fail together. This protects data integrity. Example: transferring money requires deducting from one account AND adding to another — both must succeed."
+        },
+        {
+          "id": 50,
+          "npc": "Agatha",
+          "text": "What command SAVES a transaction permanently?",
+          "options": ["SAVE", "APPLY", "COMMIT", "END"],
+          "answer": 2,
+          "explanation": "COMMIT saves all changes made in the transaction permanently. Pattern: BEGIN TRANSACTION → (your SQL statements) → COMMIT. If something goes wrong, use ROLLBACK instead."
+        },
+        {
+          "id": 51,
+          "npc": "Lance",
+          "text": "Dragon power! What command UNDOES all changes in a transaction?",
+          "options": ["UNDO", "REVERT", "ROLLBACK", "CANCEL"],
+          "answer": 2,
+          "explanation": "ROLLBACK undoes all changes since BEGIN TRANSACTION. This is your emergency undo button. If an error occurs mid-transaction, ROLLBACK returns the database to its previous state."
+        },
+        {
+          "id": 52,
+          "npc": "Lance",
+          "text": "What T-SQL keyword is used to declare a variable?",
+          "options": ["VAR", "SET", "DECLARE", "DIM"],
+          "answer": 2,
+          "explanation": "DECLARE creates a variable in T-SQL. Example: DECLARE @EmployeeCount INT. T-SQL variables always start with @. Then SET @EmployeeCount = 100 or SELECT @EmployeeCount = COUNT(*) FROM Employees."
+        },
+        {
+          "id": 53,
+          "npc": "Lance",
+          "text": "In T-SQL, what symbol MUST prefix a variable name?",
+          "options": ["$", "#", "%", "@"],
+          "answer": 3,
+          "explanation": "T-SQL variables must start with @. Example: @TotalSales, @EmployeeID, @StartDate. Double @@ means a system variable like @@ROWCOUNT or @@SERVERNAME."
+        },
+        {
+          "id": 54,
+          "npc": "Professor Oak",
+          "text": "You've grown so much! What does @@ROWCOUNT return in T-SQL?",
+          "options": [
+            "Total rows in the table",
+            "Number of rows affected by the last SQL statement",
+            "Number of tables in the database",
+            "Maximum row count allowed"
+          ],
+          "answer": 1,
+          "explanation": "@@ROWCOUNT returns the number of rows affected by the most recent statement. Useful after UPDATE or DELETE to verify how many rows were changed. Example: DELETE ... then IF @@ROWCOUNT = 0 PRINT 'Nothing deleted'"
+        },
+        {
+          "id": 55,
+          "npc": "Nurse Joy",
+          "text": "What does ISNULL() do in T-SQL?",
+          "options": [
+            "Checks if a value is NULL and returns 1 or 0",
+            "Replaces NULL with a specified replacement value",
+            "Deletes NULL rows",
+            "Converts a column to nullable"
+          ],
+          "answer": 1,
+          "explanation": "ISNULL(column, replacement) replaces NULL with the replacement value. Example: SELECT ISNULL(MiddleName, 'N/A') FROM Employees — shows 'N/A' instead of NULL for employees with no middle name."
+        },
+        {
+          "id": 56,
+          "npc": "Officer Jenny",
+          "text": "What is the difference between ISNULL() and COALESCE()?",
+          "options": [
+            "They are identical",
+            "ISNULL takes 2 arguments; COALESCE takes multiple and returns the first non-NULL",
+            "COALESCE is faster",
+            "ISNULL only works on text"
+          ],
+          "answer": 1,
+          "explanation": "ISNULL(a, b) takes exactly 2 args. COALESCE(a, b, c, ...) takes multiple and returns the FIRST non-NULL value. COALESCE is ANSI standard and works across databases. Both are widely used in T-SQL."
+        },
+        {
+          "id": 57,
+          "npc": "Brock",
+          "text": "What does the CAST() function do in T-SQL?",
+          "options": [
+            "Removes decimal places",
+            "Converts a value from one data type to another",
+            "Rounds a number",
+            "Converts text to uppercase"
+          ],
+          "answer": 1,
+          "explanation": "CAST converts data types. Example: CAST('123' AS INT) converts text '123' to the number 123. Or CAST(Salary AS VARCHAR(20)) to display a number as text. CONVERT() is a T-SQL alternative with more formatting options."
+        },
+        {
+          "id": 58,
+          "npc": "Misty",
+          "text": "What does LEN() return in T-SQL?",
+          "options": [
+            "The lowest value in a column",
+            "The number of characters in a string",
+            "The length of a table",
+            "The line number in a script"
+          ],
+          "answer": 1,
+          "explanation": "LEN(string) returns the number of characters. Example: LEN('Hello') returns 5. LEN ignores trailing spaces. Useful for validation — checking if an email address is too long, etc."
+        },
+        {
+          "id": 59,
+          "npc": "Misty",
+          "text": "What function converts text to ALL UPPERCASE in T-SQL?",
+          "options": ["UPPER()", "UPPERCASE()", "CAPS()", "UCASE()"],
+          "answer": 0,
+          "explanation": "UPPER(string) converts text to uppercase. LOWER(string) converts to lowercase. Example: WHERE UPPER(LastName) = 'SMITH' — useful for case-insensitive searches (though SQL Server collation also affects this)."
+        },
+        {
+          "id": 60,
+          "npc": "Gary",
+          "text": "Still keeping up? What does SUBSTRING() do?",
+          "options": [
+            "Removes part of a string",
+            "Extracts part of a string starting at a position",
+            "Checks if one string contains another",
+            "Splits a string into rows"
+          ],
+          "answer": 1,
+          "explanation": "SUBSTRING(string, start, length) extracts characters. Example: SUBSTRING('Hello World', 1, 5) returns 'Hello'. Note: T-SQL string positions start at 1, not 0!"
+        },
+        {
+          "id": 61,
+          "npc": "Scientist Bill",
+          "text": "What does CONCAT() do in T-SQL?",
+          "options": [
+            "Counts the concatenated results",
+            "Joins two or more strings together",
+            "Compares two strings",
+            "Splits a string"
+          ],
+          "answer": 1,
+          "explanation": "CONCAT() joins strings together. Example: SELECT CONCAT(FirstName, ' ', LastName) AS FullName FROM Employees. The + operator also concatenates in T-SQL: FirstName + ' ' + LastName."
+        },
+        {
+          "id": 62,
+          "npc": "Scientist Bill",
+          "text": "What function extracts the YEAR from a date in T-SQL?",
+          "options": ["GETYEAR()", "YEAR()", "DATEPART(year,...)", "Both B and C"],
+          "answer": 3,
+          "explanation": "Both YEAR(date) and DATEPART(year, date) extract the year. Example: YEAR(HireDate) or DATEPART(year, HireDate). Similarly, MONTH() and DAY() or DATEPART(month/day,...) work the same way."
+        },
+        {
+          "id": 63,
+          "npc": "Fisherman Ralph",
+          "text": "What does DATEDIFF() calculate in T-SQL?",
+          "options": [
+            "Adds days to a date",
+            "Formats a date as text",
+            "The difference between two dates in a specified unit",
+            "The current date minus a number"
+          ],
+          "answer": 2,
+          "explanation": "DATEDIFF(unit, startdate, enddate) calculates the difference between dates. Example: DATEDIFF(year, BirthDate, GETDATE()) gives someone's age in years. Units: year, month, day, hour, minute, second."
+        },
+        {
+          "id": 64,
+          "npc": "Fisherman Ralph",
+          "text": "What does DATEADD() do in T-SQL?",
+          "options": [
+            "Returns the current date",
+            "Adds or subtracts a time interval from a date",
+            "Formats a date",
+            "Converts text to a date"
+          ],
+          "answer": 1,
+          "explanation": "DATEADD(unit, number, date) adds/subtracts time. Example: DATEADD(day, 30, GETDATE()) returns a date 30 days from now. Use negative numbers to go back: DATEADD(month, -6, GETDATE())."
+        },
+        {
+          "id": 65,
+          "npc": "Hiker Taro",
+          "text": "What is a subquery?",
+          "options": [
+            "A query that runs after the main query",
+            "A query nested inside another query",
+            "A secondary database",
+            "A query with multiple JOINs"
+          ],
+          "answer": 1,
+          "explanation": "A subquery is a SELECT statement nested inside another query. Example: SELECT * FROM Employees WHERE Salary > (SELECT AVG(Salary) FROM Employees) — finds employees earning above average."
+        },
+        {
+          "id": 66,
+          "npc": "Hiker Taro",
+          "text": "What is a CTE (Common Table Expression)?",
+          "options": [
+            "A type of table",
+            "A temporary named result set defined with WITH that can be referenced in the main query",
+            "A stored procedure",
+            "A type of JOIN"
+          ],
+          "answer": 1,
+          "explanation": "A CTE uses WITH to create a named temporary result. Example: WITH HighEarners AS (SELECT * FROM Employees WHERE Salary > 100000) SELECT * FROM HighEarners. CTEs improve readability over subqueries."
+        },
+        {
+          "id": 67,
+          "npc": "Gym Leader Surge",
+          "text": "What does ROUND() do in T-SQL?",
+          "options": [
+            "Removes decimal places entirely",
+            "Rounds a number to a specified number of decimal places",
+            "Rounds up always",
+            "Rounds down always"
+          ],
+          "answer": 1,
+          "explanation": "ROUND(number, decimals) rounds to a specified decimal place. Example: ROUND(15.456, 2) returns 15.46. ROUND(15.456, 0) returns 15. Use CEILING() to always round up, FLOOR() to always round down."
+        },
+        {
+          "id": 68,
+          "npc": "Gym Leader Surge",
+          "text": "What does CASE WHEN do in T-SQL?",
+          "options": [
+            "Handles errors",
+            "Defines conditional logic — like IF/ELSE inside a SELECT statement",
+            "Encrypts data",
+            "Creates a new column permanently"
+          ],
+          "answer": 1,
+          "explanation": "CASE WHEN provides conditional logic. Example: SELECT CASE WHEN Salary > 100000 THEN 'High' WHEN Salary > 50000 THEN 'Medium' ELSE 'Low' END AS SalaryBand FROM Employees"
+        },
+        {
+          "id": 69,
+          "npc": "Erika",
+          "text": "What is an INDEX in SQL?",
+          "options": [
+            "A list of all tables in the database",
+            "A database object that speeds up data retrieval on a column",
+            "The first row of a table",
+            "A numbered list of columns"
+          ],
+          "answer": 1,
+          "explanation": "An INDEX speeds up queries by creating a data structure that SQL Server can search quickly — like a book's index. Without indexes, SQL Server scans every row (slow on large tables)."
+        },
+        {
+          "id": 70,
+          "npc": "Erika",
+          "text": "What is the difference between a CLUSTERED and NON-CLUSTERED index?",
+          "options": [
+            "Clustered physically sorts the table data; non-clustered creates a separate lookup structure",
+            "Non-clustered is faster always",
+            "Clustered is for text; non-clustered is for numbers",
+            "There is no difference"
+          ],
+          "answer": 0,
+          "explanation": "A CLUSTERED index physically sorts and stores the table data in order (only one per table — usually the PK). A NON-CLUSTERED index is a separate structure pointing to the data rows. A table can have many non-clustered indexes."
+        },
+        {
+          "id": 71,
+          "npc": "Koga",
+          "text": "What does the UNION operator do?",
+          "options": [
+            "Joins two tables with a foreign key",
+            "Combines result sets of two SELECT queries (removing duplicates)",
+            "Returns only matching rows from two queries",
+            "Multiplies two result sets"
+          ],
+          "answer": 1,
+          "explanation": "UNION combines results from two SELECT statements and removes duplicates. Both queries must have the same number of columns and compatible data types. Use UNION ALL to keep duplicates (faster)."
+        },
+        {
+          "id": 72,
+          "npc": "Koga",
+          "text": "What is the difference between UNION and UNION ALL?",
+          "options": [
+            "No difference",
+            "UNION removes duplicates; UNION ALL keeps all rows including duplicates (and is faster)",
+            "UNION ALL removes duplicates; UNION keeps them",
+            "UNION ALL adds a total row"
+          ],
+          "answer": 1,
+          "explanation": "UNION removes duplicate rows (slower — has to check). UNION ALL keeps ALL rows including duplicates and runs faster. Use UNION ALL when you know there are no duplicates or don't mind them."
+        },
+        {
+          "id": 73,
+          "npc": "Sabrina",
+          "text": "What does INTERSECT do?",
+          "options": [
+            "Returns all rows from both queries",
+            "Returns only rows that appear in BOTH query results",
+            "Returns rows in the first query but not the second",
+            "Joins two tables"
+          ],
+          "answer": 1,
+          "explanation": "INTERSECT returns only rows that exist in BOTH query results. Like a Venn diagram intersection. Less common but useful for finding common records between two datasets."
+        },
+        {
+          "id": 74,
+          "npc": "Sabrina",
+          "text": "What does EXCEPT do in T-SQL?",
+          "options": [
+            "Returns all rows from both queries",
+            "Returns rows from the first query that do NOT exist in the second query",
+            "Excludes a specific column",
+            "Removes NULL rows"
+          ],
+          "answer": 1,
+          "explanation": "EXCEPT returns rows from the FIRST query that don't appear in the SECOND query. Useful for finding records in one dataset that are missing from another. (MySQL uses MINUS instead.)"
+        },
+        {
+          "id": 75,
+          "npc": "Blaine",
+          "text": "What is a TRIGGER in SQL?",
+          "options": [
+            "A shortcut key in SQL Server Management Studio",
+            "Automatically executed SQL code when INSERT, UPDATE, or DELETE occurs on a table",
+            "A type of stored procedure that returns a value",
+            "A way to schedule queries"
+          ],
+          "answer": 1,
+          "explanation": "A TRIGGER automatically fires when a specified event (INSERT, UPDATE, DELETE) happens on a table. Used for auditing, enforcing business rules, or cascading changes. Use carefully — they can slow performance."
+        },
+        {
+          "id": 76,
+          "npc": "Lorelei",
+          "text": "What is a SCHEMA in SQL Server?",
+          "options": [
+            "The visual diagram of a database",
+            "A container/namespace that groups related database objects together",
+            "A type of backup",
+            "The database itself"
+          ],
+          "answer": 1,
+          "explanation": "A schema is a namespace that organizes database objects. Example: dbo.Employees (schema 'dbo', table 'Employees'). Common schemas: dbo (default), HR, Finance, Sales. Like folders for database objects."
+        },
+        {
+          "id": 77,
+          "npc": "Lorelei",
+          "text": "In T-SQL, what does SELECT TOP 1 ... ORDER BY Date DESC return?",
+          "options": [
+            "The oldest record",
+            "All records sorted by date",
+            "The most recent (latest) single record",
+            "A random record"
+          ],
+          "answer": 2,
+          "explanation": "TOP 1 limits to 1 row. ORDER BY Date DESC sorts newest first. Combined, this returns the SINGLE most recent record. This pattern is very common in real-world T-SQL queries!"
+        },
+        {
+          "id": 78,
+          "npc": "Bruno",
+          "text": "What does SELECT INTO do in T-SQL?",
+          "options": [
+            "Moves data from one table to another permanently",
+            "Creates a NEW table and inserts the query results into it",
+            "Inserts data into an existing table",
+            "Creates a view"
+          ],
+          "answer": 1,
+          "explanation": "SELECT ... INTO NewTable FROM ... creates a NEW table and inserts query results. Example: SELECT * INTO Employees_Backup FROM Employees. The new table structure matches the query result."
+        },
+        {
+          "id": 79,
+          "npc": "Bruno",
+          "text": "What is INSERT INTO ... SELECT used for?",
+          "options": [
+            "Creates a new table",
+            "Copies data from one query result into an EXISTING table",
+            "Updates existing rows",
+            "Creates a view from a table"
+          ],
+          "answer": 1,
+          "explanation": "INSERT INTO ExistingTable SELECT ... FROM ... copies data INTO an EXISTING table. Different from SELECT INTO (which CREATES a new table). The target table must already exist and match the column structure."
+        },
+        {
+          "id": 80,
+          "npc": "Agatha",
+          "text": "From the shadows... What is a TEMP TABLE in T-SQL?",
+          "options": [
+            "A table that deletes itself after 1 hour",
+            "A temporary table stored in tempdb that exists only for the current session",
+            "A view that looks like a table",
+            "A table with no indexes"
+          ],
+          "answer": 1,
+          "explanation": "Temp tables (#TableName) are stored in tempdb and exist only for your session (or procedure). They're great for storing intermediate results. ## prefix makes it a global temp table visible to all sessions."
+        },
+        {
+          "id": 81,
+          "npc": "Agatha",
+          "text": "What is a TABLE VARIABLE in T-SQL and how does it differ from a temp table?",
+          "options": [
+            "They are identical",
+            "A table variable (@TableName) exists only within a batch/procedure and is stored in memory (usually)",
+            "Table variables are permanent",
+            "Table variables use disk; temp tables use memory"
+          ],
+          "answer": 1,
+          "explanation": "A table variable (DECLARE @MyTable TABLE(...)) is scoped to the current batch/procedure. They often live in memory (small data), are faster for small datasets, but can't have indexes easily. Temp tables are better for large datasets."
+        },
+        {
+          "id": 82,
+          "npc": "Lance",
+          "text": "What does TRY...CATCH do in T-SQL?",
+          "options": [
+            "Tests query performance",
+            "Handles errors gracefully — runs TRY block, and if error occurs, executes CATCH block",
+            "Validates data before insert",
+            "Encrypts sensitive data"
+          ],
+          "answer": 1,
+          "explanation": "TRY...CATCH is T-SQL error handling. Code in TRY block runs normally. If an error occurs, execution jumps to CATCH where you can log the error, ROLLBACK a transaction, or return a friendly message."
+        },
+        {
+          "id": 83,
+          "npc": "Lance",
+          "text": "What does @@ERROR return in T-SQL?",
+          "options": [
+            "The error message text",
+            "The error number of the last statement (0 if no error)",
+            "The line number of the error",
+            "A list of all recent errors"
+          ],
+          "answer": 1,
+          "explanation": "@@ERROR returns the error number from the last T-SQL statement. 0 means success. Older code uses @@ERROR; modern T-SQL prefers TRY...CATCH with ERROR_NUMBER(), ERROR_MESSAGE(), ERROR_LINE() functions."
+        },
+        {
+          "id": 84,
+          "npc": "Rival Gary",
+          "text": "OK you're actually pretty good. What is SQL Server Management Studio (SSMS)?",
+          "options": [
+            "A type of SQL Server database",
+            "Microsoft's free GUI tool for connecting to, managing, and querying SQL Server databases",
+            "A stored procedure for managing users",
+            "A cloud version of SQL Server"
+          ],
+          "answer": 1,
+          "explanation": "SSMS is Microsoft's free IDE for SQL Server. You use it to write and run T-SQL queries, manage databases, create tables/views/procedures, check performance, and administer SQL Server. Every DBA uses it daily!"
+        },
+        {
+          "id": 85,
+          "npc": "Nurse Joy",
+          "text": "What does a query execution plan show you in SQL Server?",
+          "options": [
+            "The query results in a graphical format",
+            "How SQL Server plans to physically execute your query — showing operations, costs, and bottlenecks",
+            "A list of scheduled queries",
+            "The query history"
+          ],
+          "answer": 1,
+          "explanation": "An Execution Plan (view with Ctrl+M in SSMS) shows HOW SQL Server will execute your query — table scans, index seeks, joins, sorts, and their relative cost %. Essential for query performance tuning!"
+        },
+        {
+          "id": 86,
+          "npc": "Officer Jenny",
+          "text": "What does the NOLOCK hint do in a SELECT query?",
+          "options": [
+            "Prevents other users from reading the table",
+            "Allows reading data without taking a lock — faster but may read uncommitted/dirty data",
+            "Encrypts the query results",
+            "Prevents the query from timing out"
+          ],
+          "answer": 1,
+          "explanation": "WITH (NOLOCK) hint allows dirty reads — reading data even if another transaction hasn't committed yet. Makes reads faster and reduces blocking, but risks reading data that gets rolled back. Common in reporting queries."
+        },
+        {
+          "id": 87,
+          "npc": "Professor Oak",
+          "text": "What is a DEADLOCK in SQL Server?",
+          "options": [
+            "When a query takes too long",
+            "When two processes each wait for the other to release a lock, causing an infinite wait",
+            "When the database runs out of storage",
+            "When an index is corrupt"
+          ],
+          "answer": 1,
+          "explanation": "A deadlock occurs when Process A holds a lock that Process B wants, and Process B holds a lock that Process A wants — neither can proceed. SQL Server detects this and kills one process (the 'deadlock victim')."
+        },
+        {
+          "id": 88,
+          "npc": "Scientist Bill",
+          "text": "What does ROW_NUMBER() do in T-SQL?",
+          "options": [
+            "Counts the total rows in a table",
+            "Assigns a sequential number to each row within a result set partition",
+            "Returns the row's physical position in the table",
+            "Adds an ID column permanently"
+          ],
+          "answer": 1,
+          "explanation": "ROW_NUMBER() is a window function that numbers rows. Example: SELECT ROW_NUMBER() OVER (ORDER BY Salary DESC) AS Rank, * FROM Employees. Used for ranking, pagination, and removing duplicates."
+        },
+        {
+          "id": 89,
+          "npc": "Scientist Bill",
+          "text": "What is the difference between ROW_NUMBER(), RANK(), and DENSE_RANK()?",
+          "options": [
+            "They are identical",
+            "ROW_NUMBER gives unique sequential numbers; RANK skips numbers on ties; DENSE_RANK does not skip on ties",
+            "RANK is the fastest; others are aliases",
+            "ROW_NUMBER requires a PARTITION BY"
+          ],
+          "answer": 1,
+          "explanation": "For tied values: ROW_NUMBER gives 1,2,3 (always unique). RANK gives 1,1,3 (skips 2 after tie). DENSE_RANK gives 1,1,2 (no skipping). All are window functions used with OVER(ORDER BY ...)."
+        },
+        {
+          "id": 90,
+          "npc": "Erika",
+          "text": "What does PARTITION BY do inside a window function?",
+          "options": [
+            "Splits the database into sections",
+            "Resets the window function calculation for each group defined by the partition column(s)",
+            "Creates a backup partition",
+            "Divides a number evenly"
+          ],
+          "answer": 1,
+          "explanation": "PARTITION BY divides rows into groups for window functions. Example: ROW_NUMBER() OVER (PARTITION BY Department ORDER BY Salary DESC) numbers employees 1,2,3... within EACH department separately."
+        },
+        {
+          "id": 91,
+          "npc": "Koga",
+          "text": "What does the PIVOT operation do in T-SQL?",
+          "options": [
+            "Rotates rows into columns — converts unique values from one column into multiple columns",
+            "Sorts data clockwise",
+            "Transposes the entire table",
+            "Converts columns to rows"
+          ],
+          "answer": 0,
+          "explanation": "PIVOT rotates rows into columns. Example: turning a Sales table with rows for each month into a summary with columns Jan, Feb, Mar... Very useful for reporting and creating crosstab summaries."
+        },
+        {
+          "id": 92,
+          "npc": "Blaine",
+          "text": "Scorching hot question! What is the IDENTITY property in T-SQL?",
+          "options": [
+            "Stores the user's login name",
+            "An auto-incrementing number column — SQL Server automatically generates a unique value for each new row",
+            "A unique constraint on a column",
+            "The database's license ID"
+          ],
+          "answer": 1,
+          "explanation": "IDENTITY(seed, increment) auto-generates values. Example: EmployeeID INT IDENTITY(1,1) starts at 1 and increments by 1 for each new row. Common for primary keys. Use @@IDENTITY or SCOPE_IDENTITY() to get the last generated value."
+        },
+        {
+          "id": 93,
+          "npc": "Lorelei",
+          "text": "What is the difference between CHAR and VARCHAR data types?",
+          "options": [
+            "No difference",
+            "CHAR is fixed-length (always uses full allocated space); VARCHAR is variable-length (uses only space needed)",
+            "VARCHAR is faster for all use cases",
+            "CHAR is for numbers; VARCHAR is for text"
+          ],
+          "answer": 1,
+          "explanation": "CHAR(10) always uses 10 characters of storage (pads with spaces). VARCHAR(10) uses only the space the actual value needs. CHAR is efficient for fixed-length data (like state codes 'CA', 'NY'). VARCHAR is better for variable-length text."
+        },
+        {
+          "id": 94,
+          "npc": "Bruno",
+          "text": "What is the NVARCHAR data type used for?",
+          "options": [
+            "Negative numbers stored as text",
+            "Unicode text — supports international characters like Chinese, Arabic, emoji",
+            "Numbers with variable decimal places",
+            "Very long text over 8000 characters"
+          ],
+          "answer": 1,
+          "explanation": "NVARCHAR stores Unicode text (N stands for National). It uses 2 bytes per character, supporting any language's characters. Use NVARCHAR when your data may contain non-English characters. Prefix Unicode strings with N: N'Héllo'."
+        },
+        {
+          "id": 95,
+          "npc": "Agatha",
+          "text": "What does a CHECK constraint do?",
+          "options": [
+            "Checks if the table has data",
+            "Enforces that column values meet a specified condition before INSERT/UPDATE",
+            "Verifies the database connection",
+            "Checks for duplicate rows"
+          ],
+          "answer": 1,
+          "explanation": "CHECK constraints enforce data rules. Example: CHECK (Age >= 18) prevents inserting anyone younger than 18. CHECK (Salary > 0) ensures salary is positive. They protect data integrity at the database level."
+        },
+        {
+          "id": 96,
+          "npc": "Lance",
+          "text": "What is database NORMALIZATION?",
+          "options": [
+            "Converting all text to lowercase",
+            "The process of organizing tables to reduce data redundancy and improve integrity",
+            "Sorting all tables alphabetically",
+            "Defragmenting the database"
+          ],
+          "answer": 1,
+          "explanation": "Normalization organizes data to minimize redundancy. 1NF: eliminate repeating groups. 2NF: remove partial dependencies. 3NF: remove transitive dependencies. Well-normalized databases are easier to maintain and have fewer update anomalies."
+        },
+        {
+          "id": 97,
+          "npc": "Rival Gary",
+          "text": "What is the purpose of the sp_help stored procedure in SQL Server?",
+          "options": [
+            "Returns help documentation in a browser",
+            "Returns information about a database object — its columns, types, constraints, and indexes",
+            "Lists all stored procedures",
+            "Shows the SQL Server error log"
+          ],
+          "answer": 1,
+          "explanation": "EXEC sp_help 'TableName' returns detailed info about a table: columns, data types, nullability, constraints, indexes. Great for quickly understanding an unfamiliar table's structure without opening Object Explorer."
+        },
+        {
+          "id": 98,
+          "npc": "Professor Oak",
+          "text": "Nearly there, trainer! What does sp_who2 return in SQL Server?",
+          "options": [
+            "A list of all stored procedures",
+            "Information about current user sessions and processes — who is connected and what they're running",
+            "The database owner information",
+            "All SQL Server logins"
+          ],
+          "answer": 1,
+          "explanation": "EXEC sp_who2 shows active connections: login names, status, blocking info, CPU, disk usage, and current command. DBAs use it to find blocking queries, idle connections, or who is running slow queries."
+        },
+        {
+          "id": 99,
+          "npc": "Champion",
+          "text": "One question from glory! What is the difference between a clustered index SEEK and a TABLE SCAN in execution plans?",
+          "options": [
+            "No difference in performance",
+            "Index Seek directly finds matching rows (fast); Table Scan reads every row in the table (slow on large tables)",
+            "Table Scan uses indexes; Index Seek does not",
+            "Index Seek is only for text columns"
+          ],
+          "answer": 1,
+          "explanation": "Index SEEK is like using a book index — goes directly to the data. Table SCAN reads every single row. Seeks are almost always faster on large tables. Seeing Table Scans in execution plans often signals a missing index."
+        },
+        {
+          "id": 100,
+          "npc": "Champion",
+          "text": "FINAL QUESTION! You are writing a query for management to show total sales by region, only for regions with over $1,000,000 in sales, sorted highest first. Which query structure is correct?",
+          "options": [
+            "SELECT Region, SUM(Amount) AS TotalSales FROM Sales WHERE SUM(Amount) > 1000000 GROUP BY Region ORDER BY TotalSales DESC",
+            "SELECT Region, SUM(Amount) AS TotalSales FROM Sales GROUP BY Region HAVING SUM(Amount) > 1000000 ORDER BY TotalSales DESC",
+            "SELECT Region, SUM(Amount) AS TotalSales FROM Sales GROUP BY Region WHERE TotalSales > 1000000 ORDER BY TotalSales DESC",
+            "SELECT Region, SUM(Amount) AS TotalSales FROM Sales HAVING SUM(Amount) > 1000000 GROUP BY Region ORDER BY TotalSales DESC"
+          ],
+          "answer": 1,
+          "explanation": "Correct! GROUP BY Region groups the data, HAVING filters the groups (you can't use WHERE with aggregate functions), and ORDER BY TotalSales DESC sorts highest first. This is a real-world query pattern used every day by analysts and DBAs!"
+        }
+      ]
+    }
+  ]
+}

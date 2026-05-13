@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0520">
+<title>PokéSQL — Learn T-SQL</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- BOOT SPLASH -->
+  <div id="screen-boot" class="screen active">
+    <div class="boot-logo">
+      <div class="boot-gameboy">GAME BOY ADVANCE</div>
+      <div class="boot-ding">♪</div>
+      <div class="boot-copy">© 2025 PokéSQL</div>
+    </div>
+  </div>
+
+  <!-- TITLE -->
+  <div id="screen-title" class="screen">
+    <div class="title-bg">
+      <div class="title-stars"></div>
+      <div class="title-main">
+        <div class="title-logo">
+          <span class="title-poke">POKÉ</span><span class="title-query">SQL</span>
+        </div>
+        <div class="title-sub">Learn Microsoft T-SQL</div>
+        <div class="title-edition">★ SQL TRAINER EDITION ★</div>
+        <div class="title-deco">
+          <span>🗄️</span><span>📊</span><span>🔍</span>
+        </div>
+        <div class="title-tap blink">TAP / CLICK TO START</div>
+      </div>
+      <div class="title-footer">PokéSQL v1.0 · 100 Questions</div>
+    </div>
+  </div>
+
+  <!-- CONTINUE OR NEW GAME -->
+  <div id="screen-continue" class="screen">
+    <div class="continue-bg">
+      <div class="continue-logo">POKÉ<span>SQL</span></div>
+      <div class="continue-card" id="continue-card">
+        <div class="continue-card-header">📂 CONTINUE</div>
+        <div class="save-row"><span class="save-lbl">TRAINER</span><span class="save-val" id="save-name-disp">—</span></div>
+        <div class="save-row"><span class="save-lbl">PROGRESS</span><span class="save-val" id="save-prog-disp">—</span></div>
+        <div class="save-row"><span class="save-lbl">SCORE</span><span class="save-val" id="save-score-disp">—</span></div>
+        <button class="btn-pixel btn-green" id="btn-continue-save">▶ CONTINUE</button>
+      </div>
+      <div class="continue-or">— OR —</div>
+      <button class="btn-pixel btn-red" id="btn-new-game">✦ NEW GAME</button>
+      <p class="continue-warn" id="continue-warn"></p>
+    </div>
+  </div>
+
+  <!-- NAME ENTRY -->
+  <div id="screen-name" class="screen">
+    <div class="dialog-box name-dialog">
+      <div class="dialog-speaker">PROFESSOR OAK</div>
+      <div class="dialog-text" id="name-prompt-text"></div>
+    </div>
+    <div class="name-entry-area">
+      <div class="name-display-box"><span id="name-display">_</span></div>
+      <div class="keyboard-grid" id="keyboard-grid"></div>
+      <div class="name-controls">
+        <button class="btn-pixel btn-del" id="btn-backspace">← DEL</button>
+        <button class="btn-pixel btn-ok"  id="btn-confirm-name">OK ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- INTRO CUTSCENE -->
+  <div id="screen-intro" class="screen">
+    <div class="overworld-bg">
+      <div class="intro-npc" id="intro-npc">👴</div>
+      <div class="intro-player">🧢</div>
+    </div>
+    <div class="dialog-box intro-dialog">
+      <div class="dialog-speaker" id="intro-speaker">PROFESSOR OAK</div>
+      <div class="dialog-text" id="intro-text"></div>
+      <div class="dialog-arrow blink" id="intro-arrow" style="display:none">▼</div>
+    </div>
+    <div class="tap-hint blink">TAP TO CONTINUE</div>
+  </div>
+
+  <!-- OVERWORLD MAP -->
+  <div id="screen-map" class="screen">
+    <div class="map-header">
+      <div class="map-left">
+        <span class="map-pin">📍</span>
+        <span class="map-town-name">PALLET TOWN</span>
+      </div>
+      <div class="map-right">
+        <div class="prog-bar-outer"><div class="prog-bar-inner" id="map-prog-bar"></div></div>
+        <span class="prog-text" id="map-prog-text">0/100</span>
+        <span class="save-dot" id="save-dot" title="Auto-saved">💾</span>
+      </div>
+    </div>
+    <div class="overworld-bg map-world">
+      <div class="map-trees">
+        <span class="tree">🌲</span><span class="tree">🌳</span>
+        <span class="tree">🌲</span><span class="tree">🌳</span><span class="tree">🌲</span>
+      </div>
+      <div class="map-ground"></div>
+      <div class="map-npc-wrap">
+        <div class="npc-bubble">!</div>
+        <div class="map-npc" id="map-npc"></div>
+      </div>
+      <div class="map-player">🧢</div>
+    </div>
+    <div class="map-hud">
+      <div class="hud-cell"><div class="hud-lbl">TRAINER</div><div class="hud-val" id="hud-name">ASH</div></div>
+      <div class="hud-cell"><div class="hud-lbl">SCORE</div><div class="hud-val" id="hud-score">0</div></div>
+      <div class="hud-cell"><div class="hud-lbl">STREAK</div><div class="hud-val" id="hud-streak">0</div></div>
+      <div class="hud-cell"><div class="hud-lbl">CORRECT</div><div class="hud-val" id="hud-correct">0/0</div></div>
+    </div>
+    <button class="btn-pixel btn-green btn-walk" id="btn-walk">▶ TALK TO NPC</button>
+  </div>
+
+  <!-- BATTLE / QUESTION -->
+  <div id="screen-battle" class="screen">
+    <div class="battle-scene">
+      <div class="battle-npc-side">
+        <div class="battle-sprite" id="battle-npc-sprite">👴</div>
+        <div class="battle-name-tag" id="battle-npc-name">OAK</div>
+      </div>
+      <div class="battle-player-side">
+        <div class="battle-sprite">🧢</div>
+        <div class="battle-name-tag" id="battle-player-name">ASH</div>
+      </div>
+    </div>
+    <div class="dialog-box battle-dialog">
+      <div class="dialog-speaker" id="battle-speaker">PROFESSOR OAK</div>
+      <div class="dialog-text" id="battle-text"></div>
+      <div class="dialog-arrow blink" id="battle-arrow" style="display:none">▼</div>
+    </div>
+    <div class="battle-choices" id="battle-choices"></div>
+    <div class="battle-footer">
+      <span>Q <span id="battle-q-num">1</span>/100</span>
+      <span class="kbd-hint">1–4 keys to answer</span>
+      <span>PTS: <span id="battle-pts">0</span></span>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div id="screen-result" class="screen">
+    <div class="result-box">
+      <div class="result-icon" id="result-icon">✓</div>
+      <div class="result-label" id="result-label">CORRECT!</div>
+      <div class="result-correct-ans" id="result-correct-ans"></div>
+      <div class="result-explanation" id="result-explanation"></div>
+      <div class="result-pts" id="result-pts">+100 PTS</div>
+      <button class="btn-pixel btn-blue btn-full" id="btn-result-cont">CONTINUE ▶</button>
+    </div>
+  </div>
+
+  <!-- LEVEL-UP / MILESTONE -->
+  <div id="screen-levelup" class="screen">
+    <div class="levelup-box">
+      <div class="lu-stars blink" id="lu-stars">★ BADGE EARNED! ★</div>
+      <div class="lu-sprite">🧢</div>
+      <div class="lu-text"><span id="lu-name">ASH</span> gained SQL EXP!</div>
+      <div class="lu-badge" id="lu-badge">🏅 SQL TRAINEE</div>
+      <div class="lu-prog-wrap">
+        <div class="lu-prog-outer"><div class="lu-prog-inner" id="lu-prog-inner"></div></div>
+        <div class="lu-prog-label" id="lu-prog-label">25 / 100</div>
+      </div>
+      <button class="btn-pixel btn-green btn-full" id="btn-lu-cont">CONTINUE ▶</button>
+    </div>
+  </div>
+
+  <!-- COMPLETION -->
+  <div id="screen-complete" class="screen">
+    <div class="complete-scroll">
+      <div class="complete-area">
+        <div class="complete-trophy">🏆</div>
+        <div class="complete-title">CHAMPION!</div>
+        <div class="complete-name" id="complete-name">ASH</div>
+        <p class="complete-msg">You've mastered Microsoft T-SQL fundamentals! You're ready to write real queries, assist DBAs, and analyse data like a pro.</p>
+        <div class="complete-stats" id="complete-stats"></div>
+        <div class="complete-badges">
+          <div class="badge-row">🥉 SQL INITIATE — Q25</div>
+          <div class="badge-row">🥈 QUERY TRAINER — Q50</div>
+          <div class="badge-row">🥇 DATA WRANGLER — Q75</div>
+          <div class="badge-row">🏆 SQL CHAMPION — Q100</div>
+        </div>
+        <button class="btn-pixel btn-red btn-full" id="btn-play-again">▶ PLAY AGAIN</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /#app -->
+
+<div id="toast" class="toast hidden"></div>
+<script src="game.js"></script>
+</body>
+</html>
