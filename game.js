@@ -553,7 +553,7 @@ class Game {
            NPC spawns 1.5 screen-widths ahead (off-screen right) */
         this.state.worldX    = 0;
         this.state.worldY    = 0;
-        this.state.npcWorldX = Math.round(viewW * 1.5);
+        this.state.npcWorldX = Math.round(viewW * 3.5);
         this.state.npcWorldY = 0;
       } else {
         /* After each question — player world-X advances to just before
@@ -561,7 +561,7 @@ class Game {
            new NPC spawns another 1.5 screens ahead */
         this.state.worldX    = Math.max(0, this.state.npcWorldX - Math.round(viewW / 2));
         this.state.worldY    = 0;
-        this.state.npcWorldX = this.state.worldX + Math.round(viewW * 1.5 + Math.random() * viewW * 0.4);
+        this.state.npcWorldX = this.state.worldX + Math.round(viewW * 3.0 + Math.random() * viewW * 0.8);
         this.state.npcWorldY = 0;
       }
 
