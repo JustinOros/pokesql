@@ -181,7 +181,6 @@ class Game {
     if (!world) return;
     const viewW  = world.parentElement.offsetWidth  || 420;
     const viewH  = world.parentElement.offsetHeight || 300;
-    const worldW = world.offsetWidth || viewW * 4;
 
     const SPEED = 30; /* px per tick */
     let dx = 0, dy = 0, dir = '';
@@ -192,8 +191,10 @@ class Game {
     if (this._heldKeys.has('down'))  { dy =  SPEED; dir = 'down';  }
     if (!dir) return;
 
-    /* Clamp world X — can't walk left past origin or right past world edge */
-    this.state.worldX = Math.max(0, Math.min(worldW - viewW, this.state.worldX + dx));
+    /* Clamp world X — left edge is 0, right edge is npcWorldX + half screen
+       so the player can always walk far enough to reach the NPC */
+    const maxWorldX = this.state.npcWorldX + Math.round(viewW * 0.5);
+    this.state.worldX = Math.max(0, Math.min(maxWorldX, this.state.worldX + dx));
     /* Clamp Y within a narrow vertical band (path area) */
     this.state.worldY = Math.max(-30, Math.min(30, this.state.worldY + dy));
     this.state.lastDir = dir;
