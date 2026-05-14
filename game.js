@@ -205,7 +205,7 @@ class Game {
     const p = document.getElementById('map-player');
     if (p) {
       const centreX = viewW / 2 - 20;
-      const centreY = viewH * 0.60 + this.state.worldY;
+      const centreY = viewH * 0.75 + this.state.worldY;
       p.style.left   = centreX + 'px';
       p.style.bottom = (viewH - centreY - 40) + 'px';
       p.className    = `map-player walk-${dir}`;
@@ -214,10 +214,22 @@ class Game {
     this._checkNPCProximity();
   }
 
-  /* Slide the world so the camera follows the player */
+  /* Slide the world and reposition NPC in screen-space every tick */
   _applyCamera() {
     const world = document.getElementById('map-inner');
     if (world) world.style.transform = `translateX(${-this.state.worldX}px)`;
+    this._positionNPCOnScreen();
+  }
+
+  _positionNPCOnScreen() {
+    const world = document.getElementById('map-inner');
+    const viewH = world ? world.parentElement.offsetHeight : 300;
+    const npcWrap = document.getElementById('map-npc-wrap');
+    if (npcWrap) {
+      const screenX = this.state.npcWorldX - this.state.worldX;
+      npcWrap.style.left   = (screenX - 24) + 'px';
+      npcWrap.style.bottom = (viewH * 0.18) + 'px';
+    }
   }
 
   _checkNPCProximity() {
@@ -233,7 +245,7 @@ class Game {
     if (hint) {
       hint.style.display = near ? 'block' : 'none';
       hint.style.left   = (viewW / 2 - 28) + 'px';
-      hint.style.bottom = (viewH * 0.46) + 'px';
+      hint.style.bottom = (viewH * 0.32) + 'px';
     }
     if (bub) bub.style.opacity = near ? '0' : '1';
     this._updateDirArrow(near);
@@ -250,7 +262,7 @@ class Game {
     arrow.textContent   = npcScreenX >= viewW / 2 ? '▶' : '◀';
     arrow.style.display = 'block';
     arrow.style.left    = (viewW / 2 + 30) + 'px';
-    arrow.style.bottom  = (viewH * 0.40) + 'px';
+    arrow.style.bottom  = (viewH * 0.28) + 'px';
   }
 
   _nearNPC() {
@@ -266,7 +278,7 @@ class Game {
     this.startQuestion();
   }
 
-  /* Place player at viewport centre, NPC at world-px position */
+  /* Place player at viewport centre, NPC via screen-space conversion */
   _placeMapSprites() {
     const world = document.getElementById('map-inner');
     const viewW = world ? world.parentElement.offsetWidth  : 420;
@@ -275,14 +287,9 @@ class Game {
     const p = document.getElementById('map-player');
     if (p) {
       p.style.left      = (viewW / 2 - 20) + 'px';
-      p.style.bottom    = (viewH * 0.32) + 'px';
+      p.style.bottom    = (viewH * 0.18) + 'px';
       p.style.transform = 'scaleX(-1)';
       p.className       = 'map-player idle';
-    }
-    const npcWrap = document.getElementById('map-npc-wrap');
-    if (npcWrap) {
-      npcWrap.style.left   = (this.state.npcWorldX - 24) + 'px';
-      npcWrap.style.bottom = (viewH * 0.32) + 'px';
     }
     this._applyCamera();
     const hint = document.getElementById('map-talk-hint');
