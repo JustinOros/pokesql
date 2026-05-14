@@ -1088,8 +1088,17 @@ class Game {
     });
 
     function rewriteLetterRefs(text) {
-      return text.replace(/\b([ABCD])\b/g, (match, letter) => {
-        return letterToSlot[letter] !== undefined ? letterToSlot[letter] : match;
+      /* Only rewrite letters that appear in explicit option-reference patterns:
+         "Both A and B", "A and B", "Both B and C", etc.
+         Never replace standalone A/B/C/D in regular sentence text. */
+      return text.replace(/\bBoth ([ABCD]) and ([ABCD])\b/gi, (_, l1, l2) => {
+        const n1 = letterToSlot[l1.toUpperCase()];
+        const n2 = letterToSlot[l2.toUpperCase()];
+        return `Both ${n1 ?? l1} and ${n2 ?? l2}`;
+      }).replace(/\b([ABCD]) and ([ABCD])\b/g, (_, l1, l2) => {
+        const n1 = letterToSlot[l1];
+        const n2 = letterToSlot[l2];
+        return `${n1 ?? l1} and ${n2 ?? l2}`;
       });
     }
 
