@@ -555,8 +555,8 @@ class Game {
     /* Trees live in the top 52% of the world (above the path) */
     const treeTopMax    = viewH * 0.52;
     const treeBottomMin = viewH * 0.04;
-    const TYPES = ['🌲','🌳','🌲','🌳','🌲','🌲','🌳'];
-    const COUNT = 60;
+    const TYPES = ['🌳','🌳','🌳','🌳','🌳'];
+    const COUNT = 35;
 
     /* Use a seeded-ish spread: divide world into zones and place 1-2 trees per zone */
     const zoneW = worldW / COUNT;
