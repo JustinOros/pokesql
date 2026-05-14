@@ -54,14 +54,20 @@ function clearSave() { try { localStorage.removeItem(SAVE_KEY); } catch(_){} }
 
 /* ─── BACKGROUND MUSIC ───────────────────────────────────── */
 const Music = (() => {
-  let audio   = null;
-  let muted   = false;
+  let audio    = null;
+  let muted    = false;
+  let wantPlay = false;   /* true if we tried to play but were blocked */
 
   function getAudio() {
     if (!audio) {
-      audio        = new Audio('./music.mp3');
-      audio.loop   = true;
-      audio.volume = 0.5;
+      audio          = new Audio('./music.mp3');
+      audio.loop     = true;
+      audio.volume   = 0.5;
+      audio.preload  = 'auto';
+      /* If audio loads and we wanted to play, try again */
+      audio.addEventListener('canplaythrough', () => {
+        if (wantPlay && !muted) audio.play().catch(() => {});
+      });
     }
     return audio;
   }
@@ -76,17 +82,30 @@ const Music = (() => {
   return {
     play() {
       if (muted) return;
+      wantPlay = true;
       const a = getAudio();
-      if (a.paused) a.play().catch(() => {});
+      if (a.readyState >= 3) {
+        /* Enough data to play */
+        if (a.paused) a.play().catch((e) => { console.warn('Music play blocked:', e); });
+      }
+      /* else: canplaythrough listener will fire and retry */
     },
     pause() {
-      if (audio) audio.pause();
+      wantPlay = false;
+      if (audio && !audio.paused) audio.pause();
     },
     toggle() {
       muted = !muted;
       updateBtn();
       if (muted) Music.pause();
       else       Music.play();
+    },
+    /* Call once on first user interaction to unblock autoplay */
+    unblock() {
+      const a = getAudio();
+      if (wantPlay && !muted && a.paused) {
+        a.play().catch(() => {});
+      }
     },
   };
 })();
@@ -584,7 +603,11 @@ class Game {
     this.show('title');
     SFX.boot();
     this._showController(false);
-    const go = () => { document.getElementById('screen-title').removeEventListener('click',go); this.showContinueOrName(); };
+    const go = () => {
+      document.getElementById('screen-title').removeEventListener('click', go);
+      Music.unblock();
+      this.showContinueOrName();
+    };
     document.getElementById('screen-title').addEventListener('click', go);
   }
 
@@ -598,7 +621,7 @@ class Game {
       document.getElementById('save-prog-disp').textContent  = `Q${save.currentQ}/100 (${pct}%)`;
       document.getElementById('save-score-disp').textContent = save.score.toLocaleString();
 
-      document.getElementById('btn-continue-save').onclick = () => this.restoreFromSave(save);
+      document.getElementById('btn-continue-save').onclick = () => { Music.unblock(); this.restoreFromSave(save); };
       document.getElementById('btn-new-game').onclick = () => {
         document.getElementById('continue-warn').textContent = 'Starting a new game will erase your saved progress!';
         document.getElementById('btn-new-game').textContent  = '✦ CONFIRM NEW GAME';
