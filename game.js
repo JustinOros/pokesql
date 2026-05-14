@@ -734,38 +734,55 @@ class Game {
   }
 
   /* Generate randomly placed trees across the full scrollable world */
+  /* Generate trees for the current journey leg — from world origin to just past the NPC.
+     Called fresh each time so trees always fill the visible path ahead. */
   _generateTrees() {
     const container = document.getElementById('map-trees');
-    if (!container || container.childElementCount > 0) return;
+    if (!container) return;
+
+    /* Clear previous leg's trees */
+    container.innerHTML = '';
 
     const world  = document.getElementById('map-inner');
     const viewW  = world ? world.parentElement.offsetWidth  : 420;
     const viewH  = world ? world.parentElement.offsetHeight : 300;
 
-    const worldW = viewW * 100;
+    /* World spans from 0 to just past the NPC */
+    const worldW = this.state.npcWorldX + viewW;
     if (world) world.style.width = worldW + 'px';
 
-    /* Trees live above the path (top ~52% of the map area) */
     const treeTopMax    = viewH * 0.50;
     const treeBottomMin = viewH * 0.04;
-    const TYPES = ['🌳'];
-    const COUNT = 200;  /* enough trees to fill a very long journey */
 
+    /* One tree roughly every 120px across the leg */
+    const COUNT = Math.max(6, Math.round(worldW / 120));
     const zoneW = worldW / COUNT;
+
     for (let i = 0; i < COUNT; i++) {
       const span = document.createElement('span');
       span.className = 'tree';
-      const size  = 28 + Math.random() * 16;
-      const x     = i * zoneW + Math.random() * zoneW * 0.8;
-      const y     = treeBottomMin + Math.random() * (treeTopMax - treeBottomMin - size);
-      span.textContent              = TYPES[0];
-      span.style.fontSize           = size + 'px';
-      span.style.left               = x + 'px';
-      span.style.top                = y + 'px';
-      span.style.animationDelay     = (Math.random() * 3).toFixed(2) + 's';
-      span.style.animationDuration  = (2.5 + Math.random() * 2).toFixed(1) + 's';
+      const size = 28 + Math.random() * 16;
+      const x    = i * zoneW + Math.random() * zoneW * 0.75;
+      const y    = treeBottomMin + Math.random() * (treeTopMax - treeBottomMin - size);
+      span.textContent             = '🌳';
+      span.style.fontSize          = size + 'px';
+      span.style.left              = x + 'px';
+      span.style.top               = y + 'px';
+      span.style.animationDelay    = (Math.random() * 3).toFixed(2) + 's';
+      span.style.animationDuration = (2.5 + Math.random() * 2).toFixed(1) + 's';
       container.appendChild(span);
     }
+  }
+
+  /* Called on result screen — pre-builds trees for the next leg */
+  _preGenerateNextLeg() {
+    const world = document.getElementById('map-inner');
+    const viewW = world ? world.parentElement.offsetWidth : 420;
+    const nextNpcX = Math.round(viewW * 3.0 + Math.random() * viewW * 0.8);
+    const savedNpcX = this.state.npcWorldX;
+    this.state.npcWorldX = nextNpcX;
+    this._generateTrees();
+    this.state.npcWorldX = savedNpcX;
   }
 
   showMap() {
@@ -779,19 +796,16 @@ class Game {
       const viewW = world ? world.parentElement.offsetWidth : 420;
 
       if (this.state.currentQ === 0) {
-        /* First load — player at world origin, camera at 0,
-           NPC spawns 1.5 screen-widths ahead (off-screen right) */
         this.state.worldX    = 0;
         this.state.worldY    = 0;
         this.state.npcWorldX = Math.round(viewW * 3.5);
         this.state.npcWorldY = 0;
       } else {
-        /* After each question — player world-X advances to just before
-           where the NPC was, camera resets so player appears centred,
-           new NPC spawns another 1.5 screens ahead */
-        this.state.worldX    = Math.max(0, this.state.npcWorldX - Math.round(viewW / 2));
+        /* Always reset camera to 0 each question — keeps trees in view.
+           NPC spawns off-screen right relative to fresh origin. */
+        this.state.worldX    = 0;
         this.state.worldY    = 0;
-        this.state.npcWorldX = this.state.worldX + Math.round(viewW * 3.0 + Math.random() * viewW * 0.8);
+        this.state.npcWorldX = Math.round(viewW * 3.0 + Math.random() * viewW * 0.8);
         this.state.npcWorldY = 0;
       }
 
@@ -900,7 +914,11 @@ class Game {
       if(this.state.streak>=3) SFX.streak(); else SFX.correct();
     } else { this.state.streak=0; this.state.wrong++; SFX.wrong(); }
 
-    setTimeout(()=>this.showResult(correct,q),120);
+    setTimeout(()=>{
+      /* Pre-generate trees for the next map leg while player reads result */
+      this._preGenerateNextLeg();
+      this.showResult(correct,q);
+    },120);
   }
 
   /* ── RESULT ───────────────────────────────────────────── */
