@@ -207,6 +207,38 @@ class Game {
       hint.style.bottom= (this.state.playerY + 11) + '%';
     }
     if (bub) bub.style.opacity = near ? '0' : '1';
+
+    this._updateDirArrow(near);
+  }
+
+  /* Point a blinking arrow toward the NPC so players know which way to walk */
+  _updateDirArrow(nearNPC) {
+    const arrow = document.getElementById('map-dir-arrow');
+    if (!arrow) return;
+
+    /* Hide arrow once the player is close enough — "Press A" takes over */
+    if (nearNPC) { arrow.style.display = 'none'; return; }
+
+    const dx = this.state.npcX - this.state.playerX;
+    const dy = this.state.npcY - this.state.playerY;
+
+    /* Pick the dominant axis and set the arrow character + animation direction */
+    let glyph = '▶', rotation = '0deg';
+    if (Math.abs(dx) >= Math.abs(dy)) {
+      glyph    = dx > 0 ? '▶' : '◀';
+      rotation = dx > 0 ? '0deg' : '180deg';
+    } else {
+      glyph    = dy > 0 ? '▲' : '▼';
+      rotation = dy > 0 ? '270deg' : '90deg';
+    }
+
+    /* Position arrow near the player, offset so it doesn't overlap the sprite */
+    const offsetX = dx > 0 ?  8 : -6;
+    const offsetY = dy > 0 ?  8 : -6;
+    arrow.textContent    = glyph;
+    arrow.style.display  = 'block';
+    arrow.style.left     = Math.max(2, Math.min(90, this.state.playerX + offsetX)) + '%';
+    arrow.style.bottom   = Math.max(28, Math.min(70, this.state.playerY + offsetY)) + '%';
   }
 
   _nearNPC() {
@@ -215,7 +247,11 @@ class Game {
     return dx < 12 && dy < 12;
   }
 
-  _talkToNPC() { this.startQuestion(); }
+  _talkToNPC() {
+    const arrow = document.getElementById('map-dir-arrow');
+    if (arrow) arrow.style.display = 'none';
+    this.startQuestion();
+  }
 
   /* ── Position player & NPC on map ────────────────────────  */
   _placeMapSprites() {
@@ -497,6 +533,7 @@ class Game {
     if (q && npcEl) npcEl.textContent = NPC[q.npc]||'🧑';
 
     this._placeMapSprites();
+    this._updateDirArrow(false);   /* show arrow immediately on map entry */
     saveGame(this.state);
     this.flashSaveDot();
 

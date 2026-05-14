@@ -98,6 +98,7 @@ html, body {
 @keyframes abPress      { 0%{transform:scale(1)}40%{transform:scale(.82)}100%{transform:scale(1)} }
 @keyframes choiceCursor { 0%,100%{box-shadow:0 0 0 3px var(--yellow), 2px 2px 0 var(--darkgray)}50%{box-shadow:0 0 0 3px #ffe878, 2px 2px 0 var(--darkgray)} }
 @keyframes talkBubble   { 0%{transform:translateY(0)}50%{transform:translateY(-3px)} }
+@keyframes arrowPulse   { 0%,100%{transform:scale(1) translateX(0);opacity:1} 50%{transform:scale(1.25) translateX(4px);opacity:.7} }
 
 .blink { animation: blink 1s step-end infinite; }
 
@@ -238,22 +239,25 @@ html, body {
 /* ── SELECT / START (center strip) ─────────────────────────  */
 .gba-mid-btns {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  flex-direction: row;
+  gap: 8px;
   align-items: center;
+  justify-content: center;
 }
 .gba-mid-btn {
   background: #2a1a5e;
   border: 2px solid rgba(255,255,255,.2);
-  border-radius: 20px;
+  border-radius: 30px;
   color: rgba(255,255,255,.6);
   font-family: var(--font);
   font-size: clamp(4.5px, 1.2vw, 6px);
-  padding: 4px 10px;
+  padding: clamp(8px, 2vw, 11px) clamp(10px, 2.5vw, 14px);
   cursor: pointer;
   letter-spacing: .5px;
   -webkit-tap-highlight-color: transparent;
   transition: background .08s;
+  min-width: 52px;
+  text-align: center;
 }
 .gba-mid-btn:active { background: #3d2f99; }
 
@@ -385,7 +389,34 @@ html, body {
 .map-trees  { position:absolute; top:12%; left:0; right:0; display:flex; justify-content:space-around; padding:0 8px; }
 .tree       { font-size:clamp(24px,7vw,36px); display:inline-block; animation:treeSway 3s ease-in-out infinite; filter:drop-shadow(1px 2px 0 rgba(0,0,0,.3)); }
 .tree:nth-child(2){animation-delay:.5s;} .tree:nth-child(3){animation-delay:1s;} .tree:nth-child(4){animation-delay:1.5s;} .tree:nth-child(5){animation-delay:2s;}
-.map-ground { position:absolute; bottom:0; left:0; right:0; height:32%; background:linear-gradient(180deg,#c0a060 0%,#a89050 100%); border-top:3px solid #907840; }
+.map-ground {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 32%;
+  /* layered: green grass strip at top, then dirt path */
+  background: linear-gradient(
+    180deg,
+    #4a9e30 0%,        /* bright grass edge */
+    #3d8a28 6%,        /* darker grass */
+    #c0a060 6%,        /* dirt path starts */
+    #b89858 50%,
+    #a08848 100%
+  );
+  border-top: 4px solid #2d6e1a;  /* crisp grass line */
+  box-shadow: inset 0 4px 0 rgba(80,160,30,.35);  /* soft green glow into path */
+}
+
+/* Directional nudge arrow — floats at bottom of map, points toward NPC */
+.map-dir-arrow {
+  position: absolute;
+  font-size: clamp(20px, 6vw, 28px);
+  color: var(--yellow);
+  text-shadow: 0 0 6px rgba(248,192,48,.8), 2px 2px 0 rgba(0,0,0,.5);
+  pointer-events: none;
+  z-index: 20;
+  animation: arrowPulse .7s ease-in-out infinite;
+  filter: drop-shadow(0 0 4px rgba(248,192,48,.6));
+}
 
 /* NPC on map */
 .map-npc-wrap { position:absolute; text-align:center; transition: left .4s ease, bottom .4s ease; }
