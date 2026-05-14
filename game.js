@@ -644,13 +644,18 @@ class Game {
 
     /* ── NAME SCREEN — D-pad navigates keyboard grid, A selects, B deletes, Start confirms ── */
     if (s === 'name') {
-      const COLS = 10;
-      if (this._gpKeyCursor === undefined) this._gpKeyCursor = 0;
-      const keys = Array.from(document.querySelectorAll('.key-btn'));
-      const total = keys.length;
+      const letterKeys = Array.from(document.querySelectorAll('.key-btn'));
+      const delBtn     = document.getElementById('btn-backspace');
+      const okBtn      = document.getElementById('btn-confirm-name');
+      const keys       = [...letterKeys, delBtn, okBtn].filter(Boolean);
+      const total      = keys.length;
+      const COLS       = 10;
 
-      /* Highlight current key */
-      keys.forEach((k, i) => k.style.outline = i === this._gpKeyCursor ? '2px solid #f8c030' : '');
+      /* Highlight current key — works for letter keys, DEL and OK */
+      keys.forEach((k, i) => {
+        k.style.outline       = i === this._gpKeyCursor ? '3px solid #f8c030' : '';
+        k.style.outlineOffset = i === this._gpKeyCursor ? '-2px' : '';
+      });
 
       /* D-pad navigation with repeat delay */
       const now = Date.now();
@@ -663,13 +668,22 @@ class Game {
         if (dir === 'down')  c = Math.min(c + COLS, total - 1);
         if (dir === 'up')    c = Math.max(c - COLS, 0);
         this._gpKeyCursor = c;
-        keys.forEach((k, i) => k.style.outline = i === c ? '2px solid #f8c030' : '');
+        keys.forEach((k, i) => {
+          k.style.outline       = i === c ? '3px solid #f8c030' : '';
+          k.style.outlineOffset = i === c ? '-2px' : '';
+        });
       }
 
-      if (justPressed(0) || justPressed(1)) { /* A or B — select highlighted letter */
+      if (justPressed(0) || justPressed(1)) { /* A or B — activate highlighted key */
         const key = keys[this._gpKeyCursor];
-        if (key) {
+        if (!key) return;
+        const isLetterKey = key.classList.contains('key-btn');
+        if (isLetterKey) {
           key.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, isPrimary: true }));
+        } else if (key.id === 'btn-backspace') {
+          this.delChar();
+        } else if (key.id === 'btn-confirm-name') {
+          this.confirmName();
         }
       }
       if (justPressed(2)) { /* X — delete */
