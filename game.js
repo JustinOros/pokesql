@@ -666,10 +666,13 @@ class Game {
         keys.forEach((k, i) => k.style.outline = i === c ? '2px solid #f8c030' : '');
       }
 
-      if (justPressed(0)) { /* A — select letter */
-        keys[this._gpKeyCursor]?.click();
+      if (justPressed(0) || justPressed(1)) { /* A or B — select highlighted letter */
+        const key = keys[this._gpKeyCursor];
+        if (key) {
+          key.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, isPrimary: true }));
+        }
       }
-      if (justPressed(1) || justPressed(2)) { /* B or X — delete */
+      if (justPressed(2)) { /* X — delete */
         this.delChar();
       }
       if (justPressed(9) || justPressed(8)) { /* Start or Select — confirm name */
