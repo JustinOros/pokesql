@@ -392,18 +392,35 @@ html, body {
 .map-ground {
   position: absolute;
   bottom: 0; left: 0; right: 0;
-  height: 32%;
-  /* layered: green grass strip at top, then dirt path */
-  background: linear-gradient(
-    180deg,
-    #4a9e30 0%,        /* bright grass edge */
-    #3d8a28 6%,        /* darker grass */
-    #c0a060 6%,        /* dirt path starts */
-    #b89858 50%,
-    #a08848 100%
-  );
-  border-top: 4px solid #2d6e1a;  /* crisp grass line */
-  box-shadow: inset 0 4px 0 rgba(80,160,30,.35);  /* soft green glow into path */
+  height: 48%;   /* taller overall area so grass shows top and bottom */
+  background:
+    /* bottom grass strip */
+    linear-gradient(
+      180deg,
+      transparent 0%,
+      transparent 54%,
+      #3d8a28 54%,
+      #4a9e30 58%,
+      #3d8a28 62%,
+      #4aaa32 66%,
+      #3d8a28 100%
+    ),
+    /* dirt path in the middle */
+    linear-gradient(
+      180deg,
+      #4a9e30 0%,          /* top grass */
+      #3d8a28 8%,
+      #2d6e1a 10%,         /* sharp grass/dirt border top */
+      #c8aa6a 10%,         /* dirt path starts */
+      #b89858 30%,
+      #c0a060 50%,
+      #b89858 70%,
+      #a88848 88%,         /* dirt path ends */
+      #2d6e1a 90%,         /* sharp grass/dirt border bottom */
+      #3d8a28 92%,         /* bottom grass */
+      #4a9e30 100%
+    );
+  border-top: 3px solid #2d6e1a;
 }
 
 /* Directional nudge arrow — floats at bottom of map, points toward NPC */
@@ -451,6 +468,14 @@ html, body {
   z-index: 11;
   animation: talkBubble .6s ease-in-out infinite;
   pointer-events: none;
+}
+/* Desktop: show "Press E", hide "Press A" */
+.hint-touch { display: none; }
+.hint-pc    { display: inline; }
+/* Touch/mobile: show "Press A", hide "Press E" */
+@media (pointer: coarse) {
+  .hint-touch { display: inline; }
+  .hint-pc    { display: none; }
 }
 
 /* HUD below map */
