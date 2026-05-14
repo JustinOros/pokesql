@@ -1,6 +1,6 @@
 # 🎮 PokéSQL — Learn T-SQL
 
-A Pokémon-style Game Boy Advance browser game for learning **Microsoft T-SQL**!  
+A Pokémon-style Game Boy Advance browser game for learning **Microsoft T-SQL**!
 Play it on your phone, tablet, or PC — progress is saved automatically to your browser.
 
 ## 🚀 Play It Live
@@ -14,7 +14,7 @@ Play it on your phone, tablet, or PC — progress is saved automatically to your
 pokesql/
 ├── index.html      ← Game screens & structure
 ├── style.css       ← GBA Pokémon aesthetic, fully responsive
-├── game.js         ← Game engine + localStorage save system
+├── game.js         ← Game engine, controller, walking, save system
 ├── questions.json  ← 100 T-SQL questions & answers
 └── README.md
 ```
@@ -32,15 +32,50 @@ No server, no database, no cost.
 
 ---
 
+## 🎮 GBA Controller Overlay
+
+On mobile, a semi-transparent Game Boy Advance-style controller overlays the bottom of the screen:
+
+| Control | Action |
+|---|---|
+| **D-pad** | Walk the player around the map |
+| **A button** (red) | Talk to NPC on map · Confirm answer in battle · Advance dialog |
+| **B button** (blue) | Talk to NPC on map · Advance dialog |
+| **SELECT / START** | Decorative — reserved for future use |
+
+The controller is hidden on desktop (≥900px wide) — use the keyboard instead.
+
+---
+
+## ⌨️ PC Keyboard Controls
+
+| Key | Action |
+|---|---|
+| **WASD / Arrow keys** | Walk player on map |
+| **E / Enter** | Talk to NPC · Confirm answer · Advance dialog |
+| **X** | Talk to NPC · Advance dialog |
+| **1 / 2 / 3 / 4** | Quick-pick answer directly |
+| **Space** | Advance dialog |
+
+---
+
+## 🗺️ Map & Walking
+
+- The player sprite walks freely around the overworld map using the D-pad or WASD
+- Walking animations change based on direction (left, right, up, down)
+- Press **A**, **B**, **E**, or **Enter** at any time to talk to the NPC and start the question
+- Tapping the NPC sprite directly also triggers the conversation
+
+---
+
 ## 💾 Save System
 
 Progress is stored in the player's browser (`localStorage`) automatically:
 
-- **Auto-saves** after every answered question and on map return
-- **Continue screen** appears on next visit if an in-progress save exists
-- Displays trainer name, question progress, and score on the continue screen
-- **New Game** option is always available (prompts confirmation to prevent accidents)
-- Save is cleared on game completion — ready for a fresh run
+- **Auto-saves** after every answered question and on map return — a 💾 icon flashes to confirm
+- **Continue screen** appears on next visit showing trainer name, progress %, and score
+- **New Game** option always available — prompts confirmation before erasing save
+- Save clears automatically on completion so the next run starts fresh
 
 ---
 
@@ -48,16 +83,20 @@ Progress is stored in the player's browser (`localStorage`) automatically:
 
 | Feature | Detail |
 |---|---|
-| GBA Pokémon aesthetic | Press Start 2P font, pixel dialog boxes, scanline overlay |
-| Mobile-first design | Full-screen on phones, framed device on desktop |
-| 100 T-SQL questions | Progressive difficulty, multiple choice |
+| GBA controller overlay | D-pad + A/B buttons, semi-transparent, mobile only |
+| Walking player | Moves freely on map, directional walk animations |
+| Mobile-first design | Full-screen on phones with safe-area support, framed on desktop |
+| localStorage save | Auto-save with continue screen on return visits |
+| 100 T-SQL questions | Progressive difficulty, shuffled answer order every time |
+| Randomised answer positions | Correct answer shuffled to a random slot — no pattern to exploit |
+| Numbered answers | Options labelled 1/2/3/4 (not A/B/C/D) |
 | Name entry | On-screen pixel keyboard, just like the real game |
-| Typewriter text | Authentic dialog effect with tap-to-skip |
+| Typewriter text | Authentic dialog effect, tap/press to skip |
 | 22 NPC characters | Professor Oak, Misty, Brock, Giovanni, Lance… |
-| Streak bonuses | 3× = +150 pts 🔥, 5×+ = +200 pts 🔥 |
+| Streak bonuses | 3× correct = +150 pts 🔥, 5×+ = +200 pts 🔥 |
 | Milestone badges | Earned at Q25, Q50, Q75, Q100 |
-| Correct answer reveal | Wrong answers show the right answer + explanation |
-| Keyboard shortcuts | 1–4 / A–D to answer, Enter to continue |
+| Correct answer reveal | Wrong answers show the right answer + full explanation |
+| Scanline overlay | Authentic CRT/GBA screen effect |
 
 ---
 
@@ -90,7 +129,7 @@ Edit `questions.json`, add to the `questions` array inside `levels[0]`:
 }
 ```
 
-`answer` is the **0-based index** of the correct option (0 = A, 1 = B, 2 = C, 3 = D).
+`answer` is the **0-based index** of the correct option in the `options` array (0 = first option, 1 = second, etc.). The game shuffles the display order randomly at runtime, so the position shown to the player will vary each time.
 
 ---
 
@@ -111,7 +150,7 @@ Then reference `"npc": "Your NPC Name"` in `questions.json`.
 
 ## 📱 Mobile Tips
 
-- Add to Home Screen on iOS/Android for a full-screen app experience
-- The game uses `100dvh` and `safe-area-inset` for notched phones
-- Tap anywhere on the dialog during intro to skip typewriter / advance
-- Tap the NPC sprite on the map to start the question (same as the button)
+- Add to Home Screen on iOS/Android for a full-screen app-like experience
+- The game uses `100dvh` and `env(safe-area-inset-bottom)` for notched phones (iPhone X+)
+- Tap anywhere on the dialog box during the intro to skip the typewriter and advance
+- Tap the NPC sprite directly on the map as an alternative to pressing A/B

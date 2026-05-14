@@ -27,7 +27,7 @@
       <div class="title-stars"></div>
       <div class="title-main">
         <div class="title-logo">
-          <span class="title-poke">POKÉ</span><span class="title-query">SQL</span>
+          <span class="title-poke">POKÉ</span><span class="title-sql">SQL</span>
         </div>
         <div class="title-sub">Learn Microsoft T-SQL</div>
         <div class="title-edition">★ SQL TRAINER EDITION ★</div>
@@ -84,7 +84,7 @@
       <div class="dialog-text" id="intro-text"></div>
       <div class="dialog-arrow blink" id="intro-arrow" style="display:none">▼</div>
     </div>
-    <div class="tap-hint blink">TAP TO CONTINUE</div>
+    <div class="tap-hint blink">TAP / PRESS A TO CONTINUE</div>
   </div>
 
   <!-- OVERWORLD MAP -->
@@ -100,17 +100,22 @@
         <span class="save-dot" id="save-dot" title="Auto-saved">💾</span>
       </div>
     </div>
-    <div class="overworld-bg map-world">
+    <div class="overworld-bg map-world" id="map-world">
       <div class="map-trees">
         <span class="tree">🌲</span><span class="tree">🌳</span>
         <span class="tree">🌲</span><span class="tree">🌳</span><span class="tree">🌲</span>
       </div>
+      <!-- Tiled path floor -->
       <div class="map-ground"></div>
-      <div class="map-npc-wrap">
-        <div class="npc-bubble">!</div>
+      <!-- NPC with ! bubble -->
+      <div class="map-npc-wrap" id="map-npc-wrap">
+        <div class="npc-bubble" id="npc-bubble">!</div>
         <div class="map-npc" id="map-npc"></div>
       </div>
-      <div class="map-player">🧢</div>
+      <!-- Pixel player — position driven by JS -->
+      <div class="map-player" id="map-player">🧢</div>
+      <!-- interaction speech bubble -->
+      <div class="map-talk-hint" id="map-talk-hint" style="display:none">Press A</div>
     </div>
     <div class="map-hud">
       <div class="hud-cell"><div class="hud-lbl">TRAINER</div><div class="hud-val" id="hud-name">ASH</div></div>
@@ -118,7 +123,6 @@
       <div class="hud-cell"><div class="hud-lbl">STREAK</div><div class="hud-val" id="hud-streak">0</div></div>
       <div class="hud-cell"><div class="hud-lbl">CORRECT</div><div class="hud-val" id="hud-correct">0/0</div></div>
     </div>
-    <button class="btn-pixel btn-green btn-walk" id="btn-walk">▶ TALK TO NPC</button>
   </div>
 
   <!-- BATTLE / QUESTION -->
@@ -141,7 +145,7 @@
     <div class="battle-choices" id="battle-choices"></div>
     <div class="battle-footer">
       <span>Q <span id="battle-q-num">1</span>/100</span>
-      <span class="kbd-hint">1–4 keys to answer</span>
+      <span class="kbd-hint">Click or tap an answer · 1–4 keys</span>
       <span>PTS: <span id="battle-pts">0</span></span>
     </div>
   </div>
@@ -194,6 +198,33 @@
   </div>
 
 </div><!-- /#app -->
+
+<!-- ═══ GBA CONTROLLER OVERLAY ═══════════════════════════════
+     Shown over map + battle screens. Hidden on all others.    -->
+<div id="gba-controller" class="gba-controller hidden">
+
+  <!-- D-PAD (left) -->
+  <div class="dpad" id="dpad">
+    <button class="dpad-btn dpad-up"    id="dp-up"    aria-label="Up">▲</button>
+    <button class="dpad-btn dpad-left"  id="dp-left"  aria-label="Left">◀</button>
+    <button class="dpad-btn dpad-center"               aria-label="Center"></button>
+    <button class="dpad-btn dpad-right" id="dp-right" aria-label="Right">▶</button>
+    <button class="dpad-btn dpad-down"  id="dp-down"  aria-label="Down">▼</button>
+  </div>
+
+  <!-- SELECT / START (center) -->
+  <div class="gba-mid-btns">
+    <button class="gba-mid-btn" id="btn-select">SELECT</button>
+    <button class="gba-mid-btn" id="btn-start">START</button>
+  </div>
+
+  <!-- A / B BUTTONS (right) -->
+  <div class="ab-cluster">
+    <button class="ab-btn ab-b" id="btn-b">B</button>
+    <button class="ab-btn ab-a" id="btn-a">A</button>
+  </div>
+
+</div>
 
 <div id="toast" class="toast hidden"></div>
 <script src="game.js"></script>
