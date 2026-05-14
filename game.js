@@ -704,7 +704,7 @@ class Game {
       this.state.score+=this.state.streak>=5?200:this.state.streak>=3?150:100;
     } else { this.state.streak=0; this.state.wrong++; }
 
-    setTimeout(()=>this.showResult(correct,q),850);
+    setTimeout(()=>this.showResult(correct,q),120);
   }
 
   /* ── RESULT ───────────────────────────────────────────── */
