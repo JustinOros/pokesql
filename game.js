@@ -717,15 +717,17 @@ class Game {
         else if (s === 'title')    { document.getElementById('screen-title')?.click(); }
         else if (s === 'continue') { document.getElementById('btn-continue-save')?.click(); }
         else if (s === 'intro')    { this.advanceIntro(); }
+        else if (s === 'battle' && !this.state.answering) { this._confirmCursor(); }
         else if (s === 'result')   { document.getElementById('btn-result-cont')?.click(); }
         else if (s === 'levelup')  { document.getElementById('btn-lu-cont')?.click(); }
         else if (s === 'complete') { document.getElementById('btn-play-again')?.click(); }
         else { this._pressA(); }
       }
 
-      /* B */
+      /* B — also confirms answer in battle */
       if (justPressed(1)) {
-        if      (s === 'intro')    { this.advanceIntro(); }
+        if      (s === 'battle' && !this.state.answering) { this._confirmCursor(); }
+        else if (s === 'intro')    { this.advanceIntro(); }
         else if (s === 'result')   { document.getElementById('btn-result-cont')?.click(); }
         else { this._pressB(); }
       }
