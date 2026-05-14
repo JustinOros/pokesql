@@ -387,7 +387,21 @@ html, body {
 #screen-intro { flex-direction:column-reverse; }
 .intro-dialog { margin:10px; min-height:90px; }
 .intro-npc    { position:absolute; right:22%; bottom:30%; font-size:clamp(44px,13vw,64px); animation:npcFloat 2s ease-in-out infinite; filter:drop-shadow(2px 3px 0 rgba(0,0,0,.4)); }
-.intro-player { position:absolute; left:22%;  bottom:28%; font-size:clamp(36px,10vw,52px); animation:bounce 1s ease-in-out infinite; filter:drop-shadow(2px 3px 0 rgba(0,0,0,.4)); }
+.intro-player {
+  position: absolute;
+  left: 22%;
+  bottom: 28%;
+  width: 32px;
+  height: 64px;
+  background-image: url('./player.png');
+  background-repeat: no-repeat;
+  background-size: 768px 64px;
+  background-position-x: -32px;  /* idle down frame */
+  background-position-y: 0;
+  image-rendering: pixelated;
+  animation: bounce 1s ease-in-out infinite;
+  filter: drop-shadow(2px 3px 0 rgba(0,0,0,.4));
+}
 .tap-hint     { font-size:6px; color:var(--black); background:rgba(255,255,255,.6); text-align:center; padding:4px; letter-spacing:1px; flex-shrink:0; }
 
 /* ─── MAP ────────────────────────────────────────────────── */
