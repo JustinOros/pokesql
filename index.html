@@ -101,22 +101,23 @@
       </div>
     </div>
     <div class="overworld-bg map-world" id="map-world">
-      <div class="map-trees">
-        <span class="tree">🌲</span><span class="tree">🌳</span>
-        <span class="tree">🌲</span><span class="tree">🌳</span><span class="tree">🌲</span>
+      <div class="map-inner" id="map-inner">
+        <div class="map-trees">
+          <span class="tree">🌲</span><span class="tree">🌳</span>
+          <span class="tree">🌲</span><span class="tree">🌳</span><span class="tree">🌲</span>
+          <span class="tree">🌳</span><span class="tree">🌲</span><span class="tree">🌳</span>
+        </div>
+        <div class="map-ground"></div>
+        <!-- NPC with ! bubble — position driven by JS in world-px -->
+        <div class="map-npc-wrap" id="map-npc-wrap">
+          <div class="npc-bubble" id="npc-bubble">!</div>
+          <div class="map-npc" id="map-npc"></div>
+        </div>
       </div>
-      <!-- Tiled path floor -->
-      <div class="map-ground"></div>
-      <!-- NPC with ! bubble -->
-      <div class="map-npc-wrap" id="map-npc-wrap">
-        <div class="npc-bubble" id="npc-bubble">!</div>
-        <div class="map-npc" id="map-npc"></div>
-      </div>
-      <!-- Pixel player — position driven by JS -->
+      <!-- Player stays fixed to viewport, only Y moves -->
       <div class="map-player" id="map-player">🧢</div>
-      <!-- interaction speech bubble -->
+      <!-- Hints overlay the viewport, not the world -->
       <div class="map-talk-hint" id="map-talk-hint" style="display:none"><span class="hint-pc">Press E</span><span class="hint-touch">Press A</span></div>
-      <!-- directional nudge arrow — points player toward NPC -->
       <div class="map-dir-arrow" id="map-dir-arrow" style="display:none">▶</div>
     </div>
     <div class="map-hud">

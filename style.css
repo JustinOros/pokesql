@@ -385,47 +385,48 @@ html, body {
 .prog-text  { font-size:6px; color:var(--white); }
 .save-dot   { font-size:12px; animation:blink 3s ease-in-out infinite; }
 
-.map-world  { position:relative; }
-.map-trees  { position:absolute; top:12%; left:0; right:0; display:flex; justify-content:space-around; padding:0 8px; }
-.tree       { font-size:clamp(24px,7vw,36px); display:inline-block; animation:treeSway 3s ease-in-out infinite; filter:drop-shadow(1px 2px 0 rgba(0,0,0,.3)); }
+.map-world  {
+  position: relative;
+  overflow: hidden;
+}
+/* Wide scrolling inner world — JS translates this to pan the camera */
+.map-inner {
+  position: absolute;
+  top: 0; bottom: 0; left: 0;
+  width: 400%;
+  will-change: transform;
+}
+.map-trees  {
+  position: absolute;
+  top: 12%;
+  left: 0; right: 0;
+  display: flex;
+  justify-content: space-around;
+  padding: 0 2%;
+  width: 100%;
+}
+.tree { font-size:clamp(24px,7vw,36px); display:inline-block; animation:treeSway 3s ease-in-out infinite; filter:drop-shadow(1px 2px 0 rgba(0,0,0,.3)); }
 .tree:nth-child(2){animation-delay:.5s;} .tree:nth-child(3){animation-delay:1s;} .tree:nth-child(4){animation-delay:1.5s;} .tree:nth-child(5){animation-delay:2s;}
+.tree:nth-child(6){animation-delay:2.5s;} .tree:nth-child(7){animation-delay:.8s;} .tree:nth-child(8){animation-delay:1.8s;}
 .map-ground {
   position: absolute;
   bottom: 0; left: 0; right: 0;
-  height: 48%;   /* taller overall area so grass shows top and bottom */
+  height: 48%;
   background:
-    /* bottom grass strip */
-    linear-gradient(
-      180deg,
-      transparent 0%,
-      transparent 54%,
-      #3d8a28 54%,
-      #4a9e30 58%,
-      #3d8a28 62%,
-      #4aaa32 66%,
-      #3d8a28 100%
+    linear-gradient(180deg,
+      transparent 0%, transparent 54%,
+      #3d8a28 54%, #4a9e30 58%, #3d8a28 62%, #4aaa32 66%, #3d8a28 100%
     ),
-    /* dirt path in the middle */
-    linear-gradient(
-      180deg,
-      #4a9e30 0%,          /* top grass */
-      #3d8a28 8%,
-      #2d6e1a 10%,         /* sharp grass/dirt border top */
-      #c8aa6a 10%,         /* dirt path starts */
-      #b89858 30%,
-      #c0a060 50%,
-      #b89858 70%,
-      #a88848 88%,         /* dirt path ends */
-      #2d6e1a 90%,         /* sharp grass/dirt border bottom */
-      #3d8a28 92%,         /* bottom grass */
-      #4a9e30 100%
+    linear-gradient(180deg,
+      #4a9e30 0%, #3d8a28 8%, #2d6e1a 10%,
+      #c8aa6a 10%, #b89858 30%, #c0a060 50%, #b89858 70%, #a88848 88%,
+      #2d6e1a 90%, #3d8a28 92%, #4a9e30 100%
     );
   border-top: 3px solid #2d6e1a;
 }
-
-/* Directional nudge arrow — floats at bottom of map, points toward NPC */
+/* Directional nudge arrow */
 .map-dir-arrow {
-  position: absolute;
+  position: fixed;
   font-size: clamp(20px, 6vw, 28px);
   color: var(--yellow);
   text-shadow: 0 0 6px rgba(248,192,48,.8), 2px 2px 0 rgba(0,0,0,.5);
@@ -434,18 +435,15 @@ html, body {
   animation: arrowPulse .7s ease-in-out infinite;
   filter: drop-shadow(0 0 4px rgba(248,192,48,.6));
 }
-
-/* NPC on map */
-.map-npc-wrap { position:absolute; text-align:center; transition: left .4s ease, bottom .4s ease; }
+/* NPC lives inside .map-inner, positioned in world-px via JS */
+.map-npc-wrap { position:absolute; text-align:center; }
 .npc-bubble   { font-size:14px; font-family:var(--font); color:var(--black); background:var(--yellow); border:2px solid var(--black); width:20px; height:20px; display:flex; align-items:center; justify-content:center; margin:0 auto 2px; animation:bounce .7s ease-in-out infinite; }
-.map-npc      { font-size:clamp(36px,10vw,52px); filter:drop-shadow(2px 3px 0 rgba(0,0,0,.35)); }
-
-/* ── PLAYER SPRITE (JS-positioned) ─────────────────────────  */
+.map-npc      { font-size:clamp(36px,10vw,52px); filter:drop-shadow(2px 3px 0 rgba(0,0,0,.35)); cursor:pointer; }
+/* Player is fixed to the viewport centre horizontally; only Y moves */
 .map-player {
   position: absolute;
   font-size: clamp(28px, 8vw, 40px);
   filter: drop-shadow(2px 3px 0 rgba(0,0,0,.4));
-  transition: left .12s linear, bottom .12s linear;
   z-index: 10;
   line-height: 1;
 }

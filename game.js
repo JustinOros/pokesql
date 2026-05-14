@@ -59,10 +59,12 @@ class Game {
       screen:'boot', playerName:'', questions:[], currentQ:0,
       score:0, streak:0, maxStreak:0, correct:0, wrong:0,
       answering:false, introStep:0, twTimer:null,
-      /* map movement */
-      playerX:15, playerY:42,
-      npcX:72,    npcY:38,
-      moving:false, walkDir:'', lastDir:'right',
+      /* map — world coords in px, camera follows player */
+      worldX: 0,          /* player's X in world-px */
+      worldY: 0,          /* player's Y in world-px (0 = path centre) */
+      npcWorldX: 0,       /* NPC world-px X */
+      npcWorldY: 0,
+      lastDir: 'right',
       /* battle cursor */
       cursor:0,
     };
@@ -175,81 +177,86 @@ class Game {
   _walkTick() {
     if (this.state.screen !== 'map') return;
 
+    const world  = document.getElementById('map-inner');
+    if (!world) return;
+    const viewW  = world.parentElement.offsetWidth  || 420;
+    const viewH  = world.parentElement.offsetHeight || 300;
+    const worldW = world.offsetWidth || viewW * 4;
+
+    const SPEED = 4; /* px per tick */
     let dx = 0, dy = 0, dir = '';
-    if (this._heldKeys.has('up'))    { dy =  1.8; dir = 'up'; }
-    if (this._heldKeys.has('down'))  { dy = -1.8; dir = 'down'; }
-    if (this._heldKeys.has('left'))  { dx = -2.2; dir = 'left'; }
-    if (this._heldKeys.has('right')) { dx =  2.2; dir = 'right'; }
+
+    if (this._heldKeys.has('right')) { dx =  SPEED; dir = 'right'; }
+    if (this._heldKeys.has('left'))  { dx = -SPEED; dir = 'left';  }
+    if (this._heldKeys.has('up'))    { dy = -SPEED; dir = 'up';    }
+    if (this._heldKeys.has('down'))  { dy =  SPEED; dir = 'down';  }
     if (!dir) return;
 
-    let nx = Math.max(5,  Math.min(88, this.state.playerX + dx));
-    let ny = Math.max(30, Math.min(72, this.state.playerY + dy));
-
-    this.state.playerX = nx;
-    this.state.playerY = ny;
+    /* Clamp world X — can't walk left past origin or right past world edge */
+    this.state.worldX = Math.max(0, Math.min(worldW - viewW, this.state.worldX + dx));
+    /* Clamp Y within a narrow vertical band (path area) */
+    this.state.worldY = Math.max(-30, Math.min(30, this.state.worldY + dy));
     this.state.lastDir = dir;
 
+    this._applyCamera();
+
+    /* Player sprite stays horizontally centred; only Y shifts */
     const p = document.getElementById('map-player');
     if (p) {
-      p.style.left   = nx + '%';
-      p.style.bottom = ny + '%';
+      const centreX = viewW / 2 - 20;
+      const centreY = viewH * 0.45 + this.state.worldY;
+      p.style.left   = centreX + 'px';
+      p.style.bottom = (viewH - centreY - 40) + 'px';
       p.className    = `map-player walk-${dir}`;
     }
 
     this._checkNPCProximity();
   }
 
+  /* Slide the world so the camera follows the player */
+  _applyCamera() {
+    const world = document.getElementById('map-inner');
+    if (world) world.style.transform = `translateX(${-this.state.worldX}px)`;
+  }
+
   _checkNPCProximity() {
-    const dx   = Math.abs(this.state.playerX - this.state.npcX);
-    const dy   = Math.abs(this.state.playerY - this.state.npcY);
-    const near = dx < 12 && dy < 12;
+    const world = document.getElementById('map-inner');
+    const viewW = world ? world.parentElement.offsetWidth  : 420;
+    const viewH = world ? world.parentElement.offsetHeight : 300;
+    const playerWorldX = this.state.worldX + viewW / 2;
+    const dx   = Math.abs(playerWorldX - this.state.npcWorldX);
+    const near = dx < 55;
 
     const hint = document.getElementById('map-talk-hint');
     const bub  = document.getElementById('npc-bubble');
     if (hint) {
       hint.style.display = near ? 'block' : 'none';
-      hint.style.left  = (this.state.playerX + 4) + '%';
-      hint.style.bottom= (this.state.playerY + 11) + '%';
+      hint.style.left   = (viewW / 2 - 28) + 'px';
+      hint.style.bottom = (viewH * 0.56) + 'px';
     }
     if (bub) bub.style.opacity = near ? '0' : '1';
-
     this._updateDirArrow(near);
   }
 
-  /* Point a blinking arrow toward the NPC so players know which way to walk */
   _updateDirArrow(nearNPC) {
     const arrow = document.getElementById('map-dir-arrow');
     if (!arrow) return;
-
-    /* Hide arrow once the player is close enough — "Press A" takes over */
     if (nearNPC) { arrow.style.display = 'none'; return; }
-
-    const dx = this.state.npcX - this.state.playerX;
-    const dy = this.state.npcY - this.state.playerY;
-
-    /* Pick the dominant axis and set the arrow character + animation direction */
-    let glyph = '▶', rotation = '0deg';
-    if (Math.abs(dx) >= Math.abs(dy)) {
-      glyph    = dx > 0 ? '▶' : '◀';
-      rotation = dx > 0 ? '0deg' : '180deg';
-    } else {
-      glyph    = dy > 0 ? '▲' : '▼';
-      rotation = dy > 0 ? '270deg' : '90deg';
-    }
-
-    /* Position arrow near the player, offset so it doesn't overlap the sprite */
-    const offsetX = dx > 0 ?  8 : -6;
-    const offsetY = dy > 0 ?  8 : -6;
-    arrow.textContent    = glyph;
-    arrow.style.display  = 'block';
-    arrow.style.left     = Math.max(2, Math.min(90, this.state.playerX + offsetX)) + '%';
-    arrow.style.bottom   = Math.max(28, Math.min(70, this.state.playerY + offsetY)) + '%';
+    const world = document.getElementById('map-inner');
+    const viewW = world ? world.parentElement.offsetWidth  : 420;
+    const viewH = world ? world.parentElement.offsetHeight : 300;
+    const npcScreenX = this.state.npcWorldX - this.state.worldX;
+    arrow.textContent   = npcScreenX >= viewW / 2 ? '▶' : '◀';
+    arrow.style.display = 'block';
+    arrow.style.left    = (viewW / 2 + 30) + 'px';
+    arrow.style.bottom  = (viewH * 0.50) + 'px';
   }
 
   _nearNPC() {
-    const dx = Math.abs(this.state.playerX - this.state.npcX);
-    const dy = Math.abs(this.state.playerY - this.state.npcY);
-    return dx < 12 && dy < 12;
+    const world = document.getElementById('map-inner');
+    const viewW = world ? world.parentElement.offsetWidth : 420;
+    const playerWorldX = this.state.worldX + viewW / 2;
+    return Math.abs(playerWorldX - this.state.npcWorldX) < 55;
   }
 
   _talkToNPC() {
@@ -258,19 +265,25 @@ class Game {
     this.startQuestion();
   }
 
-  /* ── Position player & NPC on map ────────────────────────  */
+  /* Place player at viewport centre, NPC at world-px position */
   _placeMapSprites() {
+    const world = document.getElementById('map-inner');
+    const viewW = world ? world.parentElement.offsetWidth  : 420;
+    const viewH = world ? world.parentElement.offsetHeight : 300;
+
     const p = document.getElementById('map-player');
     if (p) {
-      p.style.left   = this.state.playerX + '%';
-      p.style.bottom = this.state.playerY + '%';
-      p.className    = 'map-player idle';
+      p.style.left      = (viewW / 2 - 20) + 'px';
+      p.style.bottom    = (viewH * 0.42) + 'px';
+      p.style.transform = 'scaleX(-1)';
+      p.className       = 'map-player idle';
     }
     const npcWrap = document.getElementById('map-npc-wrap');
     if (npcWrap) {
-      npcWrap.style.left   = (this.state.npcX - 3) + '%';
-      npcWrap.style.bottom = this.state.npcY + '%';
+      npcWrap.style.left   = (this.state.npcWorldX - 24) + 'px';
+      npcWrap.style.bottom = (viewH * 0.42) + 'px';
     }
+    this._applyCamera();
     const hint = document.getElementById('map-talk-hint');
     if (hint) hint.style.display = 'none';
   }
@@ -430,8 +443,7 @@ class Game {
       playerName:save.playerName, currentQ:save.currentQ,
       score:save.score, streak:save.streak, maxStreak:save.maxStreak,
       correct:save.correct, wrong:save.wrong,
-      /* Treat restored game like mid-journey so showMap generates a fresh NPC position */
-      playerX:10, playerY:40, npcX:68, npcY:38,
+      worldX:0, worldY:0, npcWorldX:0, npcWorldY:0,
     });
     this.loadQuestions(() => this.showMap());
   }
@@ -527,57 +539,47 @@ class Game {
 
   /* ── MAP ──────────────────────────────────────────────── */
 
-  /* Generate a new NPC position that is always to the RIGHT of the player,
-     so the route feels like a journey. NPC lands 25–40% ahead horizontally,
-     with a little vertical variance to keep it interesting. */
-  _nextNPCPosition() {
-    const aheadX = 25 + Math.random() * 15;          /* 25–40% to the right */
-    const newX   = Math.min(82, this.state.playerX + aheadX);
-    /* vertical variance — stays in the walkable band */
-    const newY   = 35 + Math.random() * 10;           /* 35–45% */
-    return { x: newX, y: newY };
-  }
-
   showMap() {
     this.show('map');
     this._showController(true);
 
-    if (this.state.currentQ === 0) {
-      /* Very first map load — player starts far left, NPC far right */
-      this.state.playerX = 10;
-      this.state.playerY = 40;
-      this.state.npcX    = 68;
-      this.state.npcY    = 38;
-    } else {
-      /* After answering — player steps forward to where the NPC was,
-         and a fresh NPC appears further ahead along the path */
-      this.state.playerX = this.state.npcX - 8;  /* just left of old NPC */
-      this.state.playerY = this.state.npcY;
-      /* If player has walked near the right edge, wrap back left
-         so the path feels like it keeps going */
-      if (this.state.playerX > 65) {
-        this.state.playerX = 10;
-        this.state.playerY = 40;
+    /* We need the viewport size — defer a tick so the DOM is laid out */
+    requestAnimationFrame(() => {
+      const world = document.getElementById('map-inner');
+      const viewW = world ? world.parentElement.offsetWidth : 420;
+
+      if (this.state.currentQ === 0) {
+        /* First load — player at world origin, camera at 0,
+           NPC spawns 1.5 screen-widths ahead (off-screen right) */
+        this.state.worldX    = 0;
+        this.state.worldY    = 0;
+        this.state.npcWorldX = Math.round(viewW * 1.5);
+        this.state.npcWorldY = 0;
+      } else {
+        /* After each question — player world-X advances to just before
+           where the NPC was, camera resets so player appears centred,
+           new NPC spawns another 1.5 screens ahead */
+        this.state.worldX    = Math.max(0, this.state.npcWorldX - Math.round(viewW / 2));
+        this.state.worldY    = 0;
+        this.state.npcWorldX = this.state.worldX + Math.round(viewW * 1.5 + Math.random() * viewW * 0.4);
+        this.state.npcWorldY = 0;
       }
-      const next = this._nextNPCPosition();
-      this.state.npcX = next.x;
-      this.state.npcY = next.y;
-    }
 
-    document.getElementById('hud-name').textContent = this.state.playerName||'ASH';
-    this.updateHUD();
+      document.getElementById('hud-name').textContent = this.state.playerName||'ASH';
+      this.updateHUD();
 
-    const q = this.state.questions[this.state.currentQ];
-    const npcEl = document.getElementById('map-npc');
-    if (q && npcEl) npcEl.textContent = NPC[q.npc]||'🧑';
+      const q = this.state.questions[this.state.currentQ];
+      const npcEl = document.getElementById('map-npc');
+      if (q && npcEl) npcEl.textContent = NPC[q.npc]||'🧑';
 
-    this._placeMapSprites();
-    this._updateDirArrow(false);
-    saveGame(this.state);
-    this.flashSaveDot();
+      this._placeMapSprites();
+      this._updateDirArrow(false);
+      saveGame(this.state);
+      this.flashSaveDot();
 
-    const npcEl2 = document.getElementById('map-npc');
-    if (npcEl2) npcEl2.onclick = ()=>this._talkToNPC();
+      const npcEl2 = document.getElementById('map-npc');
+      if (npcEl2) npcEl2.onclick = ()=>this._talkToNPC();
+    });
   }
 
   updateHUD() {
