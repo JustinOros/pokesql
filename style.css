@@ -100,10 +100,12 @@ html, body {
 @keyframes wrongShake   { 0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)} }
 @keyframes npcFloat     { 0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)} }
 @keyframes treeSway     { 0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)} }
-@keyframes walkLeft     { 0%,100%{transform:scaleX(1) translateY(0)}50%{transform:scaleX(1) translateY(-4px)} }
-@keyframes walkRight    { 0%,100%{transform:scaleX(-1) translateY(0)}50%{transform:scaleX(-1) translateY(-4px)} }
-@keyframes walkUp       { 0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)} }
-@keyframes walkDown     { 0%,100%{transform:translateY(0)}50%{transform:translateY(4px)} }
+/* Sprite walk — player.png 384x32px, 24 frames at 16x32px each
+   Layout: 0-2=down  3-5=up  6-8=left  9-11=right */
+@keyframes walkDown  { from{background-position-x:   0px} to{background-position-x:  -96px} }
+@keyframes walkUp    { from{background-position-x: -96px} to{background-position-x: -192px} }
+@keyframes walkLeft  { from{background-position-x:-192px} to{background-position-x: -288px} }
+@keyframes walkRight { from{background-position-x:-288px} to{background-position-x: -384px} }
 @keyframes dpadPress    { 0%{transform:scale(1)}50%{transform:scale(.88)}100%{transform:scale(1)} }
 @keyframes abPress      { 0%{transform:scale(1)}40%{transform:scale(.82)}100%{transform:scale(1)} }
 @keyframes choiceCursor { 0%,100%{box-shadow:0 0 0 3px var(--yellow), 2px 2px 0 var(--darkgray)}50%{box-shadow:0 0 0 3px #ffe878, 2px 2px 0 var(--darkgray)} }
@@ -469,16 +471,23 @@ html, body {
 /* Player is fixed to the viewport centre horizontally; only Y moves */
 .map-player {
   position: absolute;
-  font-size: clamp(28px, 8vw, 40px);
+  width:  32px;
+  height: 64px;
+  background-image: url('./player.png');
+  background-repeat: no-repeat;
+  background-size: 768px 64px;
+  background-position: 0 0;
+  image-rendering: pixelated;
   filter: drop-shadow(2px 3px 0 rgba(0,0,0,.4));
   z-index: 10;
-  line-height: 1;
+  font-size: 0;
+  color: transparent;
 }
-.map-player.walk-left  { animation: walkLeft  .25s steps(1) infinite; }
-.map-player.walk-right { animation: walkRight .25s steps(1) infinite; }
-.map-player.walk-up    { animation: walkUp    .25s steps(1) infinite; }
-.map-player.walk-down  { animation: walkDown  .25s steps(1) infinite; }
-.map-player.idle       { animation: none; }
+.map-player.walk-down  { animation: walkDown  .32s steps(3) infinite; }
+.map-player.walk-up    { animation: walkUp    .32s steps(3) infinite; }
+.map-player.walk-left  { animation: walkLeft  .32s steps(3) infinite; }
+.map-player.walk-right { animation: walkRight .32s steps(3) infinite; }
+.map-player.idle       { animation: none; background-position-x: 0px; }
 
 /* Talk hint that floats above player when near NPC */
 .map-talk-hint {

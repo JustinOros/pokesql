@@ -346,8 +346,10 @@ class Game {
       const p = document.getElementById('map-player');
       if (p) {
         p.className = 'map-player idle';
-        /* keep facing the last direction moved */
-        p.style.transform = this.state.lastDir === 'right' ? 'scaleX(-1)' : 'scaleX(1)';
+        /* Show the idle/middle frame for the last direction walked
+           Frames at 2× scale (32px each): down=32, up=128, left=224, right=320 */
+        const idleFrames = { down:'-32px', up:'-128px', left:'-224px', right:'-320px' };
+        p.style.backgroundPositionX = idleFrames[this.state.lastDir] || '-32px';
       }
     }
   }
@@ -382,7 +384,7 @@ class Game {
     /* Player sprite stays horizontally centred; only Y shifts */
     const p = document.getElementById('map-player');
     if (p) {
-      const centreX = viewW / 2 - 20;
+      const centreX = viewW / 2 - 16;
       const centreY = viewH * 0.57 + this.state.worldY;
       p.style.left   = centreX + 'px';
       p.style.bottom = (viewH - centreY - 40) + 'px';
@@ -463,9 +465,9 @@ class Game {
 
     const p = document.getElementById('map-player');
     if (p) {
-      p.style.left      = (viewW / 2 - 20) + 'px';
+      p.style.left      = (viewW / 2 - 16) + 'px';
       p.style.bottom    = (viewH * 0.36) + 'px';
-      p.style.transform = 'scaleX(-1)';
+      
       p.className       = 'map-player idle';
     }
     this._applyCamera();
