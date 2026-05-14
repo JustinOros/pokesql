@@ -107,13 +107,14 @@
           <span class="tree">🌲</span><span class="tree">🌳</span><span class="tree">🌲</span>
           <span class="tree">🌳</span><span class="tree">🌲</span><span class="tree">🌳</span>
         </div>
-        <div class="map-ground"></div>
         <!-- NPC with ! bubble — position driven by JS in world-px -->
         <div class="map-npc-wrap" id="map-npc-wrap">
           <div class="npc-bubble" id="npc-bubble">!</div>
           <div class="map-npc" id="map-npc"></div>
         </div>
       </div>
+      <!-- Path stays fixed to the viewport — does not scroll -->
+      <div class="map-ground"></div>
       <!-- Player stays fixed to viewport, only Y moves -->
       <div class="map-player" id="map-player">🧢</div>
       <!-- Hints overlay the viewport, not the world -->
