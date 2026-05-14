@@ -193,7 +193,7 @@ class Game {
 
     /* Clamp world X — left edge is 0, right edge is npcWorldX + half screen
        so the player can always walk far enough to reach the NPC */
-    const maxWorldX = this.state.npcWorldX + Math.round(viewW * 0.5);
+    const maxWorldX = this.state.npcWorldX - Math.round(viewW / 2) + 100;
     this.state.worldX = Math.max(0, Math.min(maxWorldX, this.state.worldX + dx));
     /* Clamp Y within a narrow vertical band (path area) */
     this.state.worldY = Math.max(-30, Math.min(30, this.state.worldY + dy));
@@ -226,7 +226,7 @@ class Game {
     const viewH = world ? world.parentElement.offsetHeight : 300;
     const playerWorldX = this.state.worldX + viewW / 2;
     const dx   = Math.abs(playerWorldX - this.state.npcWorldX);
-    const near = dx < 55;
+    const near = dx < 120;
 
     const hint = document.getElementById('map-talk-hint');
     const bub  = document.getElementById('npc-bubble');
@@ -257,7 +257,7 @@ class Game {
     const world = document.getElementById('map-inner');
     const viewW = world ? world.parentElement.offsetWidth : 420;
     const playerWorldX = this.state.worldX + viewW / 2;
-    return Math.abs(playerWorldX - this.state.npcWorldX) < 55;
+    return Math.abs(playerWorldX - this.state.npcWorldX) < 120;
   }
 
   _talkToNPC() {
