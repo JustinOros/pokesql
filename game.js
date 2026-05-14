@@ -546,34 +546,34 @@ class Game {
   /* Generate randomly placed trees across the full scrollable world */
   _generateTrees() {
     const container = document.getElementById('map-trees');
-    if (!container || container.childElementCount > 0) return; /* only once */
+    if (!container || container.childElementCount > 0) return;
 
     const world  = document.getElementById('map-inner');
-    const worldW = world ? world.offsetWidth : 1680;
+    const viewW  = world ? world.parentElement.offsetWidth  : 420;
     const viewH  = world ? world.parentElement.offsetHeight : 300;
 
-    /* Trees live in the top 52% of the world (above the path) */
-    const treeTopMax    = viewH * 0.52;
-    const treeBottomMin = viewH * 0.04;
-    const TYPES = ['🌳','🌳','🌳','🌳','🌳'];
-    const COUNT = 35;
+    const worldW = viewW * 100;
+    if (world) world.style.width = worldW + 'px';
 
-    /* Use a seeded-ish spread: divide world into zones and place 1-2 trees per zone */
+    /* Trees live above the path (top ~52% of the map area) */
+    const treeTopMax    = viewH * 0.50;
+    const treeBottomMin = viewH * 0.04;
+    const TYPES = ['🌳'];
+    const COUNT = 200;  /* enough trees to fill a very long journey */
+
     const zoneW = worldW / COUNT;
     for (let i = 0; i < COUNT; i++) {
       const span = document.createElement('span');
       span.className = 'tree';
-      const emoji = TYPES[Math.floor(Math.random() * TYPES.length)];
-      const size  = 24 + Math.random() * 18; /* 24–42px */
-      const x     = i * zoneW + Math.random() * zoneW * 0.85;
+      const size  = 28 + Math.random() * 16;
+      const x     = i * zoneW + Math.random() * zoneW * 0.8;
       const y     = treeBottomMin + Math.random() * (treeTopMax - treeBottomMin - size);
-      const delay = (Math.random() * 3).toFixed(2);
-      span.textContent     = emoji;
-      span.style.fontSize  = size + 'px';
-      span.style.left      = x + 'px';
-      span.style.top       = y + 'px';
-      span.style.animationDelay    = delay + 's';
-      span.style.animationDuration = (2.5 + Math.random() * 2).toFixed(1) + 's';
+      span.textContent              = TYPES[0];
+      span.style.fontSize           = size + 'px';
+      span.style.left               = x + 'px';
+      span.style.top                = y + 'px';
+      span.style.animationDelay     = (Math.random() * 3).toFixed(2) + 's';
+      span.style.animationDuration  = (2.5 + Math.random() * 2).toFixed(1) + 's';
       container.appendChild(span);
     }
   }
