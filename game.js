@@ -347,6 +347,9 @@ class Game {
       /* Title */
       if (s === 'title' && (e.key==='Enter'||e.key===' ')) { document.getElementById('screen-title').click(); return; }
 
+      /* Continue screen */
+      if (s === 'continue' && (e.key==='Enter'||e.key===' ')) { document.getElementById('btn-continue-save')?.click(); return; }
+
       /* Intro */
       if (s === 'intro' && (e.key==='Enter'||e.key===' '||e.key==='e'||e.key==='E')) { this.advanceIntro(); return; }
 
