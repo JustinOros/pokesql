@@ -238,7 +238,7 @@ class Game {
     const viewH = world ? world.parentElement.offsetHeight : 300;
     const playerWorldX = this.state.worldX + viewW / 2;
     const dx   = Math.abs(playerWorldX - this.state.npcWorldX);
-    const near = dx < 120;
+    const near = dx < 60;
 
     const hint = document.getElementById('map-talk-hint');
     const bub  = document.getElementById('npc-bubble');
@@ -267,7 +267,7 @@ class Game {
     const world = document.getElementById('map-inner');
     const viewW = world ? world.parentElement.offsetWidth : 420;
     const playerWorldX = this.state.worldX + viewW / 2;
-    return Math.abs(playerWorldX - this.state.npcWorldX) < 120;
+    return Math.abs(playerWorldX - this.state.npcWorldX) < 60;
   }
 
   _talkToNPC() {
