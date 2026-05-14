@@ -55,9 +55,6 @@ function clearSave() { try { localStorage.removeItem(SAVE_KEY); } catch(_){} }
 /* ─── CHIPTUNE SOUND ENGINE ──────────────────────────────── */
 const SFX = (() => {
   let ctx = null;
-  let bgmNodes = [];   /* currently playing BGM oscillators/gains */
-  let bgmTrack = null; /* 'overworld' | 'battle' | null */
-  let bgmTimer = null;
 
   function getCtx() {
     if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -65,172 +62,113 @@ const SFX = (() => {
     return ctx;
   }
 
+  /* Core: play a tone with envelope */
   function tone(freq, type, vol, attack, sustain, release, when) {
-    const c    = getCtx();
-    const t    = when ?? c.currentTime;
-    const osc  = c.createOscillator();
-    const gain = c.createGain();
+    const c   = getCtx();
+    const t   = when ?? c.currentTime;
+    const osc = c.createOscillator();
+    const gain= c.createGain();
     osc.connect(gain);
     gain.connect(c.destination);
-    osc.type = type;
+    osc.type      = type;
     osc.frequency.setValueAtTime(freq, t);
     gain.gain.setValueAtTime(0, t);
     gain.gain.linearRampToValueAtTime(vol, t + attack);
     gain.gain.setValueAtTime(vol, t + attack + sustain);
     gain.gain.exponentialRampToValueAtTime(0.0001, t + attack + sustain + release);
     osc.start(t);
-    osc.stop(t + attack + sustain + release + 0.02);
-    return { osc, gain };
+    osc.stop(t + attack + sustain + release + 0.01);
   }
 
-  function seq(notes, type='square', vol=0.18, startAt) {
+  /* Sequence of notes: [{f, d}...] */
+  function seq(notes, type='square', vol=0.18) {
     const c = getCtx();
-    let t = startAt ?? (c.currentTime + 0.02);
+    let t = c.currentTime + 0.02;
     notes.forEach(n => {
-      if (n.f) tone(n.f, type, vol, 0.01, n.d * 0.55, n.d * 0.35, t);
+      if (n.f) tone(n.f, type, vol, 0.01, n.d * 0.6, n.d * 0.4, t);
       t += n.d;
     });
-    return t; /* returns time when sequence ends */
   }
 
-  /* ── BGM TRACKS ───────────────────────────────────────────
-     Each track is an array of "phrases" (arrays of notes).
-     The engine plays them in sequence, then loops.
-     Two channels: melody (square) + bass (triangle).
-  ─────────────────────────────────────────────────────────── */
-
-  /* Pallet Town-inspired overworld — cheerful, major key */
-  const OVERWORLD = {
-    melody: [
-      /* phrase A */
-      [{f:392,d:.15},{f:440,d:.15},{f:494,d:.15},{f:523,d:.2},
-       {f:494,d:.12},{f:440,d:.12},{f:392,d:.22},
-       {f:330,d:.15},{f:370,d:.15},{f:392,d:.3}],
-      /* phrase B */
-      [{f:523,d:.15},{f:494,d:.1},{f:440,d:.1},{f:494,d:.15},{f:523,d:.2},
-       {f:587,d:.15},{f:659,d:.15},{f:587,d:.12},{f:523,d:.28}],
-      /* phrase C — bridge */
-      [{f:659,d:.12},{f:587,d:.12},{f:523,d:.12},{f:494,d:.12},{f:440,d:.2},
-       {f:392,d:.12},{f:440,d:.12},{f:494,d:.12},{f:523,d:.24}],
-      /* phrase A repeat */
-      [{f:392,d:.15},{f:440,d:.15},{f:494,d:.15},{f:523,d:.2},
-       {f:494,d:.12},{f:440,d:.12},{f:392,d:.22},
-       {f:330,d:.15},{f:392,d:.15},{f:523,d:.35}],
-    ],
-    bass: [
-      [{f:131,d:.3},{f:0,d:.1},{f:147,d:.3},{f:0,d:.1},{f:131,d:.3},{f:0,d:.1},{f:110,d:.3},{f:0,d:.1}],
-      [{f:131,d:.3},{f:0,d:.1},{f:147,d:.3},{f:0,d:.1},{f:165,d:.3},{f:0,d:.1},{f:147,d:.3},{f:0,d:.1}],
-      [{f:165,d:.3},{f:0,d:.1},{f:147,d:.3},{f:0,d:.1},{f:131,d:.3},{f:0,d:.1},{f:110,d:.4}],
-      [{f:131,d:.3},{f:0,d:.1},{f:147,d:.3},{f:0,d:.1},{f:131,d:.3},{f:0,d:.1},{f:98,d:.5}],
-    ],
-  };
-
-  /* Battle theme — tense, minor key, faster */
-  const BATTLE = {
-    melody: [
-      /* phrase A — urgent opening */
-      [{f:494,d:.1},{f:523,d:.1},{f:494,d:.1},{f:0,d:.05},
-       {f:440,d:.1},{f:466,d:.1},{f:440,d:.1},{f:0,d:.05},
-       {f:392,d:.1},{f:415,d:.1},{f:392,d:.15},{f:0,d:.08},
-       {f:370,d:.1},{f:392,d:.22}],
-      /* phrase B */
-      [{f:523,d:.1},{f:587,d:.1},{f:523,d:.1},{f:494,d:.1},{f:0,d:.05},
-       {f:466,d:.1},{f:494,d:.1},{f:466,d:.1},{f:440,d:.15},
-       {f:0,d:.08},{f:392,d:.1},{f:440,d:.25}],
-      /* phrase C — climax */
-      [{f:659,d:.1},{f:587,d:.08},{f:523,d:.08},{f:494,d:.08},{f:466,d:.1},
-       {f:440,d:.08},{f:415,d:.08},{f:392,d:.08},{f:370,d:.1},
-       {f:349,d:.08},{f:330,d:.25}],
-      /* phrase D — resolve back */
-      [{f:392,d:.1},{f:440,d:.1},{f:494,d:.1},{f:523,d:.1},{f:494,d:.1},
-       {f:440,d:.1},{f:415,d:.1},{f:392,d:.28}],
-    ],
-    bass: [
-      [{f:147,d:.2},{f:0,d:.05},{f:147,d:.2},{f:0,d:.05},{f:139,d:.2},{f:0,d:.05},{f:131,d:.25}],
-      [{f:147,d:.2},{f:0,d:.05},{f:155,d:.2},{f:0,d:.05},{f:147,d:.2},{f:0,d:.05},{f:131,d:.25}],
-      [{f:165,d:.2},{f:0,d:.05},{f:155,d:.2},{f:0,d:.05},{f:147,d:.2},{f:0,d:.05},{f:131,d:.3}],
-      [{f:131,d:.2},{f:0,d:.05},{f:139,d:.2},{f:0,d:.05},{f:147,d:.2},{f:0,d:.05},{f:131,d:.3}],
-    ],
-  };
-
-  function stopBGM() {
-    if (bgmTimer) { clearTimeout(bgmTimer); bgmTimer = null; }
-    bgmTrack = null;
-  }
-
-  function playBGMTrack(track, name, phraseIdx) {
-    if (bgmTrack !== name) return; /* stopped or switched */
-    const c      = getCtx();
-    const now    = c.currentTime;
-    const melody = track.melody[phraseIdx % track.melody.length];
-    const bass   = track.bass[phraseIdx   % track.bass.length];
-
-    const melVol = name === 'battle' ? 0.13 : 0.11;
-    const basVol = name === 'battle' ? 0.07 : 0.06;
-
-    let end = now + 0.02;
-    /* play melody and bass simultaneously, get the longer duration */
-    let mEnd = now + 0.02;
-    melody.forEach(n => { if(n.f) tone(n.f,'square',melVol,0.01,n.d*.55,n.d*.3,mEnd); mEnd+=n.d; });
-    let bEnd = now + 0.02;
-    bass.forEach(n   => { if(n.f) tone(n.f,'triangle',basVol,0.01,n.d*.7,n.d*.2,bEnd); bEnd+=n.d; });
-    end = Math.max(mEnd, bEnd);
-
-    const delay = Math.max(0, (end - c.currentTime) * 1000 - 30);
-    bgmTimer = setTimeout(() => {
-      playBGMTrack(track, name, phraseIdx + 1);
-    }, delay);
-  }
-
-  function startBGM(name) {
-    if (bgmTrack === name) return;
-    stopBGM();
-    bgmTrack = name;
-    const track = name === 'battle' ? BATTLE : OVERWORLD;
-    playBGMTrack(track, name, 0);
-  }
-
-  /* ── SFX ──────────────────────────────────────────────── */
   return {
-    stopBGM,
-    overworldBGM() { startBGM('overworld'); },
-    battleBGM()    { startBGM('battle');    },
-
+    /* Boot jingle — classic rising fanfare */
     boot() {
-      seq([{f:262,d:.1},{f:330,d:.1},{f:392,d:.1},{f:523,d:.25}],'square',0.2);
+      seq([
+        {f:262,d:.1},{f:330,d:.1},{f:392,d:.1},{f:523,d:.25}
+      ], 'square', 0.2);
     },
+
+    /* Overworld bgm loop — simple cheerful melody */
+    overworldStart() {
+      seq([
+        {f:392,d:.12},{f:440,d:.12},{f:494,d:.12},{f:523,d:.18},
+        {f:494,d:.1}, {f:440,d:.1}, {f:392,d:.18},
+        {f:330,d:.12},{f:392,d:.12},{f:440,d:.12},{f:392,d:.24},
+      ], 'square', 0.12);
+    },
+
+    /* Footstep click — tiny blip each walk tick */
+    step() {
+      tone(180, 'square', 0.04, 0.005, 0.02, 0.03);
+    },
+
+    /* NPC encounter — ascending two-note ding */
     encounter() {
-      stopBGM();
-      seq([{f:523,d:.1},{f:659,d:.18}],'square',0.22);
+      seq([{f:523,d:.1},{f:659,d:.18}], 'square', 0.22);
     },
+
+    /* Typewriter blip per character */
     type() {
-      tone(880+Math.random()*200,'square',0.03,0.005,0.01,0.02);
+      tone(880 + Math.random()*200, 'square', 0.03, 0.005, 0.01, 0.02);
     },
+
+    /* Select / menu move */
     select() {
-      tone(440,'square',0.12,0.005,0.03,0.04);
+      tone(440, 'square', 0.12, 0.005, 0.03, 0.04);
     },
+
+    /* Correct answer — happy ascending chord */
     correct() {
-      seq([{f:523,d:.08},{f:659,d:.08},{f:784,d:.08},{f:1047,d:.2}],'square',0.18);
+      seq([
+        {f:523,d:.08},{f:659,d:.08},{f:784,d:.08},{f:1047,d:.2}
+      ], 'square', 0.18);
     },
+
+    /* Streak bonus — extra flourish */
     streak() {
-      seq([{f:523,d:.06},{f:659,d:.06},{f:784,d:.06},{f:1047,d:.06},{f:1319,d:.2}],'square',0.18);
+      seq([
+        {f:523,d:.06},{f:659,d:.06},{f:784,d:.06},
+        {f:1047,d:.06},{f:1319,d:.2}
+      ], 'square', 0.18);
     },
+
+    /* Wrong answer — descending buzz */
     wrong() {
-      seq([{f:330,d:.1},{f:277,d:.1},{f:233,d:.18}],'sawtooth',0.15);
+      seq([
+        {f:330,d:.1},{f:277,d:.1},{f:233,d:.18}
+      ], 'sawtooth', 0.15);
     },
+
+    /* Badge / level up fanfare */
     levelUp() {
-      stopBGM();
-      seq([{f:523,d:.1},{f:659,d:.1},{f:784,d:.1},{f:659,d:.1},{f:784,d:.1},{f:1047,d:.3}],'square',0.2);
+      seq([
+        {f:523,d:.1},{f:659,d:.1},{f:784,d:.1},{f:659,d:.1},
+        {f:784,d:.1},{f:1047,d:.3}
+      ], 'square', 0.2);
     },
+
+    /* Champion / completion — full fanfare */
     complete() {
-      stopBGM();
-      seq([{f:523,d:.1},{f:659,d:.1},{f:784,d:.1},{f:1047,d:.1},
-           {f:784,d:.08},{f:880,d:.08},{f:1047,d:.08},{f:1319,d:.4}],'square',0.2);
+      seq([
+        {f:523,d:.1},{f:659,d:.1},{f:784,d:.1},{f:1047,d:.1},
+        {f:784,d:.08},{f:880,d:.08},{f:1047,d:.08},{f:1319,d:.4}
+      ], 'square', 0.2);
     },
+
+    /* Menu confirm (name entry OK) */
     confirm() {
-      seq([{f:523,d:.08},{f:784,d:.15}],'square',0.18);
+      seq([{f:523,d:.08},{f:784,d:.15}], 'square', 0.18);
     },
-    addChar(ch) { /* kept for compat */ },
   };
 })();
 
@@ -802,7 +740,7 @@ class Game {
 
       this._placeMapSprites();
       this._updateDirArrow(false);
-      SFX.overworldBGM();
+      SFX.overworldStart();
       saveGame(this.state);
       this.flashSaveDot();
 
@@ -836,7 +774,6 @@ class Game {
 
     this.show('battle');
     this._showController(true);
-    SFX.battleBGM();
     this.state.answering=false;
     this.state.cursor=0;
 
@@ -901,7 +838,6 @@ class Game {
   /* ── RESULT ───────────────────────────────────────────── */
   showResult(correct,q) {
     this.show('result');
-    SFX.stopBGM();
     this._showController(false);
 
     document.getElementById('result-icon').textContent  = correct?'✓':'✗';
