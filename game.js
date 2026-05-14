@@ -625,73 +625,109 @@ class Game {
     const gp = [...gamepads].find(g => g);
     if (!gp) return;
 
-    const DEAD = 0.25; /* analog stick deadzone */
+    const DEAD = 0.25;
     const axes = gp.axes;
     const btns = gp.buttons;
 
-    /* ── Directional input ─────────────────────────────── */
-    const gpDirs = {
-      up:    (axes[1] < -DEAD) || (btns[12]?.pressed),
-      down:  (axes[1] >  DEAD) || (btns[13]?.pressed),
-      left:  (axes[0] < -DEAD) || (btns[14]?.pressed),
-      right: (axes[0] >  DEAD) || (btns[15]?.pressed),
-    };
-
-    const s = this.state.screen;
-
-    Object.entries(gpDirs).forEach(([dir, active]) => {
-      const key = `axis_${dir}`;
-      if (active && !this._gpPrev[key]) {
-        /* Pressed this frame */
-        if (s === 'map' || s === 'battle') {
-          this._heldKeys.add(dir);
-          if (s === 'map' && !this._walkLoop) this._startWalkLoop();
-          if (s === 'battle') this._moveCursor(dir);
-        }
-      } else if (!active && this._gpPrev[key]) {
-        /* Released this frame */
-        this._heldKeys.delete(dir);
-        if (this._heldKeys.size === 0) this._stopWalkLoop();
-      }
-      this._gpPrev[key] = active;
-    });
-
-    /* ── Button press edges (fire once on press) ───────── */
     const pressedNow  = (i) =>  btns[i]?.pressed;
     const wasPressed  = (i) => !!this._gpPrev[`btn_${i}`];
     const justPressed = (i) =>  pressedNow(i) && !wasPressed(i);
 
-    /* A button (0) or Start (9) — works on every screen */
-    if (justPressed(0) || justPressed(9)) {
-      if (s === 'title')    { document.getElementById('screen-title')?.click(); }
-      else if (s === 'continue') { document.getElementById('btn-continue-save')?.click(); }
-      else if (s === 'intro')    { this.advanceIntro(); }
-      else if (s === 'result')   { document.getElementById('btn-result-cont')?.click(); }
-      else if (s === 'levelup')  { document.getElementById('btn-lu-cont')?.click(); }
-      else if (s === 'complete') { document.getElementById('btn-play-again')?.click(); }
-      else { this._pressA(); }
-    }
+    const gpDirs = {
+      up:    (axes[1] < -DEAD) || !!btns[12]?.pressed,
+      down:  (axes[1] >  DEAD) || !!btns[13]?.pressed,
+      left:  (axes[0] < -DEAD) || !!btns[14]?.pressed,
+      right: (axes[0] >  DEAD) || !!btns[15]?.pressed,
+    };
 
-    /* B button (1) */
-    if (justPressed(1)) {
-      if (s === 'intro')  { this.advanceIntro(); }
-      else if (s === 'result') { document.getElementById('btn-result-cont')?.click(); }
-      else { this._pressB(); }
-    }
+    const s = this.state.screen;
 
-    /* Quick-pick answers with X=2, Y=3, LB=4, RB=5 on battle screen */
-    if (s === 'battle' && !this.state.answering) {
-      const quickMap = { 2:0, 3:1, 4:2, 5:3 };
-      Object.entries(quickMap).forEach(([btn, idx]) => {
-        if (justPressed(+btn)) {
-          this.state.cursor = idx;
-          this._renderCursor();
-          setTimeout(() => this._confirmCursor(), 80);
+    /* ── NAME SCREEN — D-pad navigates keyboard grid, A selects, B deletes, Start confirms ── */
+    if (s === 'name') {
+      const COLS = 10;
+      if (this._gpKeyCursor === undefined) this._gpKeyCursor = 0;
+      const keys = Array.from(document.querySelectorAll('.key-btn'));
+      const total = keys.length;
+
+      /* Highlight current key */
+      keys.forEach((k, i) => k.style.outline = i === this._gpKeyCursor ? '2px solid #f8c030' : '');
+
+      /* D-pad navigation with repeat delay */
+      const now = Date.now();
+      const moved = Object.entries(gpDirs).find(([d, active]) => active && !this._gpPrev[`axis_${d}`]);
+      if (moved) {
+        const [dir] = moved;
+        let c = this._gpKeyCursor;
+        if (dir === 'right') c = Math.min(c + 1, total - 1);
+        if (dir === 'left')  c = Math.max(c - 1, 0);
+        if (dir === 'down')  c = Math.min(c + COLS, total - 1);
+        if (dir === 'up')    c = Math.max(c - COLS, 0);
+        this._gpKeyCursor = c;
+        keys.forEach((k, i) => k.style.outline = i === c ? '2px solid #f8c030' : '');
+      }
+
+      if (justPressed(0)) { /* A — select letter */
+        keys[this._gpKeyCursor]?.click();
+      }
+      if (justPressed(1) || justPressed(2)) { /* B or X — delete */
+        this.delChar();
+      }
+      if (justPressed(9) || justPressed(8)) { /* Start or Select — confirm name */
+        this.confirmName();
+      }
+
+    /* ── ALL OTHER SCREENS — directional movement + button actions ── */
+    } else {
+
+      /* Walk / battle cursor movement */
+      Object.entries(gpDirs).forEach(([dir, active]) => {
+        const key = `axis_${dir}`;
+        if (active && !this._gpPrev[key]) {
+          if (s === 'map') {
+            this._heldKeys.add(dir);
+            if (!this._walkLoop) this._startWalkLoop();
+          }
+          if (s === 'battle') this._moveCursor(dir);
+        } else if (!active && this._gpPrev[key]) {
+          this._heldKeys.delete(dir);
+          if (this._heldKeys.size === 0) this._stopWalkLoop();
         }
       });
+
+      /* A / Start — context action on every screen */
+      if (justPressed(0) || justPressed(9)) {
+        if      (s === 'boot')     { /* wait for title */ }
+        else if (s === 'title')    { document.getElementById('screen-title')?.click(); }
+        else if (s === 'continue') { document.getElementById('btn-continue-save')?.click(); }
+        else if (s === 'intro')    { this.advanceIntro(); }
+        else if (s === 'result')   { document.getElementById('btn-result-cont')?.click(); }
+        else if (s === 'levelup')  { document.getElementById('btn-lu-cont')?.click(); }
+        else if (s === 'complete') { document.getElementById('btn-play-again')?.click(); }
+        else { this._pressA(); }
+      }
+
+      /* B */
+      if (justPressed(1)) {
+        if      (s === 'intro')    { this.advanceIntro(); }
+        else if (s === 'result')   { document.getElementById('btn-result-cont')?.click(); }
+        else { this._pressB(); }
+      }
+
+      /* Quick-pick answers X=2, Y=3, LB=4, RB=5 */
+      if (s === 'battle' && !this.state.answering) {
+        const quickMap = { 2:0, 3:1, 4:2, 5:3 };
+        Object.entries(quickMap).forEach(([btn, idx]) => {
+          if (justPressed(+btn)) {
+            this.state.cursor = idx;
+            this._renderCursor();
+            setTimeout(() => this._confirmCursor(), 80);
+          }
+        });
+      }
     }
 
-    /* Store current button states for next frame */
+    /* Store all states for next frame */
+    Object.entries(gpDirs).forEach(([d, v]) => this._gpPrev[`axis_${d}`] = v);
     for (let i = 0; i < btns.length; i++) {
       this._gpPrev[`btn_${i}`] = btns[i]?.pressed;
     }
@@ -764,6 +800,7 @@ class Game {
   showNameEntry() {
     this.show('name');
     this._showController(false);
+    this._gpKeyCursor = 0;
     this.buildKeyboard();
     this.typeText('name-prompt-text', "Hello there! Welcome to PokéSQL! My name is Professor Oak — the SQL Pokémon Professor. Now tell me, what is your name?");
     document.getElementById('btn-backspace').onclick    = () => this.delChar();
