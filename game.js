@@ -52,6 +52,126 @@ function saveGame(s) {
 function loadGame()  { try { const r=localStorage.getItem(SAVE_KEY); return r?JSON.parse(r):null; } catch(_){return null;} }
 function clearSave() { try { localStorage.removeItem(SAVE_KEY); } catch(_){} }
 
+/* ─── CHIPTUNE SOUND ENGINE ──────────────────────────────── */
+const SFX = (() => {
+  let ctx = null;
+
+  function getCtx() {
+    if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (ctx.state === 'suspended') ctx.resume();
+    return ctx;
+  }
+
+  /* Core: play a tone with envelope */
+  function tone(freq, type, vol, attack, sustain, release, when) {
+    const c   = getCtx();
+    const t   = when ?? c.currentTime;
+    const osc = c.createOscillator();
+    const gain= c.createGain();
+    osc.connect(gain);
+    gain.connect(c.destination);
+    osc.type      = type;
+    osc.frequency.setValueAtTime(freq, t);
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(vol, t + attack);
+    gain.gain.setValueAtTime(vol, t + attack + sustain);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + attack + sustain + release);
+    osc.start(t);
+    osc.stop(t + attack + sustain + release + 0.01);
+  }
+
+  /* Sequence of notes: [{f, d}...] */
+  function seq(notes, type='square', vol=0.18) {
+    const c = getCtx();
+    let t = c.currentTime + 0.02;
+    notes.forEach(n => {
+      if (n.f) tone(n.f, type, vol, 0.01, n.d * 0.6, n.d * 0.4, t);
+      t += n.d;
+    });
+  }
+
+  return {
+    /* Boot jingle — classic rising fanfare */
+    boot() {
+      seq([
+        {f:262,d:.1},{f:330,d:.1},{f:392,d:.1},{f:523,d:.25}
+      ], 'square', 0.2);
+    },
+
+    /* Overworld bgm loop — simple cheerful melody */
+    overworldStart() {
+      seq([
+        {f:392,d:.12},{f:440,d:.12},{f:494,d:.12},{f:523,d:.18},
+        {f:494,d:.1}, {f:440,d:.1}, {f:392,d:.18},
+        {f:330,d:.12},{f:392,d:.12},{f:440,d:.12},{f:392,d:.24},
+      ], 'square', 0.12);
+    },
+
+    /* Footstep click — tiny blip each walk tick */
+    step() {
+      tone(180, 'square', 0.04, 0.005, 0.02, 0.03);
+    },
+
+    /* NPC encounter — ascending two-note ding */
+    encounter() {
+      seq([{f:523,d:.1},{f:659,d:.18}], 'square', 0.22);
+    },
+
+    /* Typewriter blip per character */
+    type() {
+      tone(880 + Math.random()*200, 'square', 0.03, 0.005, 0.01, 0.02);
+    },
+
+    /* Select / menu move */
+    select() {
+      tone(440, 'square', 0.12, 0.005, 0.03, 0.04);
+    },
+
+    /* Correct answer — happy ascending chord */
+    correct() {
+      seq([
+        {f:523,d:.08},{f:659,d:.08},{f:784,d:.08},{f:1047,d:.2}
+      ], 'square', 0.18);
+    },
+
+    /* Streak bonus — extra flourish */
+    streak() {
+      seq([
+        {f:523,d:.06},{f:659,d:.06},{f:784,d:.06},
+        {f:1047,d:.06},{f:1319,d:.2}
+      ], 'square', 0.18);
+    },
+
+    /* Wrong answer — descending buzz */
+    wrong() {
+      seq([
+        {f:330,d:.1},{f:277,d:.1},{f:233,d:.18}
+      ], 'sawtooth', 0.15);
+    },
+
+    /* Badge / level up fanfare */
+    levelUp() {
+      seq([
+        {f:523,d:.1},{f:659,d:.1},{f:784,d:.1},{f:659,d:.1},
+        {f:784,d:.1},{f:1047,d:.3}
+      ], 'square', 0.2);
+    },
+
+    /* Champion / completion — full fanfare */
+    complete() {
+      seq([
+        {f:523,d:.1},{f:659,d:.1},{f:784,d:.1},{f:1047,d:.1},
+        {f:784,d:.08},{f:880,d:.08},{f:1047,d:.08},{f:1319,d:.4}
+      ], 'square', 0.2);
+    },
+
+    /* Menu confirm (name entry OK) */
+    confirm() {
+      seq([{f:523,d:.08},{f:784,d:.15}], 'square', 0.18);
+    },
+  };
+})();
+
 /* ─── GAME ───────────────────────────────────────────────── */
 class Game {
   constructor() {
@@ -273,6 +393,7 @@ class Game {
   _talkToNPC() {
     const arrow = document.getElementById('map-dir-arrow');
     if (arrow) arrow.style.display = 'none';
+    SFX.encounter();
     this.startQuestion();
   }
 
@@ -308,6 +429,7 @@ class Game {
     c = Math.min(c, btns.length - 1);
     this.state.cursor = c;
     this._renderCursor();
+    SFX.select();
   }
 
   _renderCursor() {
@@ -421,6 +543,7 @@ class Game {
 
   showTitle() {
     this.show('title');
+    SFX.boot();
     this._showController(false);
     const go = () => { document.getElementById('screen-title').removeEventListener('click',go); this.showContinueOrName(); };
     document.getElementById('screen-title').addEventListener('click', go);
@@ -484,13 +607,13 @@ class Game {
     });
   }
 
-  addChar(ch) { if (this.state.playerName.length<10){ this.state.playerName+=ch; this.refreshNameDisplay(); } }
+  addChar(ch) { if (this.state.playerName.length<10){ this.state.playerName+=ch; this.refreshNameDisplay(); SFX.select(); } }
   delChar()   { this.state.playerName=this.state.playerName.slice(0,-1); this.refreshNameDisplay(); }
   refreshNameDisplay() {
     const el=document.getElementById('name-display');
     if(el) el.textContent=this.state.playerName+(this.state.playerName.length<10?'_':'');
   }
-  confirmName() { if(!this.state.playerName.trim()) this.state.playerName='ASH'; this.showIntro(); }
+  confirmName() { if(!this.state.playerName.trim()) this.state.playerName='ASH'; SFX.confirm(); this.showIntro(); }
 
   /* ── INTRO ────────────────────────────────────────────── */
   showIntro() {
@@ -617,6 +740,7 @@ class Game {
 
       this._placeMapSprites();
       this._updateDirArrow(false);
+      SFX.overworldStart();
       saveGame(this.state);
       this.flashSaveDot();
 
@@ -705,7 +829,8 @@ class Game {
       this.state.streak++; this.state.correct++;
       this.state.maxStreak=Math.max(this.state.maxStreak,this.state.streak);
       this.state.score+=this.state.streak>=5?200:this.state.streak>=3?150:100;
-    } else { this.state.streak=0; this.state.wrong++; }
+      if(this.state.streak>=3) SFX.streak(); else SFX.correct();
+    } else { this.state.streak=0; this.state.wrong++; SFX.wrong(); }
 
     setTimeout(()=>this.showResult(correct,q),120);
   }
@@ -745,6 +870,7 @@ class Game {
   /* ── LEVEL UP ─────────────────────────────────────────── */
   showLevelUp() {
     this.show('levelup');
+    SFX.levelUp();
     this._showController(false);
     const ms=MILESTONES[this.state.currentQ];
     const pct=(this.state.currentQ/(this.state.questions.length||100))*100;
@@ -760,6 +886,7 @@ class Game {
   /* ── COMPLETE ─────────────────────────────────────────── */
   showComplete() {
     this.show('complete');
+    SFX.complete();
     this._showController(false);
     const name=this.state.playerName||'ASH', tot=this.state.questions.length||100;
     const acc=tot>0?Math.round((this.state.correct/tot)*100):0;
@@ -785,7 +912,7 @@ class Game {
     const el=document.getElementById(id); if(!el)return; el.textContent='';
     let i=0;
     this.state.twTimer=setInterval(()=>{
-      if(i<text.length){el.textContent+=text[i++];}
+      if(i<text.length){el.textContent+=text[i++]; if(i%2===0) SFX.type();}
       else{clearInterval(this.state.twTimer);this.state.twTimer=null;if(onDone)onDone();}
     },26);
   }
