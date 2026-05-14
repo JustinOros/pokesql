@@ -427,14 +427,15 @@ html, body {
 }
 /* Directional nudge arrow */
 .map-dir-arrow {
-  position: fixed;
-  font-size: clamp(20px, 6vw, 28px);
+  position: absolute;
+  font-size: clamp(24px, 7vw, 34px);
   color: var(--yellow);
   text-shadow: 0 0 6px rgba(248,192,48,.8), 2px 2px 0 rgba(0,0,0,.5);
   pointer-events: none;
-  z-index: 20;
+  z-index: 50;
   animation: arrowPulse .7s ease-in-out infinite;
   filter: drop-shadow(0 0 4px rgba(248,192,48,.6));
+  right: 12px;   /* pinned to right edge of map viewport */
 }
 /* NPC lives inside .map-inner, positioned in world-px via JS */
 .map-npc-wrap { position:absolute; text-align:center; z-index: 30; }

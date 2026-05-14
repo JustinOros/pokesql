@@ -256,13 +256,11 @@ class Game {
     if (!arrow) return;
     if (nearNPC) { arrow.style.display = 'none'; return; }
     const world = document.getElementById('map-inner');
-    const viewW = world ? world.parentElement.offsetWidth  : 420;
     const viewH = world ? world.parentElement.offsetHeight : 300;
-    const npcScreenX = this.state.npcWorldX - this.state.worldX;
-    arrow.textContent   = npcScreenX >= viewW / 2 ? '▶' : '◀';
+    arrow.textContent   = '▶';
     arrow.style.display = 'block';
-    arrow.style.left    = (viewW / 2 + 30) + 'px';
-    arrow.style.bottom  = (viewH * 0.48) + 'px';
+    arrow.style.removeProperty('left');
+    arrow.style.bottom  = (viewH * 0.42) + 'px';
   }
 
   _nearNPC() {
