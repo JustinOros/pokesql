@@ -158,7 +158,7 @@ class Game {
      ══════════════════════════════════════════════════════════ */
   _startWalkLoop() {
     if (this._walkLoop) return;
-    this._walkLoop = setInterval(() => this._walkTick(), 80);
+    this._walkLoop = setInterval(() => this._walkTick(), 30);
   }
 
   _stopWalkLoop() {
@@ -183,7 +183,7 @@ class Game {
     const viewH  = world.parentElement.offsetHeight || 300;
     const worldW = world.offsetWidth || viewW * 4;
 
-    const SPEED = 80; /* px per tick */
+    const SPEED = 30; /* px per tick */
     let dx = 0, dy = 0, dir = '';
 
     if (this._heldKeys.has('right')) { dx =  SPEED; dir = 'right'; }
