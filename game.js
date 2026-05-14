@@ -426,7 +426,13 @@ class Game {
   }
 
   restoreFromSave(save) {
-    Object.assign(this.state, { playerName:save.playerName, currentQ:save.currentQ, score:save.score, streak:save.streak, maxStreak:save.maxStreak, correct:save.correct, wrong:save.wrong });
+    Object.assign(this.state, {
+      playerName:save.playerName, currentQ:save.currentQ,
+      score:save.score, streak:save.streak, maxStreak:save.maxStreak,
+      correct:save.correct, wrong:save.wrong,
+      /* Treat restored game like mid-journey so showMap generates a fresh NPC position */
+      playerX:10, playerY:40, npcX:68, npcY:38,
+    });
     this.loadQuestions(() => this.showMap());
   }
 
@@ -520,15 +526,43 @@ class Game {
   }
 
   /* ── MAP ──────────────────────────────────────────────── */
+
+  /* Generate a new NPC position that is always to the RIGHT of the player,
+     so the route feels like a journey. NPC lands 25–40% ahead horizontally,
+     with a little vertical variance to keep it interesting. */
+  _nextNPCPosition() {
+    const aheadX = 25 + Math.random() * 15;          /* 25–40% to the right */
+    const newX   = Math.min(82, this.state.playerX + aheadX);
+    /* vertical variance — stays in the walkable band */
+    const newY   = 35 + Math.random() * 10;           /* 35–45% */
+    return { x: newX, y: newY };
+  }
+
   showMap() {
     this.show('map');
     this._showController(true);
 
-    /* reset player to start if fresh (currentQ 0), else keep position */
     if (this.state.currentQ === 0) {
-      this.state.playerX = 15; this.state.playerY = 42;
+      /* Very first map load — player starts far left, NPC far right */
+      this.state.playerX = 10;
+      this.state.playerY = 40;
+      this.state.npcX    = 68;
+      this.state.npcY    = 38;
+    } else {
+      /* After answering — player steps forward to where the NPC was,
+         and a fresh NPC appears further ahead along the path */
+      this.state.playerX = this.state.npcX - 8;  /* just left of old NPC */
+      this.state.playerY = this.state.npcY;
+      /* If player has walked near the right edge, wrap back left
+         so the path feels like it keeps going */
+      if (this.state.playerX > 65) {
+        this.state.playerX = 10;
+        this.state.playerY = 40;
+      }
+      const next = this._nextNPCPosition();
+      this.state.npcX = next.x;
+      this.state.npcY = next.y;
     }
-    this.state.npcX = 72; this.state.npcY = 38;
 
     document.getElementById('hud-name').textContent = this.state.playerName||'ASH';
     this.updateHUD();
@@ -538,11 +572,10 @@ class Game {
     if (q && npcEl) npcEl.textContent = NPC[q.npc]||'🧑';
 
     this._placeMapSprites();
-    this._updateDirArrow(false);   /* show arrow immediately on map entry */
+    this._updateDirArrow(false);
     saveGame(this.state);
     this.flashSaveDot();
 
-    /* click NPC directly also triggers talk */
     const npcEl2 = document.getElementById('map-npc');
     if (npcEl2) npcEl2.onclick = ()=>this._talkToNPC();
   }
