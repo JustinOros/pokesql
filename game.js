@@ -600,20 +600,16 @@ class Game {
        Button 9  = Start (confirm)
      ══════════════════════════════════════════════════════════ */
   _bindGamepad() {
-    /* Track previous button state to detect press edges */
-    this._gpPrev = {};
+    this._gpPrev   = {};
     this._gpActive = false;
 
     window.addEventListener('gamepadconnected', (e) => {
       console.log('Gamepad connected:', e.gamepad.id);
-      this._gpActive = true;
-      if (!this._gpLoop) this._startGpLoop();
     });
 
-    window.addEventListener('gamepaddisconnected', () => {
-      const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
-      this._gpActive = [...gamepads].some(g => g);
-    });
+    /* Start polling immediately — don't wait for the event.
+       The poll function checks if any gamepad is present each frame. */
+    this._startGpLoop();
   }
 
   _startGpLoop() {
@@ -665,14 +661,22 @@ class Game {
     const wasPressed  = (i) => !!this._gpPrev[`btn_${i}`];
     const justPressed = (i) =>  pressedNow(i) && !wasPressed(i);
 
-    /* A button (0) or Start (9) = confirm / talk */
+    /* A button (0) or Start (9) — works on every screen */
     if (justPressed(0) || justPressed(9)) {
-      this._pressA();
+      if (s === 'title')    { document.getElementById('screen-title')?.click(); }
+      else if (s === 'continue') { document.getElementById('btn-continue-save')?.click(); }
+      else if (s === 'intro')    { this.advanceIntro(); }
+      else if (s === 'result')   { document.getElementById('btn-result-cont')?.click(); }
+      else if (s === 'levelup')  { document.getElementById('btn-lu-cont')?.click(); }
+      else if (s === 'complete') { document.getElementById('btn-play-again')?.click(); }
+      else { this._pressA(); }
     }
 
-    /* B button (1) = back / talk */
+    /* B button (1) */
     if (justPressed(1)) {
-      this._pressB();
+      if (s === 'intro')  { this.advanceIntro(); }
+      else if (s === 'result') { document.getElementById('btn-result-cont')?.click(); }
+      else { this._pressB(); }
     }
 
     /* Quick-pick answers with X=2, Y=3, LB=4, RB=5 on battle screen */
