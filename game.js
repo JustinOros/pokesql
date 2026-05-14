@@ -438,7 +438,7 @@ class Game {
     arrow.textContent   = '▶';
     arrow.style.display = 'block';
     arrow.style.removeProperty('left');
-    arrow.style.bottom  = (viewH * 0.42) + 'px';
+    arrow.style.bottom  = (viewH * 0.36) + 'px';
   }
 
   _nearNPC() {
