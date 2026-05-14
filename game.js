@@ -1079,11 +1079,28 @@ class Game {
     }
     const correctShuffledIdx = indices.indexOf(q.answer);
 
+    /* Build a map from original option letter (A/B/C/D) to shuffled slot number (1/2/3/4)
+       so any option text like "Both A and B" gets rewritten to e.g. "Both 2 and 4" */
+    const letterToSlot = {};
+    indices.forEach((origIdx, slotIdx) => {
+      const letter = ['A','B','C','D'][origIdx];
+      letterToSlot[letter] = slotIdx + 1;
+    });
+
+    function rewriteLetterRefs(text) {
+      return text.replace(/\b([ABCD])\b/g, (match, letter) => {
+        return letterToSlot[letter] !== undefined ? letterToSlot[letter] : match;
+      });
+    }
+
+    /* Store display text of correct answer with letter refs rewritten */
+    q._correctDisplayText = rewriteLetterRefs(q.options[q.answer]);
+
     indices.forEach((origIdx, slotIdx) => {
       const btn=document.createElement('button');
       btn.className='choice-btn';
       btn.setAttribute('data-letter', slotIdx + 1);
-      btn.textContent=q.options[origIdx];
+      btn.textContent=rewriteLetterRefs(q.options[origIdx]);
       btn.addEventListener('click',()=>this.pick(slotIdx, correctShuffledIdx, q, container));
       container.appendChild(btn);
     });
@@ -1133,7 +1150,7 @@ class Game {
       ptsEl.style.display='block'; ansEl.classList.remove('visible');
     } else {
       ptsEl.style.display='none';
-      ansEl.textContent='✓ Correct answer: '+q.options[q.answer];
+      ansEl.textContent='✓ Correct answer: '+(q._correctDisplayText||q.options[q.answer]);
       ansEl.classList.add('visible');
     }
     document.getElementById('result-explanation').textContent=q.explanation;
