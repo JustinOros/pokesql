@@ -205,7 +205,7 @@ class Game {
     const p = document.getElementById('map-player');
     if (p) {
       const centreX = viewW / 2 - 20;
-      const centreY = viewH * 0.63 + this.state.worldY;
+      const centreY = viewH * 0.57 + this.state.worldY;
       p.style.left   = centreX + 'px';
       p.style.bottom = (viewH - centreY - 40) + 'px';
       p.className    = `map-player walk-${dir}`;
@@ -228,7 +228,7 @@ class Game {
     if (npcWrap) {
       const screenX = this.state.npcWorldX - this.state.worldX;
       npcWrap.style.left   = (screenX - 24) + 'px';
-      npcWrap.style.bottom = (viewH * 0.30) + 'px';
+      npcWrap.style.bottom = (viewH * 0.36) + 'px';
     }
   }
 
@@ -245,7 +245,7 @@ class Game {
     if (hint) {
       hint.style.display = near ? 'block' : 'none';
       hint.style.left   = (viewW / 2 - 28) + 'px';
-      hint.style.bottom = (viewH * 0.44) + 'px';
+      hint.style.bottom = (viewH * 0.50) + 'px';
     }
     if (bub) bub.style.opacity = near ? '0' : '1';
     this._updateDirArrow(near);
@@ -262,7 +262,7 @@ class Game {
     arrow.textContent   = npcScreenX >= viewW / 2 ? '▶' : '◀';
     arrow.style.display = 'block';
     arrow.style.left    = (viewW / 2 + 30) + 'px';
-    arrow.style.bottom  = (viewH * 0.42) + 'px';
+    arrow.style.bottom  = (viewH * 0.48) + 'px';
   }
 
   _nearNPC() {
@@ -287,7 +287,7 @@ class Game {
     const p = document.getElementById('map-player');
     if (p) {
       p.style.left      = (viewW / 2 - 20) + 'px';
-      p.style.bottom    = (viewH * 0.30) + 'px';
+      p.style.bottom    = (viewH * 0.36) + 'px';
       p.style.transform = 'scaleX(-1)';
       p.className       = 'map-player idle';
     }
