@@ -90,8 +90,8 @@ html, body {
 @keyframes wrongShake   { 0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)} }
 @keyframes npcFloat     { 0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)} }
 @keyframes treeSway     { 0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)} }
-@keyframes walkLeft     { 0%,100%{transform:scaleX(-1) translateY(0)}50%{transform:scaleX(-1) translateY(-4px)} }
-@keyframes walkRight    { 0%,100%{transform:scaleX(1) translateY(0)}50%{transform:scaleX(1) translateY(-4px)} }
+@keyframes walkLeft     { 0%,100%{transform:scaleX(1) translateY(0)}50%{transform:scaleX(1) translateY(-4px)} }
+@keyframes walkRight    { 0%,100%{transform:scaleX(-1) translateY(0)}50%{transform:scaleX(-1) translateY(-4px)} }
 @keyframes walkUp       { 0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)} }
 @keyframes walkDown     { 0%,100%{transform:translateY(0)}50%{transform:translateY(4px)} }
 @keyframes dpadPress    { 0%{transform:scale(1)}50%{transform:scale(.88)}100%{transform:scale(1)} }

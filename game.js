@@ -60,9 +60,9 @@ class Game {
       score:0, streak:0, maxStreak:0, correct:0, wrong:0,
       answering:false, introStep:0, twTimer:null,
       /* map movement */
-      playerX:15, playerY:42,   /* % of map-world */
+      playerX:15, playerY:42,
       npcX:72,    npcY:38,
-      moving:false, walkDir:'',
+      moving:false, walkDir:'', lastDir:'right',
       /* battle cursor */
       cursor:0,
     };
@@ -164,7 +164,11 @@ class Game {
     this._walkLoop = null;
     if (this.state.screen === 'map') {
       const p = document.getElementById('map-player');
-      if (p) { p.className = 'map-player idle'; }
+      if (p) {
+        p.className = 'map-player idle';
+        /* keep facing the last direction moved */
+        p.style.transform = this.state.lastDir === 'right' ? 'scaleX(-1)' : 'scaleX(1)';
+      }
     }
   }
 
@@ -183,6 +187,7 @@ class Game {
 
     this.state.playerX = nx;
     this.state.playerY = ny;
+    this.state.lastDir = dir;
 
     const p = document.getElementById('map-player');
     if (p) {
