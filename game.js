@@ -205,7 +205,7 @@ class Game {
     const p = document.getElementById('map-player');
     if (p) {
       const centreX = viewW / 2 - 20;
-      const centreY = viewH * 0.45 + this.state.worldY;
+      const centreY = viewH * 0.60 + this.state.worldY;
       p.style.left   = centreX + 'px';
       p.style.bottom = (viewH - centreY - 40) + 'px';
       p.className    = `map-player walk-${dir}`;
@@ -233,7 +233,7 @@ class Game {
     if (hint) {
       hint.style.display = near ? 'block' : 'none';
       hint.style.left   = (viewW / 2 - 28) + 'px';
-      hint.style.bottom = (viewH * 0.56) + 'px';
+      hint.style.bottom = (viewH * 0.46) + 'px';
     }
     if (bub) bub.style.opacity = near ? '0' : '1';
     this._updateDirArrow(near);
@@ -250,7 +250,7 @@ class Game {
     arrow.textContent   = npcScreenX >= viewW / 2 ? '▶' : '◀';
     arrow.style.display = 'block';
     arrow.style.left    = (viewW / 2 + 30) + 'px';
-    arrow.style.bottom  = (viewH * 0.50) + 'px';
+    arrow.style.bottom  = (viewH * 0.40) + 'px';
   }
 
   _nearNPC() {
@@ -275,14 +275,14 @@ class Game {
     const p = document.getElementById('map-player');
     if (p) {
       p.style.left      = (viewW / 2 - 20) + 'px';
-      p.style.bottom    = (viewH * 0.42) + 'px';
+      p.style.bottom    = (viewH * 0.32) + 'px';
       p.style.transform = 'scaleX(-1)';
       p.className       = 'map-player idle';
     }
     const npcWrap = document.getElementById('map-npc-wrap');
     if (npcWrap) {
       npcWrap.style.left   = (this.state.npcWorldX - 24) + 'px';
-      npcWrap.style.bottom = (viewH * 0.42) + 'px';
+      npcWrap.style.bottom = (viewH * 0.32) + 'px';
     }
     this._applyCamera();
     const hint = document.getElementById('map-talk-hint');
