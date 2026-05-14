@@ -256,9 +256,11 @@ class Game {
     this._walkLoop    = null;
     this._introClick  = null;
     this._introKey    = null;
+    this._gpLoop      = null;
 
     this._bindController();
     this._bindGlobalKeys();
+    this._bindGamepad();
     this.boot();
   }
 
@@ -583,8 +585,113 @@ class Game {
   }
 
   /* ══════════════════════════════════════════════════════════
-     CONTROLLER VISIBILITY
+     XBOX / GAMEPAD SUPPORT (Gamepad API)
+     Polls every animation frame. Works with Xbox, PS, and most
+     USB/Bluetooth gamepads that the browser recognises.
+
+     Xbox mapping:
+       Axes 0/1  = left stick X/Y
+       Button 0  = A  (confirm / talk)
+       Button 1  = B  (talk / back)
+       Button 12 = D-pad up
+       Button 13 = D-pad down
+       Button 14 = D-pad left
+       Button 15 = D-pad right
+       Button 9  = Start (confirm)
      ══════════════════════════════════════════════════════════ */
+  _bindGamepad() {
+    /* Track previous button state to detect press edges */
+    this._gpPrev = {};
+    this._gpActive = false;
+
+    window.addEventListener('gamepadconnected', (e) => {
+      console.log('Gamepad connected:', e.gamepad.id);
+      this._gpActive = true;
+      if (!this._gpLoop) this._startGpLoop();
+    });
+
+    window.addEventListener('gamepaddisconnected', () => {
+      const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+      this._gpActive = [...gamepads].some(g => g);
+    });
+  }
+
+  _startGpLoop() {
+    const poll = () => {
+      this._gpLoop = requestAnimationFrame(poll);
+      this._pollGamepad();
+    };
+    this._gpLoop = requestAnimationFrame(poll);
+  }
+
+  _pollGamepad() {
+    const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+    const gp = [...gamepads].find(g => g);
+    if (!gp) return;
+
+    const DEAD = 0.25; /* analog stick deadzone */
+    const axes = gp.axes;
+    const btns = gp.buttons;
+
+    /* ── Directional input ─────────────────────────────── */
+    const gpDirs = {
+      up:    (axes[1] < -DEAD) || (btns[12]?.pressed),
+      down:  (axes[1] >  DEAD) || (btns[13]?.pressed),
+      left:  (axes[0] < -DEAD) || (btns[14]?.pressed),
+      right: (axes[0] >  DEAD) || (btns[15]?.pressed),
+    };
+
+    const s = this.state.screen;
+
+    Object.entries(gpDirs).forEach(([dir, active]) => {
+      const key = `axis_${dir}`;
+      if (active && !this._gpPrev[key]) {
+        /* Pressed this frame */
+        if (s === 'map' || s === 'battle') {
+          this._heldKeys.add(dir);
+          if (s === 'map' && !this._walkLoop) this._startWalkLoop();
+          if (s === 'battle') this._moveCursor(dir);
+        }
+      } else if (!active && this._gpPrev[key]) {
+        /* Released this frame */
+        this._heldKeys.delete(dir);
+        if (this._heldKeys.size === 0) this._stopWalkLoop();
+      }
+      this._gpPrev[key] = active;
+    });
+
+    /* ── Button press edges (fire once on press) ───────── */
+    const pressedNow  = (i) =>  btns[i]?.pressed;
+    const wasPressed  = (i) => !!this._gpPrev[`btn_${i}`];
+    const justPressed = (i) =>  pressedNow(i) && !wasPressed(i);
+
+    /* A button (0) or Start (9) = confirm / talk */
+    if (justPressed(0) || justPressed(9)) {
+      this._pressA();
+    }
+
+    /* B button (1) = back / talk */
+    if (justPressed(1)) {
+      this._pressB();
+    }
+
+    /* Quick-pick answers with X=2, Y=3, LB=4, RB=5 on battle screen */
+    if (s === 'battle' && !this.state.answering) {
+      const quickMap = { 2:0, 3:1, 4:2, 5:3 };
+      Object.entries(quickMap).forEach(([btn, idx]) => {
+        if (justPressed(+btn)) {
+          this.state.cursor = idx;
+          this._renderCursor();
+          setTimeout(() => this._confirmCursor(), 80);
+        }
+      });
+    }
+
+    /* Store current button states for next frame */
+    for (let i = 0; i < btns.length; i++) {
+      this._gpPrev[`btn_${i}`] = btns[i]?.pressed;
+    }
+  }
   _showController(visible) {
     const ctrl = document.getElementById('gba-controller');
     if (!ctrl) return;
