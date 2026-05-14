@@ -86,6 +86,7 @@ html, body {
 @keyframes bounce       { 0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)} }
 @keyframes pop          { 0%{transform:scale(.5);opacity:0}65%{transform:scale(1.08)}100%{transform:scale(1);opacity:1} }
 @keyframes goldShimmer  { 0%,100%{color:#f8c030;text-shadow:0 0 8px #f8c030}50%{color:#ffe878;text-shadow:0 0 18px #ffe878,0 0 36px #f8c030} }
+@keyframes blueShimmer  { 0%,100%{color:#60c8ff;text-shadow:4px 4px 0 #003d70,0 0 12px #60c8ff}50%{color:#a0e0ff;text-shadow:4px 4px 0 #003d70,0 0 24px #a0e0ff,0 0 48px #60c8ff} }
 @keyframes correctPulse { 0%,100%{background:#c8ffc8;border-color:var(--green)}50%{background:#e0ffe0} }
 @keyframes wrongShake   { 0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)} }
 @keyframes npcFloat     { 0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)} }
@@ -333,7 +334,7 @@ html, body {
 .title-main { text-align:center; z-index:1; padding:24px 16px; }
 .title-logo { margin-bottom:16px; line-height:1; }
 .title-poke { font-size:clamp(30px,11vw,50px); color:var(--yellow); text-shadow:4px 4px 0 #7a5800,0 0 24px rgba(248,192,48,.5); animation:goldShimmer 3s ease-in-out infinite; display:inline-block; }
-.title-sql  { font-size:clamp(30px,11vw,50px); color:#60c8ff; text-shadow:4px 4px 0 #003d70,0 0 24px rgba(96,200,255,.5); display:inline-block; }
+.title-sql  { font-size:clamp(30px,11vw,50px); color:#60c8ff; text-shadow:4px 4px 0 #003d70,0 0 24px rgba(96,200,255,.5); display:inline-block; animation:blueShimmer 3s ease-in-out infinite; animation-delay:.4s; }
 .title-sub  { font-size:clamp(6px,1.8vw,8px); color:rgba(255,255,255,.75); letter-spacing:1px; margin:10px 0 6px; }
 .title-edition { font-size:clamp(5.5px,1.6vw,7px); color:var(--yellow); margin-bottom:24px; animation:goldShimmer 3s ease-in-out infinite; }
 .title-deco { font-size:clamp(22px,6vw,32px); margin-bottom:28px; display:flex; gap:16px; justify-content:center; }
