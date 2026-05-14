@@ -397,18 +397,19 @@ html, body {
   will-change: transform;
   z-index: 5;
 }
-.map-trees  {
+.map-trees {
   position: absolute;
-  top: 12%;
-  left: 0; right: 0;
-  display: flex;
-  justify-content: space-around;
-  padding: 0 2%;
-  width: 100%;
+  inset: 0;
+  pointer-events: none;
 }
-.tree { font-size:clamp(24px,7vw,36px); display:inline-block; animation:treeSway 3s ease-in-out infinite; filter:drop-shadow(1px 2px 0 rgba(0,0,0,.3)); }
-.tree:nth-child(2){animation-delay:.5s;} .tree:nth-child(3){animation-delay:1s;} .tree:nth-child(4){animation-delay:1.5s;} .tree:nth-child(5){animation-delay:2s;}
-.tree:nth-child(6){animation-delay:2.5s;} .tree:nth-child(7){animation-delay:.8s;} .tree:nth-child(8){animation-delay:1.8s;}
+.tree {
+  position: absolute;
+  display: inline-block;
+  animation: treeSway 3s ease-in-out infinite;
+  filter: drop-shadow(1px 2px 0 rgba(0,0,0,.3));
+  line-height: 1;
+}
+.tree:nth-child(even) { animation-direction: reverse; }
 .map-ground {
   position: absolute;
   bottom: 0; left: 0; right: 0;

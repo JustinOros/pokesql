@@ -543,7 +543,40 @@ class Game {
       .catch(()=>this.toast('❌ Could not load questions.json'));
   }
 
-  /* ── MAP ──────────────────────────────────────────────── */
+  /* Generate randomly placed trees across the full scrollable world */
+  _generateTrees() {
+    const container = document.getElementById('map-trees');
+    if (!container || container.childElementCount > 0) return; /* only once */
+
+    const world  = document.getElementById('map-inner');
+    const worldW = world ? world.offsetWidth : 1680;
+    const viewH  = world ? world.parentElement.offsetHeight : 300;
+
+    /* Trees live in the top 52% of the world (above the path) */
+    const treeTopMax    = viewH * 0.52;
+    const treeBottomMin = viewH * 0.04;
+    const TYPES = ['🌲','🌳','🌲','🌳','🌲','🌲','🌳'];
+    const COUNT = 60;
+
+    /* Use a seeded-ish spread: divide world into zones and place 1-2 trees per zone */
+    const zoneW = worldW / COUNT;
+    for (let i = 0; i < COUNT; i++) {
+      const span = document.createElement('span');
+      span.className = 'tree';
+      const emoji = TYPES[Math.floor(Math.random() * TYPES.length)];
+      const size  = 24 + Math.random() * 18; /* 24–42px */
+      const x     = i * zoneW + Math.random() * zoneW * 0.85;
+      const y     = treeBottomMin + Math.random() * (treeTopMax - treeBottomMin - size);
+      const delay = (Math.random() * 3).toFixed(2);
+      span.textContent     = emoji;
+      span.style.fontSize  = size + 'px';
+      span.style.left      = x + 'px';
+      span.style.top       = y + 'px';
+      span.style.animationDelay    = delay + 's';
+      span.style.animationDuration = (2.5 + Math.random() * 2).toFixed(1) + 's';
+      container.appendChild(span);
+    }
+  }
 
   showMap() {
     this.show('map');
@@ -551,6 +584,7 @@ class Game {
 
     /* We need the viewport size — defer a tick so the DOM is laid out */
     requestAnimationFrame(() => {
+      this._generateTrees();
       const world = document.getElementById('map-inner');
       const viewW = world ? world.parentElement.offsetWidth : 420;
 
