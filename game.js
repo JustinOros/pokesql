@@ -385,7 +385,7 @@ class Game {
     const p = document.getElementById('map-player');
     if (p) {
       const centreX = viewW / 2 - 16;
-      const centreY = viewH * 0.57 + this.state.worldY;
+      const centreY = viewH * 0.65 + this.state.worldY;
       p.style.left   = centreX + 'px';
       p.style.bottom = (viewH - centreY - 40) + 'px';
       p.className    = `map-player walk-${dir}`;
@@ -408,7 +408,7 @@ class Game {
     if (npcWrap) {
       const screenX = this.state.npcWorldX - this.state.worldX;
       npcWrap.style.left   = (screenX - 24) + 'px';
-      npcWrap.style.bottom = (viewH * 0.36) + 'px';
+      npcWrap.style.bottom = (viewH * 0.28) + 'px';
     }
   }
 
@@ -440,7 +440,7 @@ class Game {
     arrow.textContent   = '▶';
     arrow.style.display = 'block';
     arrow.style.removeProperty('left');
-    arrow.style.bottom  = (viewH * 0.36) + 'px';
+    arrow.style.bottom  = (viewH * 0.28) + 'px';
   }
 
   _nearNPC() {
@@ -466,7 +466,7 @@ class Game {
     const p = document.getElementById('map-player');
     if (p) {
       p.style.left      = (viewW / 2 - 16) + 'px';
-      p.style.bottom    = (viewH * 0.36) + 'px';
+      p.style.bottom    = (viewH * 0.28) + 'px';
       
       p.className       = 'map-player idle';
     }
