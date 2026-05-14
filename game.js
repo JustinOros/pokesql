@@ -696,6 +696,23 @@ class Game {
     /* ── ALL OTHER SCREENS — directional movement + button actions ── */
     } else {
 
+      /* ── CONTINUE SCREEN — D-pad up/down switches between Continue and New Game ── */
+      if (s === 'continue') {
+        if (this._gpContCursor === undefined) this._gpContCursor = 0;
+        const contBtn = document.getElementById('btn-continue-save');
+        const newBtn  = document.getElementById('btn-new-game');
+
+        const movedUp   = gpDirs.up   && !this._gpPrev['axis_up'];
+        const movedDown = gpDirs.down  && !this._gpPrev['axis_down'];
+        if (movedUp || movedDown) {
+          this._gpContCursor = this._gpContCursor === 0 ? 1 : 0;
+        }
+
+        /* Highlight selected button */
+        if (contBtn) contBtn.style.outline = this._gpContCursor === 0 ? '3px solid #f8c030' : '';
+        if (newBtn)  newBtn.style.outline  = this._gpContCursor === 1 ? '3px solid #f8c030' : '';
+      }
+
       /* Walk / battle cursor movement */
       Object.entries(gpDirs).forEach(([dir, active]) => {
         const key = `axis_${dir}`;
@@ -715,7 +732,11 @@ class Game {
       if (justPressed(0) || justPressed(9)) {
         if      (s === 'boot')     { /* wait for title */ }
         else if (s === 'title')    { document.getElementById('screen-title')?.click(); }
-        else if (s === 'continue') { document.getElementById('btn-continue-save')?.click(); }
+        else if (s === 'continue') {
+          /* 0 = CONTINUE highlighted, 1 = NEW GAME highlighted */
+          if (this._gpContCursor === 0) document.getElementById('btn-continue-save')?.click();
+          else                          document.getElementById('btn-new-game')?.click();
+        }
         else if (s === 'intro')    { this.advanceIntro(); }
         else if (s === 'battle' && !this.state.answering) { this._confirmCursor(); }
         else if (s === 'result')   { document.getElementById('btn-result-cont')?.click(); }
@@ -795,6 +816,12 @@ class Game {
         document.getElementById('btn-new-game').textContent  = '✦ CONFIRM NEW GAME';
         document.getElementById('btn-new-game').onclick      = () => { clearSave(); this.startFresh(); };
       };
+      /* Reset controller cursor to CONTINUE button */
+      this._gpContCursor = 0;
+      setTimeout(() => {
+        const c = document.getElementById('btn-continue-save');
+        if (c) c.style.outline = '3px solid #f8c030';
+      }, 50);
     } else {
       this.startFresh();
     }
