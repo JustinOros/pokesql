@@ -4,7 +4,7 @@ A Pokémon-style Game Boy Advance browser game for learning **Microsoft T-SQL**!
 Play it on your phone, tablet, or PC — progress is saved automatically to your browser.
 
 ## 🚀 Play It Live
-**`https://justinoros.github.io/pokesql`**
+👉 [Launch PokeSQL](https://justinoros.github.io/pokesql)
 
 ---
 
