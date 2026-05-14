@@ -103,8 +103,8 @@ html, body {
 /* Sprite walk — player.png 384x32px, 24 frames at 16x32px each
    Layout: 0-2=down  3-5=up  6-8=left  9-11=right */
 @keyframes walkDown  { from{background-position-x:   0px} to{background-position-x:  -96px} }
-@keyframes walkUp    { from{background-position-x: -96px} to{background-position-x: -192px} }
-@keyframes walkLeft  { from{background-position-x:-192px} to{background-position-x: -288px} }
+@keyframes walkLeft  { from{background-position-x: -96px} to{background-position-x: -192px} }
+@keyframes walkUp    { from{background-position-x:-192px} to{background-position-x: -288px} }
 @keyframes walkRight { from{background-position-x:-288px} to{background-position-x: -384px} }
 @keyframes dpadPress    { 0%{transform:scale(1)}50%{transform:scale(.88)}100%{transform:scale(1)} }
 @keyframes abPress      { 0%{transform:scale(1)}40%{transform:scale(.82)}100%{transform:scale(1)} }

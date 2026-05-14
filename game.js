@@ -348,7 +348,7 @@ class Game {
         p.className = 'map-player idle';
         /* Show the idle/middle frame for the last direction walked
            Frames at 2× scale (32px each): down=32, up=128, left=224, right=320 */
-        const idleFrames = { down:'-32px', up:'-128px', left:'-224px', right:'-320px' };
+        const idleFrames = { down:'-32px', left:'-128px', up:'-224px', right:'-320px' };
         p.style.backgroundPositionX = idleFrames[this.state.lastDir] || '-32px';
       }
     }
