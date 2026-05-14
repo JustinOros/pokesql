@@ -472,7 +472,7 @@ class Game {
   /* ── LOAD QUESTIONS ───────────────────────────────────── */
   loadQuestions(cb) {
     if (this.state.questions.length>0) { cb(); return; }
-    fetch('questions.json')
+    fetch('./questions.json')
       .then(r=>r.json())
       .then(data=>{ this.state.questions=data.levels[0].questions; cb(); })
       .catch(()=>this.toast('❌ Could not load questions.json'));
@@ -564,13 +564,13 @@ class Game {
       btn.className='choice-btn';
       btn.setAttribute('data-letter', slotIdx + 1);
       btn.textContent=q.options[origIdx];
-      btn.addEventListener('click',()=>this.pick(slotIdx, correctShuffledIdx, container));
+      btn.addEventListener('click',()=>this.pick(slotIdx, correctShuffledIdx, q, container));
       container.appendChild(btn);
     });
     this._renderCursor();
   }
 
-  pick(chosen, correctIdx, container) {
+  pick(chosen, correctIdx, q, container) {
     if(this.state.answering)return;
     this.state.answering=true;
 
