@@ -397,7 +397,17 @@ html, body {
 .prog-bar-outer { width:80px; height:9px; background:var(--black); border:2px solid var(--lightgray); overflow:hidden; }
 .prog-bar-inner { height:100%; width:0%; background:var(--hp-green); transition:width .5s ease; }
 .prog-text  { font-size:6px; color:var(--white); }
-.save-dot   { font-size:12px; animation:blink 3s ease-in-out infinite; }
+.save-dot     { font-size:12px; animation:blink 3s ease-in-out infinite; }
+.music-toggle {
+  font-size: 14px;
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity .2s;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  padding: 2px 4px;
+}
+.music-toggle.muted { opacity: .35; }
 
 .map-world  {
   position: relative;

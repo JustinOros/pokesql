@@ -52,6 +52,45 @@ function saveGame(s) {
 function loadGame()  { try { const r=localStorage.getItem(SAVE_KEY); return r?JSON.parse(r):null; } catch(_){return null;} }
 function clearSave() { try { localStorage.removeItem(SAVE_KEY); } catch(_){} }
 
+/* ─── BACKGROUND MUSIC ───────────────────────────────────── */
+const Music = (() => {
+  let audio   = null;
+  let muted   = false;
+
+  function getAudio() {
+    if (!audio) {
+      audio        = new Audio('./music.mp3');
+      audio.loop   = true;
+      audio.volume = 0.5;
+    }
+    return audio;
+  }
+
+  function updateBtn() {
+    const btn = document.getElementById('music-toggle');
+    if (!btn) return;
+    btn.textContent = muted ? '🔇' : '🎵';
+    btn.classList.toggle('muted', muted);
+  }
+
+  return {
+    play() {
+      if (muted) return;
+      const a = getAudio();
+      if (a.paused) a.play().catch(() => {});
+    },
+    pause() {
+      if (audio) audio.pause();
+    },
+    toggle() {
+      muted = !muted;
+      updateBtn();
+      if (muted) Music.pause();
+      else       Music.play();
+    },
+  };
+})();
+
 /* ─── CHIPTUNE SOUND ENGINE ──────────────────────────────── */
 const SFX = (() => {
   let ctx = null;
@@ -740,12 +779,15 @@ class Game {
 
       this._placeMapSprites();
       this._updateDirArrow(false);
-      SFX.overworldStart();
+      Music.play();
       saveGame(this.state);
       this.flashSaveDot();
 
       const npcEl2 = document.getElementById('map-npc');
       if (npcEl2) npcEl2.onclick = ()=>this._talkToNPC();
+
+      const musicBtn = document.getElementById('music-toggle');
+      if (musicBtn) musicBtn.onclick = () => Music.toggle();
     });
   }
 
@@ -774,6 +816,7 @@ class Game {
 
     this.show('battle');
     this._showController(true);
+    Music.pause();
     this.state.answering=false;
     this.state.cursor=0;
 
