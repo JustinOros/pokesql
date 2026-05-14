@@ -545,6 +545,19 @@ html, body {
 .battle-npc-side, .battle-player-side { display:flex; flex-direction:column; align-items:center; gap:4px; }
 .battle-sprite { font-size:clamp(38px,11vw,56px); filter:drop-shadow(2px 3px 0 rgba(0,0,0,.3)); animation:npcFloat 2s ease-in-out infinite; }
 .battle-player-side .battle-sprite { animation:bounce 1s ease-in-out infinite; }
+/* Player sprite on battle screen — use sprite sheet facing down-idle */
+.battle-player-sprite {
+  width: 48px;
+  height: 96px;
+  background-image: url('./player.png');
+  background-repeat: no-repeat;
+  background-size: 1152px 96px;  /* 3× scale */
+  background-position-x: -48px; /* idle down frame */
+  background-position-y: 0;
+  image-rendering: pixelated;
+  filter: drop-shadow(2px 3px 0 rgba(0,0,0,.3));
+  animation: bounce 1s ease-in-out infinite;
+}
 .battle-name-tag { font-size:clamp(5.5px,1.6vw,7px); background:rgba(255,255,255,.8); border:2px solid var(--black); padding:2px 6px; color:var(--black); }
 .battle-dialog { margin:8px; min-height:72px; }
 .battle-choices { display:grid; grid-template-columns:1fr 1fr; gap:5px; padding:5px 8px; flex-shrink:0; }
