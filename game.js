@@ -182,7 +182,7 @@ class Game {
     const viewW  = world.parentElement.offsetWidth  || 420;
     const viewH  = world.parentElement.offsetHeight || 300;
 
-    const SPEED = 20; /* px per tick */
+    const SPEED = 12; /* px per tick */
     let dx = 0, dy = 0, dir = '';
 
     if (this._heldKeys.has('right')) { dx =  SPEED; dir = 'right'; }
