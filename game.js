@@ -1140,6 +1140,10 @@ class Game {
       btn.setAttribute('data-letter', slotIdx + 1);
       btn.textContent=rewriteLetterRefs(q.options[origIdx]);
       btn.addEventListener('click',()=>this.pick(slotIdx, correctShuffledIdx, q, container));
+      btn.addEventListener('mouseenter', () => {
+        this.state.cursor = slotIdx;
+        this._renderCursor();
+      });
       container.appendChild(btn);
     });
     this._renderCursor();
