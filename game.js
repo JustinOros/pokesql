@@ -944,7 +944,15 @@ class Game {
     if (this.state.questions.length>0) { cb(); return; }
     fetch('./questions.json')
       .then(r=>r.json())
-      .then(data=>{ this.state.questions=data.levels[0].questions; cb(); })
+      .then(data=>{
+        const qs = data.levels[0].questions;
+        for (let i = qs.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [qs[i], qs[j]] = [qs[j], qs[i]];
+        }
+        this.state.questions = qs;
+        cb();
+      })
       .catch(()=>this.toast('❌ Could not load questions.json'));
   }
 
