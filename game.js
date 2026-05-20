@@ -386,11 +386,15 @@ class Game {
     /* Player sprite stays horizontally centred; only Y shifts */
     const p = document.getElementById('map-player');
     if (p) {
-      const centreX = viewW / 2 - 16;
-      const centreY = viewH * 0.65 + this.state.worldY;
+      const centreX  = viewW / 2 - 16;
+      const centreY  = viewH * 0.65 + this.state.worldY;
+      const bottomPx = viewH - centreY - 40;
       p.style.left   = centreX + 'px';
-      p.style.bottom = (viewH - centreY - 40) + 'px';
+      p.style.bottom = bottomPx + 'px';
       p.className    = `map-player walk-${dir}`;
+      /* Keep "..." bubble above player */
+      const bub = document.getElementById('player-bubble');
+      if (bub) { bub.style.left = (centreX - 4) + 'px'; bub.style.bottom = (bottomPx + 66) + 'px'; }
     }
 
     this._checkNPCProximity();
@@ -453,8 +457,22 @@ class Game {
   }
 
   _talkToNPC() {
+    if (!this._nearNPC()) {
+      /* Too far away — show "..." bubble above player */
+      const bub = document.getElementById('player-bubble');
+      if (bub) {
+        bub.classList.remove('visible');
+        void bub.offsetWidth;
+        bub.classList.add('visible');
+        clearTimeout(this._bubbleTimer);
+        this._bubbleTimer = setTimeout(() => bub.classList.remove('visible'), 1500);
+      }
+      return;
+    }
     const arrow = document.getElementById('map-dir-arrow');
     if (arrow) arrow.style.display = 'none';
+    const bub = document.getElementById('player-bubble');
+    if (bub) bub.classList.remove('visible');
     SFX.encounter();
     this.startQuestion();
   }
@@ -467,10 +485,13 @@ class Game {
 
     const p = document.getElementById('map-player');
     if (p) {
-      p.style.left      = (viewW / 2 - 16) + 'px';
-      p.style.bottom    = (viewH * 0.28) + 'px';
-      
+      const left   = viewW / 2 - 16;
+      const bottom = viewH * 0.28;
+      p.style.left      = left + 'px';
+      p.style.bottom    = bottom + 'px';
       p.className       = 'map-player idle';
+      const bub = document.getElementById('player-bubble');
+      if (bub) { bub.style.left = (left - 4) + 'px'; bub.style.bottom = (bottom + 66) + 'px'; }
     }
     this._applyCamera();
     const hint = document.getElementById('map-talk-hint');
