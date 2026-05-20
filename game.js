@@ -440,11 +440,12 @@ class Game {
   _updateDirArrow(nearNPC) {
     const arrow = document.getElementById('map-dir-arrow');
     if (!arrow) return;
-    if (nearNPC) { arrow.style.display = 'none'; return; }
+    if (nearNPC) { arrow.style.display = 'none'; arrow.style.animation = 'none'; return; }
     const world = document.getElementById('map-inner');
     const viewH = world ? world.parentElement.offsetHeight : 300;
     arrow.textContent   = '▶';
     arrow.style.display = 'block';
+    arrow.style.animation = 'arrowPulse .7s ease-in-out infinite';
     arrow.style.removeProperty('left');
     arrow.style.bottom  = (viewH * 0.28) + 'px';
   }
