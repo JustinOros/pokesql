@@ -1031,7 +1031,6 @@ class Game {
 
     /* We need the viewport size — defer a tick so the DOM is laid out */
     requestAnimationFrame(() => {
-      this._generateTrees();
       const world = document.getElementById('map-inner');
       const viewW = world ? world.parentElement.offsetWidth : 420;
 
@@ -1048,6 +1047,8 @@ class Game {
         this.state.npcWorldX = Math.round(viewW * 3.0 + Math.random() * viewW * 0.8);
         this.state.npcWorldY = 0;
       }
+
+      this._generateTrees();
 
       document.getElementById('hud-name').textContent = this.state.playerName||'ASH';
       this.updateHUD();
