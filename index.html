@@ -4,10 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0a0520">
-<title>PokéSQL — Learn T-SQL</title>
-<link rel="icon" type="image/x-icon" href="./favicon.ico">
+<title>PokéSQL — Lean SQL</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -30,10 +31,10 @@
         <div class="title-logo">
           <span class="title-poke">POKÉ</span><span class="title-sql">SQL</span>
         </div>
-        <div class="title-edition">★ SQL TRAINER EDITION ★</div>
-        <div class="title-tap blink">TAP / CLICK TO START</div>
+        <div class="title-edition">★ SQL TRAINER ★</div>
+        <div class="title-tap blink">PRESS START</div>
       </div>
-      <div class="title-footer">PokéSQL v1.0 · 100 Questions</div>
+      <div class="title-footer">PokéSQL v1.0 · SQL · github.com/JustinOros</div>
     </div>
   </div>
 
@@ -89,11 +90,13 @@
     <div class="map-header">
       <div class="map-left">
         <span class="map-pin">📍</span>
-        <span class="map-town-name">PALLET TOWN</span>
+        <span class="map-town-name" id="map-town-name">SQL TOWN</span>
       </div>
-      <div class="map-right">
+      <div class="map-center">
         <div class="prog-bar-outer"><div class="prog-bar-inner" id="map-prog-bar"></div></div>
         <span class="prog-text" id="map-prog-text">0/100</span>
+      </div>
+      <div class="map-right">
         <span class="music-toggle" id="music-toggle" title="Mute/Unmute Music">🎵</span>
       </div>
     </div>
@@ -102,8 +105,7 @@
         <div class="map-trees" id="map-trees"></div>
       </div>
       <!-- Path stays fixed to the viewport — does not scroll -->
-      <div class="map-ground"></div>
-      <!-- NPC in viewport layer — JS positions it using screen-space X -->
+      <!-- NPC in viewport layer — JS positions it using screen-space coords -->
       <div class="map-npc-wrap" id="map-npc-wrap">
         <div class="npc-bubble" id="npc-bubble">!</div>
         <div class="map-npc" id="map-npc"></div>
@@ -166,7 +168,7 @@
       <div class="lu-stars blink" id="lu-stars">★ BADGE EARNED! ★</div>
       <div class="lu-sprite"><div class="lu-player-sprite"></div></div>
       <div class="lu-text"><span id="lu-name">ASH</span> gained SQL EXP!</div>
-      <div class="lu-badge" id="lu-badge">🏅 SQL TRAINEE</div>
+      <div class="lu-badge" id="lu-badge">🏅 CLOUD TRAINEE</div>
       <div class="lu-prog-wrap">
         <div class="lu-prog-outer"><div class="lu-prog-inner" id="lu-prog-inner"></div></div>
         <div class="lu-prog-label" id="lu-prog-label">25 / 100</div>
@@ -182,47 +184,42 @@
         <div class="complete-trophy">🏆</div>
         <div class="complete-title">CHAMPION!</div>
         <div class="complete-name" id="complete-name">ASH</div>
-        <p class="complete-msg">You've mastered Microsoft T-SQL fundamentals! You're ready to write real queries, assist DBAs, and analyse data like a pro.</p>
+        <p class="complete-msg">You've conquered SQL Town and mastered Microsoft T-SQL! Your SQL journey is just beginning — more towns and exams await!</p>
         <div class="complete-stats" id="complete-stats"></div>
         <div class="complete-badges">
-          <div class="badge-row">🥉 SQL INITIATE — Q25</div>
-          <div class="badge-row">🥈 QUERY TRAINER — Q50</div>
-          <div class="badge-row">🥇 DATA WRANGLER — Q75</div>
+          <div class="badge-row">🥉 SQL EXPLORER — Q25</div>
+          <div class="badge-row">🥈 SQL APPRENTICE — Q50</div>
+          <div class="badge-row">🥇 SQL PRACTITIONER — Q75</div>
           <div class="badge-row">🏆 SQL CHAMPION — Q100</div>
+          <div class="badge-row">🗺️ More towns & exams coming soon...</div>
         </div>
         <button class="btn-pixel btn-red btn-full" id="btn-play-again">▶ PLAY AGAIN</button>
       </div>
     </div>
   </div>
 
+  <div id="gba-left" class="gba-controller hidden">
+    <div class="dpad" id="dpad">
+      <button class="dpad-btn dpad-up"    id="dp-up"    aria-label="Up">▲</button>
+      <button class="dpad-btn dpad-left"  id="dp-left"  aria-label="Left">◀</button>
+      <button class="dpad-btn dpad-center"               aria-label="Center"></button>
+      <button class="dpad-btn dpad-right" id="dp-right" aria-label="Right">▶</button>
+      <button class="dpad-btn dpad-down"  id="dp-down"  aria-label="Down">▼</button>
+    </div>
+    <div class="gba-mid-btns">
+      <button class="gba-mid-btn" id="btn-select">SELECT</button>
+      <button class="gba-mid-btn" id="btn-start">START</button>
+    </div>
+  </div>
+
+  <div id="gba-right" class="gba-controller hidden">
+    <div class="ab-cluster">
+      <button class="ab-btn ab-b" id="btn-b">B</button>
+      <button class="ab-btn ab-a" id="btn-a">A</button>
+    </div>
+  </div>
+
 </div><!-- /#app -->
-
-<!-- ═══ GBA CONTROLLER OVERLAY ═══════════════════════════════
-     Shown over map + battle screens. Hidden on all others.    -->
-<div id="gba-controller" class="gba-controller hidden">
-
-  <!-- D-PAD (left) -->
-  <div class="dpad" id="dpad">
-    <button class="dpad-btn dpad-up"    id="dp-up"    aria-label="Up">▲</button>
-    <button class="dpad-btn dpad-left"  id="dp-left"  aria-label="Left">◀</button>
-    <button class="dpad-btn dpad-center"               aria-label="Center"></button>
-    <button class="dpad-btn dpad-right" id="dp-right" aria-label="Right">▶</button>
-    <button class="dpad-btn dpad-down"  id="dp-down"  aria-label="Down">▼</button>
-  </div>
-
-  <!-- SELECT / START (center) -->
-  <div class="gba-mid-btns">
-    <button class="gba-mid-btn" id="btn-select">SELECT</button>
-    <button class="gba-mid-btn" id="btn-start">START</button>
-  </div>
-
-  <!-- A / B BUTTONS (right) -->
-  <div class="ab-cluster">
-    <button class="ab-btn ab-b" id="btn-b">B</button>
-    <button class="ab-btn ab-a" id="btn-a">A</button>
-  </div>
-
-</div>
 
 <div id="toast" class="toast hidden"></div>
 <script src="game.js"></script>

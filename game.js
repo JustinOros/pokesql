@@ -1,4 +1,21 @@
 /* ─── NPC ROSTER ─────────────────────────────────────────── */
+const CONFIG = {
+  gameName:    'PokéSQL',
+  subject:     'SQL',
+  examName:    'SQL',
+  townName:    'SQL Town',
+  saveKey:     'pokesql_save_v1',
+  introLines: [
+    "Hello {name}! Welcome to PokéSQL, the world of SQL training! My name is Professor Oak, the SQL Professor!",
+    "This world is powered by Databases, Tables, Queries, Indexes, and Transactions, mastered through knowledge!",
+    "Your mission? Journey through each town, challenge SQL masters, and conquer every database concept!",
+    "Start in SQL Town then travel the SQL world to master JOINs, Aggregations, Indexing, and beyond!",
+    "100 questions await you. Each correct answer earns you SQL EXP and you'll learn something real!",
+    "Your progress is saved automatically in your browser so you can pick up right where you left off. Now, {name}... your adventure begins!",
+  ],
+  namePrompt: "Hello there! Welcome to PokéSQL! My name is Professor Oak — the SQL Professor. Now tell me, what is your name?",
+};
+
 const NPC = {
   'Professor Oak':     '👴',
   'Rival Gary':        '😤',
@@ -25,14 +42,7 @@ const NPC = {
   'Gary':              '😤',
 };
 
-const INTRO_MSGS = [
-  { speaker:'PROFESSOR OAK', npc:'Professor Oak', text:"Hello {name}! Welcome to PokéSQL — the world of T-SQL training! My name is Professor Oak, the SQL Pokémon Professor!" },
-  { speaker:'PROFESSOR OAK', npc:'Professor Oak', text:"This world is inhabited by powerful data — stored in TABLES, organised in DATABASES, and tamed with QUERIES!" },
-  { speaker:'PROFESSOR OAK', npc:'Professor Oak', text:"Your mission? Journey through Pallet Town, challenge SQL experts, and become a T-SQL Champion!" },
-  { speaker:'PROFESSOR OAK', npc:'Professor Oak', text:"You'll learn Microsoft T-SQL — the language used by DBAs and data professionals worldwide." },
-  { speaker:'PROFESSOR OAK', npc:'Professor Oak', text:"100 questions await you in this town alone. Each correct answer earns you SQL EXP — and you'll learn something real!" },
-  { speaker:'PROFESSOR OAK', npc:'Professor Oak', text:"Your progress is saved automatically in your browser so you can pick up right where you left off. Now, {name}... your adventure begins!" },
-];
+const INTRO_MSGS = CONFIG.introLines.map(text => ({ speaker:'PROFESSOR OAK', npc:'Professor Oak', text }));
 
 const CORRECT_FB = ["That's right!","Excellent work!","Perfect!","Outstanding!","Correct!","You're a natural!","Great answer!","Spot on!","Impressive!","Well done!"];
 const WRONG_FB   = ["Not quite...","Hmm, that's not it.","Try again next time!","Almost...","Not this time!"];
@@ -43,7 +53,7 @@ const MILESTONES = {
   75: { badge:'🥇 DATA WRANGLER',  stars:'★ ★ ★ ★' },
 };
 
-const SAVE_KEY = 'pokesql_save_v1';
+const SAVE_KEY = CONFIG.saveKey;
 
 /* ─── SAVE / LOAD ────────────────────────────────────────── */
 function saveGame(s) {
@@ -55,8 +65,9 @@ function clearSave() { try { localStorage.removeItem(SAVE_KEY); } catch(_){} }
 /* ─── BACKGROUND MUSIC ───────────────────────────────────── */
 const Music = (() => {
   let audio    = null;
+  let rival    = null;
   let muted    = false;
-  let wantPlay = false;   /* true if we tried to play but were blocked */
+  let wantPlay = false;
 
   function getAudio() {
     if (!audio) {
@@ -64,12 +75,21 @@ const Music = (() => {
       audio.loop     = true;
       audio.volume   = 0.5;
       audio.preload  = 'auto';
-      /* If audio loads and we wanted to play, try again */
       audio.addEventListener('canplaythrough', () => {
         if (wantPlay && !muted) audio.play().catch(() => {});
       });
     }
     return audio;
+  }
+
+  function getRival() {
+    if (!rival) {
+      rival         = new Audio('./music-rival.mp3');
+      rival.loop    = true;
+      rival.volume  = 0.5;
+      rival.preload = 'auto';
+    }
+    return rival;
   }
 
   function updateBtn() {
@@ -83,16 +103,25 @@ const Music = (() => {
     play() {
       if (muted) return;
       wantPlay = true;
+      if (rival && !rival.paused) return;
       const a = getAudio();
       if (a.readyState >= 3) {
-        /* Enough data to play */
         if (a.paused) a.play().catch((e) => { console.warn('Music play blocked:', e); });
       }
-      /* else: canplaythrough listener will fire and retry */
     },
     pause() {
       wantPlay = false;
       if (audio && !audio.paused) audio.pause();
+      if (rival && !rival.paused) rival.pause();
+    },
+    playBattle() {
+      if (muted) return;
+      if (audio && !audio.paused) audio.pause();
+      const r = getRival();
+      if (r.paused) { r.currentTime = 0; r.play().catch(() => {}); }
+    },
+    stopBattle() {
+      if (rival && !rival.paused) { rival.pause(); rival.currentTime = 0; }
     },
     toggle() {
       muted = !muted;
@@ -100,7 +129,6 @@ const Music = (() => {
       if (muted) Music.pause();
       else       Music.play();
     },
-    /* Call once on first user interaction to unblock autoplay */
     unblock() {
       const a = getAudio();
       if (wantPlay && !muted && a.paused) {
@@ -120,7 +148,12 @@ const SFX = (() => {
     return ctx;
   }
 
-  /* Resume AudioContext when user returns to the page on mobile */
+  function unlock() {
+    if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (ctx.state === 'suspended') ctx.resume().then(() => {});
+  }
+  document.addEventListener('touchstart',  unlock, { once: true, passive: true });
+  document.addEventListener('pointerdown', unlock, { once: true, passive: true });
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible' && ctx && ctx.state === 'suspended') {
       ctx.resume();
@@ -189,7 +222,8 @@ const SFX = (() => {
 
     /* Select / menu move */
     select() {
-      tone(440, 'square', 0.12, 0.005, 0.03, 0.04);
+      const c = getCtx();
+      tone(440, 'square', 0.12, 0.005, 0.03, 0.04, c.currentTime + 0.05);
     },
 
     /* Correct answer — happy ascending chord */
@@ -244,13 +278,11 @@ class Game {
       screen:'boot', playerName:'', questions:[], currentQ:0,
       score:0, streak:0, maxStreak:0, correct:0, wrong:0,
       answering:false, introStep:0, twTimer:null,
-      /* map — world coords in px, camera follows player */
-      worldX: 0,          /* player's X in world-px */
-      worldY: 0,          /* player's Y in world-px (0 = path centre) */
-      npcWorldX: 0,       /* NPC world-px X */
-      npcWorldY: 0,
+      worldX: 0, worldY: 0,
+      npcWorldX: 0, npcWorldY: 0,
+      npcSpawned: false,
+      pathDir: 'right',
       lastDir: 'right',
-      /* battle cursor */
       cursor:0,
     };
 
@@ -275,8 +307,6 @@ class Game {
      CONTROLLER OVERLAY — wires D-pad, A, B, SELECT, START
      ══════════════════════════════════════════════════════════ */
   _bindController() {
-    const ctrl = document.getElementById('gba-controller');
-
     const dpadMap = { 'dp-up':'up', 'dp-down':'down', 'dp-left':'left', 'dp-right':'right' };
 
     Object.entries(dpadMap).forEach(([id, dir]) => {
@@ -354,91 +384,102 @@ class Game {
     if (this.state.screen === 'map') {
       const p = document.getElementById('map-player');
       if (p) {
+        const dir = this.state.lastDir;
+        const idleFrames = { right:'-320px', down:'-32px', left:'-128px', up:'-224px' };
+        const frame = idleFrames[dir] || '-32px';
         p.className = 'map-player idle';
-        /* Show the idle/middle frame for the last direction walked
-           Frames at 2× scale (32px each): down=32, up=128, left=224, right=320 */
-        const idleFrames = { down:'-32px', left:'-128px', up:'-224px', right:'-320px' };
-        p.style.backgroundPositionX = idleFrames[this.state.lastDir] || '-32px';
+        requestAnimationFrame(() => {
+          p.style.backgroundPositionX = frame;
+        });
       }
     }
   }
 
+  _getViewport() {
+    const w = document.getElementById('map-world');
+    return {
+      viewW: (w && w.offsetWidth)  || 420,
+      viewH: (w && w.offsetHeight) || 300,
+    };
+  }
+
   _walkTick() {
     if (this.state.screen !== 'map') return;
-
-    const world  = document.getElementById('map-inner');
-    if (!world) return;
-    const viewW  = world.parentElement.offsetWidth  || 420;
-    const viewH  = world.parentElement.offsetHeight || 300;
-
-    const SPEED = 8; /* px per tick */
+    const {viewW, viewH} = this._getViewport();
+    const SPEED = 8;
     let dx = 0, dy = 0, dir = '';
-
     if (this._heldKeys.has('right')) { dx =  SPEED; dir = 'right'; }
     if (this._heldKeys.has('left'))  { dx = -SPEED; dir = 'left';  }
     if (this._heldKeys.has('up'))    { dy = -SPEED; dir = 'up';    }
     if (this._heldKeys.has('down'))  { dy =  SPEED; dir = 'down';  }
     if (!dir) return;
 
-    /* Clamp world X — left edge is 0, right edge is npcWorldX + half screen
-       so the player can always walk far enough to reach the NPC */
-    const maxWorldX = this.state.npcWorldX - Math.round(viewW / 2) + 100;
-    this.state.worldX = Math.max(0, Math.min(maxWorldX, this.state.worldX + dx));
-    /* Clamp Y within a narrow vertical band (path area) */
-    this.state.worldY = Math.max(-30, Math.min(30, this.state.worldY + dy));
+    this.state.worldX += dx;
+    this.state.worldY += dy;
     this.state.lastDir = dir;
 
     this._applyCamera();
 
-    /* Player sprite stays horizontally centred; only Y shifts */
-    const p = document.getElementById('map-player');
+    const p   = document.getElementById('map-player');
+    const bub = document.getElementById('player-bubble');
     if (p) {
-      const centreX  = viewW / 2 - 16;
-      const centreY  = viewH * 0.65 + this.state.worldY;
-      const bottomPx = viewH - centreY - 40;
-      p.style.left   = centreX + 'px';
-      p.style.bottom = bottomPx + 'px';
+      const cx  = viewW / 2 - 16;
+      const bot = viewH * 0.45;
+      p.style.left   = cx + 'px';
+      p.style.bottom = bot + 'px';
       p.className    = `map-player walk-${dir}`;
-      /* Keep "..." bubble above player */
-      const bub = document.getElementById('player-bubble');
-      if (bub) { bub.style.left = (centreX - 4) + 'px'; bub.style.bottom = (bottomPx + 66) + 'px'; }
+      if (bub) { bub.style.left = (cx - 4) + 'px'; bub.style.bottom = (bot + 66) + 'px'; }
     }
-
     this._checkNPCProximity();
   }
 
-  /* Slide the world and reposition NPC in screen-space every tick */
   _applyCamera() {
-    const world = document.getElementById('map-inner');
-    if (world) world.style.transform = `translateX(${-this.state.worldX}px)`;
+    const {viewW, viewH} = this._getViewport();
+    const spread = Math.max(viewW, viewH) * 5;
+    const inner = document.getElementById('map-inner');
+    const tx = -(spread + this.state.worldX - viewW / 2);
+    const ty = -(spread + this.state.worldY - viewH / 2);
+    if (inner) inner.style.transform = `translate(${tx}px,${ty}px)`;
     this._positionNPCOnScreen();
   }
 
   _positionNPCOnScreen() {
-    const world = document.getElementById('map-inner');
-    const viewH = world ? world.parentElement.offsetHeight : 300;
+    const {viewW, viewH} = this._getViewport();
     const npcWrap = document.getElementById('map-npc-wrap');
     if (npcWrap) {
-      const screenX = this.state.npcWorldX - this.state.worldX;
-      npcWrap.style.left   = (screenX - 24) + 'px';
-      npcWrap.style.bottom = (viewH * 0.28) + 'px';
+      const screenX = viewW / 2 + (this.state.npcWorldX - this.state.worldX) - 24;
+      const screenY = viewH / 2 + (this.state.npcWorldY - this.state.worldY) - 24;
+      npcWrap.style.left   = screenX + 'px';
+      npcWrap.style.bottom = (viewH - screenY - 48) + 'px';
     }
   }
 
+  _playerScreenOffset() {
+    const {viewW, viewH} = this._getViewport();
+    return { px: viewW / 2, py: viewH - (viewH * 0.45) - 32 };
+  }
+
+  _npcScreenDist() {
+    const {viewW, viewH} = this._getViewport();
+    const {px, py} = this._playerScreenOffset();
+    const npcSX = viewW / 2 + (this.state.npcWorldX - this.state.worldX);
+    const npcSY = viewH / 2 + (this.state.npcWorldY - this.state.worldY);
+    return Math.sqrt((npcSX - px) ** 2 + (npcSY - py) ** 2);
+  }
+
   _checkNPCProximity() {
-    const world = document.getElementById('map-inner');
-    const viewW = world ? world.parentElement.offsetWidth  : 420;
-    const viewH = world ? world.parentElement.offsetHeight : 300;
-    const playerWorldX = this.state.worldX + viewW / 2;
-    const dx   = Math.abs(playerWorldX - this.state.npcWorldX);
-    const near = dx < 60;
+    const {viewW, viewH} = this._getViewport();
+    const dist = this._npcScreenDist();
+    const near = this.state.npcSpawned && dist < 100;
 
     const hint = document.getElementById('map-talk-hint');
     const bub  = document.getElementById('npc-bubble');
     if (hint) {
+      const npcSX = viewW / 2 + (this.state.npcWorldX - this.state.worldX);
+      const npcSY = viewH / 2 + (this.state.npcWorldY - this.state.worldY);
       hint.style.display = near ? 'block' : 'none';
-      hint.style.left   = (viewW / 2 - 28) + 'px';
-      hint.style.bottom = (viewH * 0.50) + 'px';
+      hint.style.left   = (npcSX - 28) + 'px';
+      hint.style.bottom = (viewH - npcSY + 48) + 'px';
     }
     if (bub) bub.style.opacity = near ? '0' : '1';
     this._updateDirArrow(near);
@@ -448,25 +489,51 @@ class Game {
     const arrow = document.getElementById('map-dir-arrow');
     if (!arrow) return;
     if (nearNPC) { arrow.style.display = 'none'; arrow.style.animation = 'none'; return; }
-    const world = document.getElementById('map-inner');
-    const viewH = world ? world.parentElement.offsetHeight : 300;
-    arrow.textContent   = '▶';
-    arrow.style.display = 'block';
+    const {viewW, viewH} = this._getViewport();
+    const dx = this.state.npcWorldX - this.state.worldX;
+    const dy = this.state.npcWorldY - this.state.worldY;
+    let pd;
+    if (Math.abs(dx) >= Math.abs(dy)) {
+      pd = dx >= 0 ? 'right' : 'left';
+    } else {
+      pd = dy >= 0 ? 'down' : 'up';
+    }
+
+    const isLandscape = window.innerWidth > window.innerHeight;
+    const ctrlH = isLandscape ? 0 : Math.round(Math.min(148, Math.max(110, window.innerWidth * 0.22)));
+    const safeBottom = ctrlH + 12;
+    const midY = (viewH - ctrlH) / 2 - 16;
+
+    const glyphs = { right:'▶', left:'◀', up:'▲', down:'▼' };
+    arrow.textContent     = glyphs[pd];
+    arrow.style.display   = 'block';
     arrow.style.animation = 'arrowPulse .7s ease-in-out infinite';
-    arrow.style.removeProperty('left');
-    arrow.style.bottom  = (viewH * 0.28) + 'px';
+    if (pd === 'right') {
+      arrow.style.removeProperty('left');
+      arrow.style.right  = '12px';
+      arrow.style.bottom = midY + 'px';
+    } else if (pd === 'left') {
+      arrow.style.removeProperty('right');
+      arrow.style.left   = '12px';
+      arrow.style.bottom = midY + 'px';
+    } else if (pd === 'up') {
+      arrow.style.removeProperty('right');
+      arrow.style.left   = (viewW / 2 - 16) + 'px';
+      arrow.style.bottom = (viewH - ctrlH - 48) + 'px';
+    } else {
+      arrow.style.removeProperty('right');
+      arrow.style.left   = (viewW / 2 - 16) + 'px';
+      arrow.style.bottom = safeBottom + 'px';
+    }
   }
 
   _nearNPC() {
-    const world = document.getElementById('map-inner');
-    const viewW = world ? world.parentElement.offsetWidth : 420;
-    const playerWorldX = this.state.worldX + viewW / 2;
-    return Math.abs(playerWorldX - this.state.npcWorldX) < 60;
+    if (!this.state.npcSpawned) return false;
+    return this._npcScreenDist() < 100;
   }
 
   _talkToNPC() {
     if (!this._nearNPC()) {
-      /* Too far away — show "..." bubble above player */
       const bub = document.getElementById('player-bubble');
       if (bub) {
         bub.classList.remove('visible');
@@ -478,28 +545,26 @@ class Game {
       return;
     }
     const arrow = document.getElementById('map-dir-arrow');
-    if (arrow) arrow.style.display = 'none';
+    if (arrow) { arrow.style.display = 'none'; arrow.style.animation = 'none'; }
     const bub = document.getElementById('player-bubble');
     if (bub) bub.classList.remove('visible');
     SFX.encounter();
     this.startQuestion();
   }
 
-  /* Place player at viewport centre, NPC via screen-space conversion */
   _placeMapSprites() {
-    const world = document.getElementById('map-inner');
-    const viewW = world ? world.parentElement.offsetWidth  : 420;
-    const viewH = world ? world.parentElement.offsetHeight : 300;
-
-    const p = document.getElementById('map-player');
+    const {viewW, viewH} = this._getViewport();
+    const idleFrames = { right:'-320px', down:'-32px', left:'-128px', up:'-224px' };
+    const p   = document.getElementById('map-player');
+    const bub = document.getElementById('player-bubble');
     if (p) {
-      const left   = viewW / 2 - 16;
-      const bottom = viewH * 0.28;
-      p.style.left      = left + 'px';
-      p.style.bottom    = bottom + 'px';
-      p.className       = 'map-player idle';
-      const bub = document.getElementById('player-bubble');
-      if (bub) { bub.style.left = (left - 4) + 'px'; bub.style.bottom = (bottom + 66) + 'px'; }
+      const cx  = viewW / 2 - 16;
+      const bot = viewH * 0.45;
+      p.style.left   = cx + 'px';
+      p.style.bottom = bot + 'px';
+      p.className    = 'map-player idle';
+      p.style.backgroundPositionX = idleFrames[this.state.lastDir] || '-32px';
+      if (bub) { bub.style.left = (cx - 4) + 'px'; bub.style.bottom = (bot + 66) + 'px'; }
     }
     this._applyCamera();
     const hint = document.getElementById('map-talk-hint');
@@ -510,14 +575,16 @@ class Game {
      BATTLE CURSOR — navigate 2×2 grid with D-pad / WASD
      ══════════════════════════════════════════════════════════ */
   _moveCursor(dir) {
-    const btns = document.querySelectorAll('.choice-btn:not(.disabled):not(.correct):not(.wrong)');
+    const btns = document.querySelectorAll('.choice-btn:not(.disabled):not(.correct):not(.wrong):not(.confirm-inactive)');
     if (!btns.length) return;
+    const total = btns.length;
     let c = this.state.cursor;
+    const hasConfirm = total === 5;
     if      (dir === 'right') c = (c === 0) ? 1 : (c === 2) ? 3 : c;
-    else if (dir === 'left')  c = (c === 1) ? 0 : (c === 3) ? 2 : c;
-    else if (dir === 'down')  c = (c === 0) ? 2 : (c === 1) ? 3 : c;
-    else if (dir === 'up')    c = (c === 2) ? 0 : (c === 3) ? 1 : c;
-    c = Math.min(c, btns.length - 1);
+    else if (dir === 'left')  c = (c === 1) ? 0 : (c === 3) ? 2 : (c === 4) ? 4 : c;
+    else if (dir === 'down')  c = (c === 0) ? 2 : (c === 1) ? 3 : (hasConfirm && (c === 2 || c === 3)) ? 4 : c;
+    else if (dir === 'up')    c = (c === 2) ? 0 : (c === 3) ? 1 : (c === 4) ? 2 : c;
+    c = Math.min(c, total - 1);
     this.state.cursor = c;
     this._renderCursor();
     SFX.select();
@@ -531,7 +598,7 @@ class Game {
 
   _confirmCursor() {
     if (this.state.answering) return;
-    const btns = document.querySelectorAll('.choice-btn:not(.disabled)');
+    const btns = document.querySelectorAll('.choice-btn:not(.disabled):not(.correct):not(.wrong):not(.confirm-inactive)');
     const target = btns[this.state.cursor];
     if (target) target.click();
   }
@@ -802,10 +869,12 @@ class Game {
     }
   }
   _showController(visible) {
-    const ctrl = document.getElementById('gba-controller');
-    if (!ctrl) return;
-    if (visible) ctrl.classList.remove('hidden');
-    else         ctrl.classList.add('hidden');
+    ['gba-left', 'gba-right'].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (visible) el.classList.remove('hidden');
+      else         el.classList.add('hidden');
+    });
   }
 
   /* ══════════════════════════════════════════════════════════
@@ -861,7 +930,7 @@ class Game {
       playerName:save.playerName, currentQ:save.currentQ,
       score:save.score, streak:save.streak, maxStreak:save.maxStreak,
       correct:save.correct, wrong:save.wrong,
-      worldX:0, worldY:0, npcWorldX:0, npcWorldY:0,
+      worldX:0, worldY:0, npcWorldX:0, npcWorldY:0, npcSpawned:false,
     });
     this.loadQuestions(() => {
       if (save.questionOrder && save.questionOrder.length === this.state.questions.length) {
@@ -886,7 +955,7 @@ class Game {
     this._showController(false);
     this._gpKeyCursor = 0;
     this.buildKeyboard();
-    this.typeText('name-prompt-text', "Hello there! Welcome to PokéSQL! My name is Professor Oak — the SQL Pokémon Professor. Now tell me, what is your name?");
+    this.typeText('name-prompt-text', CONFIG.namePrompt);
     document.getElementById('btn-backspace').onclick    = () => this.delChar();
     document.getElementById('btn-confirm-name').onclick = () => this.confirmName();
   }
@@ -976,34 +1045,35 @@ class Game {
   /* Generate randomly placed trees across the full scrollable world */
   /* Generate trees for the current journey leg — from world origin to just past the NPC.
      Called fresh each time so trees always fill the visible path ahead. */
+  _pickNextDir(currentDir) {
+    const opposite = { right:'left', left:'right', up:'down', down:'up' };
+    const opp = opposite[currentDir];
+    const choices = ['right','left','up','down',currentDir,currentDir].filter(d => d !== opp);
+    return choices[Math.floor(Math.random() * choices.length)];
+  }
+
   _generateTrees() {
     const container = document.getElementById('map-trees');
     if (!container) return;
-
-    /* Clear previous leg's trees */
     container.innerHTML = '';
-
-    const world  = document.getElementById('map-inner');
-    const viewW  = world ? world.parentElement.offsetWidth  : 420;
-    const viewH  = world ? world.parentElement.offsetHeight : 300;
-
-    /* World spans from 0 to just past the NPC */
-    const worldW = this.state.npcWorldX + viewW;
-    if (world) world.style.width = worldW + 'px';
-
-    const treeTopMax    = viewH * 0.50;
-    const treeBottomMin = viewH * 0.04;
-
-    /* One tree roughly every 120px across the leg */
-    const COUNT = Math.max(6, Math.round(worldW / 120));
-    const zoneW = worldW / COUNT;
-
-    for (let i = 0; i < COUNT; i++) {
+    const {viewW, viewH} = this._getViewport();
+    const spread = Math.max(viewW, viewH) * 5;
+    const inner = document.getElementById('map-inner');
+    if (inner) { inner.style.width = spread * 2 + 'px'; inner.style.height = spread * 2 + 'px'; }
+    const cx = spread;
+    const cy = spread;
+    const npcX = cx + this.state.npcWorldX;
+    const npcY = cy + this.state.npcWorldY;
+    for (let i = 0; i < 300; i++) {
       const span = document.createElement('span');
       span.className = 'tree';
-      const size = 28 + Math.random() * 16;
-      const x    = i * zoneW + Math.random() * zoneW * 0.75;
-      const y    = treeBottomMin + Math.random() * (treeTopMax - treeBottomMin - size);
+      const size = 48 + Math.random() * 24;
+      let x, y, tries = 0;
+      do {
+        x = cx + (Math.random() - 0.5) * spread * 1.8;
+        y = cy + (Math.random() - 0.5) * spread * 1.8;
+        tries++;
+      } while (tries < 10 && Math.abs(x - npcX) < 80 && Math.abs(y - npcY) < 80);
       span.textContent             = '🌳';
       span.style.fontSize          = size + 'px';
       span.style.left              = x + 'px';
@@ -1014,39 +1084,47 @@ class Game {
     }
   }
 
-  /* Called on result screen — pre-builds trees for the next leg */
   _preGenerateNextLeg() {
-    const world = document.getElementById('map-inner');
-    const viewW = world ? world.parentElement.offsetWidth : 420;
-    const nextNpcX = Math.round(viewW * 3.0 + Math.random() * viewW * 0.8);
-    const savedNpcX = this.state.npcWorldX;
-    this.state.npcWorldX = nextNpcX;
-    this._generateTrees();
-    this.state.npcWorldX = savedNpcX;
+    this._nextLegDir = this._pickNextDir(this.state.pathDir);
+    this._nextLegLen = null;
+  }
+
+  _npcOffsetForDir(dir, viewW, viewH) {
+    const dist = dir === 'right' || dir === 'left'
+      ? Math.round(viewW * (3.0 + Math.random() * 0.8))
+      : Math.round(viewH * (3.0 + Math.random() * 0.8));
+    return {
+      nx: dir === 'right' ? dist : dir === 'left' ? -dist : 0,
+      ny: dir === 'down'  ? dist : dir === 'up'   ? -dist : 0,
+      dir,
+    };
   }
 
   showMap() {
     this.show('map');
     this._showController(true);
 
-    /* We need the viewport size — defer a tick so the DOM is laid out */
     requestAnimationFrame(() => {
-      const world = document.getElementById('map-inner');
-      const viewW = world ? world.parentElement.offsetWidth : 420;
+      const {viewW, viewH} = this._getViewport();
 
       if (this.state.currentQ === 0) {
-        this.state.worldX    = 0;
-        this.state.worldY    = 0;
-        this.state.npcWorldX = Math.round(viewW * 3.5);
-        this.state.npcWorldY = 0;
+        this.state.pathDir = 'right';
+      } else if (this._nextLegDir) {
+        this.state.pathDir = this._nextLegDir;
+        this._nextLegDir = null;
+        this._nextLegLen = null;
       } else {
-        /* Always reset camera to 0 each question — keeps trees in view.
-           NPC spawns off-screen right relative to fresh origin. */
-        this.state.worldX    = 0;
-        this.state.worldY    = 0;
-        this.state.npcWorldX = Math.round(viewW * 3.0 + Math.random() * viewW * 0.8);
-        this.state.npcWorldY = 0;
+        this.state.pathDir = this._pickNextDir(this.state.pathDir);
       }
+
+      this.state.worldX  = 0;
+      this.state.worldY  = 0;
+      this.state.lastDir = this.state.pathDir;
+
+      const {nx, ny} = this._npcOffsetForDir(this.state.pathDir, viewW, viewH);
+      this.state.npcWorldX  = nx;
+      this.state.npcWorldY  = ny;
+      this.state.npcSpawned = true;
 
       this._generateTrees();
 
@@ -1058,7 +1136,9 @@ class Game {
       if (q && npcEl) npcEl.textContent = NPC[q.npc]||'🧑';
 
       this._placeMapSprites();
+      this._checkNPCProximity();
       this._updateDirArrow(false);
+      Music.stopBattle();
       Music.play();
       saveGame(this.state);
       this.flashSaveDot();
@@ -1070,6 +1150,7 @@ class Game {
       if (musicBtn) musicBtn.onclick = () => Music.toggle();
     });
   }
+
 
   updateHUD() {
     const tot=this.state.questions.length||100, done=this.state.currentQ, pct=(done/tot)*100;
@@ -1096,7 +1177,7 @@ class Game {
 
     this.show('battle');
     this._showController(true);
-    Music.pause();
+    Music.playBattle();
     this.state.answering=false;
     this.state.cursor=0;
 
@@ -1117,53 +1198,78 @@ class Game {
     container.innerHTML='';
     this.state.cursor=0;
 
-    /* Shuffle options so the correct answer lands in a random slot each time.
-       We track which shuffled index holds the correct answer. */
+    const isMulti = Array.isArray(q.answers);
+
     const indices = [0,1,2,3];
     for (let i = indices.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [indices[i], indices[j]] = [indices[j], indices[i]];
     }
-    const correctShuffledIdx = indices.indexOf(q.answer);
 
-    /* Build a map from original option letter (A/B/C/D) to shuffled slot number (1/2/3/4)
-       so any option text like "Both A and B" gets rewritten to e.g. "Both 2 and 4" */
-    const letterToSlot = {};
-    indices.forEach((origIdx, slotIdx) => {
-      const letter = ['A','B','C','D'][origIdx];
-      letterToSlot[letter] = slotIdx + 1;
-    });
+    const correctShuffledIdx = isMulti ? null : indices.indexOf(q.answer);
+    const correctShuffledSet = isMulti ? new Set(q.answers.map(a => indices.indexOf(a))) : null;
 
-    function rewriteLetterRefs(text) {
-      /* Only rewrite letters that appear in explicit option-reference patterns:
-         "Both A and B", "A and B", "Both B and C", etc.
-         Never replace standalone A/B/C/D in regular sentence text. */
-      return text.replace(/\bBoth ([ABCD]) and ([ABCD])\b/gi, (_, l1, l2) => {
-        const n1 = letterToSlot[l1.toUpperCase()];
-        const n2 = letterToSlot[l2.toUpperCase()];
-        return `Both ${n1 ?? l1} and ${n2 ?? l2}`;
-      }).replace(/\b([ABCD]) and ([ABCD])\b/g, (_, l1, l2) => {
-        const n1 = letterToSlot[l1];
-        const n2 = letterToSlot[l2];
-        return `${n1 ?? l1} and ${n2 ?? l2}`;
-      });
+    q._correctShuffledSet = correctShuffledSet;
+    q._indices = indices;
+
+    if (isMulti) {
+      q._correctDisplayText = q.answers.map(a => q.options[a]).join(' AND ');
+    } else {
+      q._correctDisplayText = q.options[q.answer];
     }
 
-    /* Store display text of correct answer with letter refs rewritten */
-    q._correctDisplayText = rewriteLetterRefs(q.options[q.answer]);
+    const selectedSlots = new Set();
+    let confirmBtn = null;
+
+    if (isMulti) {
+      confirmBtn = document.createElement('button');
+      confirmBtn.className='choice-btn confirm-btn confirm-inactive';
+      confirmBtn.textContent='✔ CONFIRM';
+      confirmBtn.addEventListener('click', () => {
+        if (this.state.answering || selectedSlots.size !== 2) return;
+        this.pickMulti(selectedSlots, correctShuffledSet, q, container);
+      });
+    }
 
     indices.forEach((origIdx, slotIdx) => {
       const btn=document.createElement('button');
       btn.className='choice-btn';
       btn.setAttribute('data-letter', slotIdx + 1);
-      btn.textContent=rewriteLetterRefs(q.options[origIdx]);
-      btn.addEventListener('click',()=>this.pick(slotIdx, correctShuffledIdx, q, container));
+      btn.textContent=q.options[origIdx];
+
+      if (isMulti) {
+        btn.addEventListener('click', () => {
+          if (this.state.answering) return;
+          if (btn.classList.contains('selected')) {
+            btn.classList.remove('selected');
+            selectedSlots.delete(slotIdx);
+          } else {
+            if (selectedSlots.size >= 2) return;
+            btn.classList.add('selected');
+            selectedSlots.add(slotIdx);
+          }
+          confirmBtn.classList.toggle('confirm-inactive', selectedSlots.size !== 2);
+        });
+      } else {
+        btn.addEventListener('click',()=>this.pick(slotIdx, correctShuffledIdx, q, container));
+      }
       btn.addEventListener('mouseenter', () => {
         this.state.cursor = slotIdx;
         this._renderCursor();
       });
       container.appendChild(btn);
     });
+
+    if (isMulti) {
+      confirmBtn.addEventListener('mouseenter', () => {
+        if (confirmBtn.classList.contains('confirm-inactive')) return;
+        this.state.cursor = 4;
+        this._renderCursor();
+      });
+      container.appendChild(confirmBtn);
+      container._confirmBtn = confirmBtn;
+    }
+
     this._renderCursor();
   }
 
@@ -1186,7 +1292,36 @@ class Game {
     } else { this.state.streak=0; this.state.wrong++; SFX.wrong(); }
 
     setTimeout(()=>{
-      /* Pre-generate trees for the next map leg while player reads result */
+      this._preGenerateNextLeg();
+      this.showResult(correct,q);
+    },120);
+  }
+
+  pickMulti(selectedSlots, correctSet, q, container) {
+    if(this.state.answering)return;
+    this.state.answering=true;
+
+    const btns=Array.from(container.querySelectorAll('.choice-btn:not(.confirm-btn)'));
+    const correct = selectedSlots.size === correctSet.size &&
+                    [...selectedSlots].every(s => correctSet.has(s));
+
+    btns.forEach((b,i)=>{
+      b.classList.remove('cursor','selected');
+      b.classList.add('disabled');
+      if(correctSet.has(i)) b.classList.add('correct');
+      else if(selectedSlots.has(i) && !correctSet.has(i)) b.classList.add('wrong');
+    });
+    const cb = container.querySelector('.confirm-btn');
+    if(cb) cb.style.display='none';
+
+    if(correct){
+      this.state.streak++; this.state.correct++;
+      this.state.maxStreak=Math.max(this.state.maxStreak,this.state.streak);
+      this.state.score+=this.state.streak>=5?200:this.state.streak>=3?150:100;
+      if(this.state.streak>=3) SFX.streak(); else SFX.correct();
+    } else { this.state.streak=0; this.state.wrong++; SFX.wrong(); }
+
+    setTimeout(()=>{
       this._preGenerateNextLeg();
       this.showResult(correct,q);
     },120);
@@ -1196,6 +1331,8 @@ class Game {
   showResult(correct,q) {
     this.show('result');
     this._showController(false);
+    Music.stopBattle();
+    Music.pause();
 
     document.getElementById('result-icon').textContent  = correct?'✓':'✗';
     const lbl=document.getElementById('result-label');
@@ -1210,18 +1347,23 @@ class Game {
       ptsEl.style.display='block'; ansEl.classList.remove('visible');
     } else {
       ptsEl.style.display='none';
-      ansEl.textContent='✓ Correct answer: '+(q._correctDisplayText||q.options[q.answer]);
+      const correctText = q._correctDisplayText || (q.answers ? q.answers.map(a=>q.options[a]).join(' AND ') : q.options[q.answer]);
+      ansEl.textContent='✓ Correct answer'+(q.answers?'s':'')+': '+correctText;
       ansEl.classList.add('visible');
     }
     document.getElementById('result-explanation').textContent=q.explanation;
 
-    document.getElementById('btn-result-cont').onclick=()=>{
+    const contBtn = document.getElementById('btn-result-cont');
+    const doNext = () => {
       this.state.currentQ++;
       saveGame(this.state);
       if(this.state.currentQ>=this.state.questions.length){ clearSave(); this.showComplete(); }
       else if(MILESTONES[this.state.currentQ]) this.showLevelUp();
       else this.showMap();
     };
+    contBtn.onclick = doNext;
+    const resultScreen = document.getElementById('screen-result');
+    resultScreen.addEventListener('pointerdown', doNext, { once: true });
   }
 
   /* ── LEVEL UP ─────────────────────────────────────────── */

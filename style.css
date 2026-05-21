@@ -180,6 +180,7 @@ html, body {
     repeating-linear-gradient(0deg,   transparent 0,transparent 31px, rgba(0,80,0,.12) 31px, rgba(0,80,0,.12) 32px),
     repeating-linear-gradient(90deg,  transparent 0,transparent 31px, rgba(0,80,0,.12) 31px, rgba(0,80,0,.12) 32px),
     linear-gradient(180deg, #6cb84e 0%, #58a83e 100%);
+  background-position: 16px 16px, 16px 16px, 0 0;
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -188,19 +189,11 @@ html, body {
    Shown only when screen === 'map' or 'battle'.
    ═══════════════════════════════════════════════════════════ */
 .gba-controller {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: clamp(110px, 22vw, 148px);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 clamp(8px,3vw,20px) max(8px, var(--safe-bottom));
   background: linear-gradient(180deg, rgba(26,10,62,.82) 0%, rgba(14,6,36,.95) 100%);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  border-top: 2px solid rgba(120,80,255,.35);
   z-index: 800;
   user-select: none;
   touch-action: none;
@@ -208,9 +201,40 @@ html, body {
 }
 .gba-controller.hidden { display: none; }
 
-/* Only show controller on touch / small screens by default.
-   On desktop we rely on keyboard — but controller still shows
-   if screen is narrow enough. JS toggles it per screen anyway. */
+/* ── PORTRAIT: two panels fixed at bottom ── */
+@media (orientation: portrait) {
+  #gba-left, #gba-right {
+    position: fixed;
+    bottom: 0;
+    height: clamp(110px, 22vw, 148px);
+    flex-direction: row;
+    border-top: 2px solid rgba(120,80,255,.35);
+  }
+
+  #gba-left {
+    left: 0;
+    width: 65%;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 0 8px max(8px,var(--safe-bottom)) clamp(8px,3vw,20px);
+  }
+
+  #gba-right {
+    right: 0;
+    width: 35%;
+    justify-content: center;
+    padding: 0 clamp(8px,3vw,20px) max(8px,var(--safe-bottom)) 8px;
+  }
+
+  #gba-left .gba-mid-btns {
+    flex-direction: row;
+    gap: 6px;
+    margin-top: 0;
+    width: auto;
+    justify-content: center;
+  }
+}
+
 @media (min-width: 900px) {
   .gba-controller { display: none !important; }
 }
@@ -257,6 +281,8 @@ html, body {
   gap: 8px;
   align-items: center;
   justify-content: center;
+  margin-top: 12px;
+  width: 100%;
 }
 .gba-mid-btn {
   background: #2a1a5e;
@@ -271,6 +297,7 @@ html, body {
   -webkit-tap-highlight-color: transparent;
   transition: background .08s;
   min-width: 52px;
+  width: 52px;
   text-align: center;
 }
 .gba-mid-btn:active { background: #3d2f99; }
@@ -348,8 +375,8 @@ html, body {
 }
 .title-main { text-align:center; z-index:1; padding:24px 16px; }
 .title-logo { margin-bottom:16px; line-height:1; }
-.title-poke { font-size:clamp(30px,11vw,50px); color:var(--yellow); text-shadow:4px 4px 0 #7a5800,0 0 24px rgba(248,192,48,.5); animation:goldShimmer 3s ease-in-out infinite; display:inline-block; }
-.title-sql  { font-size:clamp(30px,11vw,50px); color:#60c8ff; text-shadow:4px 4px 0 #003d70,0 0 24px rgba(96,200,255,.5); display:inline-block; animation:blueShimmer 3s ease-in-out infinite; animation-delay:.4s; }
+.title-poke { font-size:clamp(22px,7.5vw,38px); color:var(--yellow); text-shadow:4px 4px 0 #7a5800,0 0 24px rgba(248,192,48,.5); animation:goldShimmer 3s ease-in-out infinite; display:inline-block; }
+.title-sql  { font-size:clamp(22px,7.5vw,38px); color:#60c8ff; text-shadow:4px 4px 0 #003d70,0 0 24px rgba(96,200,255,.5); display:inline-block; animation:blueShimmer 3s ease-in-out infinite; }
 .title-sub  { font-size:clamp(6px,1.8vw,8px); color:rgba(255,255,255,.75); letter-spacing:1px; margin:10px 0 6px; }
 .title-edition { font-size:clamp(5.5px,1.6vw,7px); color:var(--yellow); margin-bottom:24px; animation:goldShimmer 3s ease-in-out infinite; }
 .title-deco { font-size:clamp(22px,6vw,32px); margin-bottom:28px; display:flex; gap:16px; justify-content:center; }
@@ -406,10 +433,11 @@ html, body {
 
 /* ─── MAP ────────────────────────────────────────────────── */
 .map-header { background:var(--dark-bg); padding:8px 12px; display:flex; align-items:center; justify-content:space-between; gap:8px; border-bottom:3px solid var(--black); flex-shrink:0; }
-.map-left   { display:flex; align-items:center; gap:6px; }
+.map-left   { display:flex; align-items:center; gap:6px; flex:1; }
+.map-center { display:flex; align-items:center; gap:6px; flex:1; justify-content:center; }
+.map-right  { display:flex; align-items:center; gap:6px; flex:1; justify-content:flex-end; }
 .map-pin    { font-size:12px; }
-.map-town-name { font-size:clamp(5.5px,1.6vw,7px); color:var(--yellow); letter-spacing:.5px; }
-.map-right  { display:flex; align-items:center; gap:6px; }
+.map-town-name { font-size:clamp(5.5px,1.6vw,7px); color:var(--yellow); letter-spacing:.5px; word-spacing:-1px; }
 .prog-bar-outer { width:80px; height:9px; background:var(--black); border:2px solid var(--lightgray); overflow:hidden; }
 .prog-bar-inner { height:100%; width:0%; background:var(--hp-green); transition:width .5s ease; }
 .prog-text  { font-size:6px; color:var(--white); }
@@ -434,8 +462,9 @@ html, body {
   position: absolute;
   top: 0; bottom: 0; left: 0;
   width: 400%;
+  height: 400%;
   will-change: transform;
-  z-index: 5;
+  z-index: 25;
 }
 .map-trees {
   position: absolute;
@@ -445,27 +474,11 @@ html, body {
 .tree {
   position: absolute;
   display: inline-block;
-  animation: treeSway 3s ease-in-out infinite;
   filter: drop-shadow(1px 2px 0 rgba(0,0,0,.3));
   line-height: 1;
+  z-index: 60;
 }
-.tree:nth-child(even) { animation-direction: reverse; }
-.map-ground {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 48%;
-  background:
-    linear-gradient(180deg,
-      transparent 0%, transparent 54%,
-      #3d8a28 54%, #4a9e30 58%, #3d8a28 62%, #4aaa32 66%, #3d8a28 100%
-    ),
-    linear-gradient(180deg,
-      #4a9e30 0%, #3d8a28 8%, #2d6e1a 10%,
-      #c8aa6a 10%, #b89858 30%, #c0a060 50%, #b89858 70%, #a88848 88%,
-      #2d6e1a 90%, #3d8a28 92%, #4a9e30 100%
-    );
-  border-top: 3px solid #2d6e1a;
-}
+.tree:nth-child(even) { }
 /* Directional nudge arrow */
 .map-dir-arrow {
   position: absolute;
@@ -475,14 +488,13 @@ html, body {
   pointer-events: none;
   z-index: 50;
   filter: drop-shadow(0 0 4px rgba(248,192,48,.6));
-  right: 12px;
   display: none;
-  bottom: -9999px; /* ensure off-screen when hidden */
+  bottom: -9999px;
 }
 /* NPC lives inside .map-inner, positioned in world-px via JS */
-.map-npc-wrap { position:absolute; text-align:center; z-index: 10; }
+.map-npc-wrap { position:absolute; text-align:center; z-index: 30; }
 .npc-bubble   { font-size:14px; font-family:var(--font); color:var(--black); background:var(--yellow); border:2px solid var(--black); width:20px; height:20px; display:flex; align-items:center; justify-content:center; margin:0 auto 2px; animation:bounce .7s ease-in-out infinite; }
-.map-npc      { font-size:clamp(36px,10vw,52px); filter:drop-shadow(2px 3px 0 rgba(0,0,0,.35)); cursor:pointer; }
+.map-npc      { font-size:clamp(36px,10vw,52px); filter:drop-shadow(2px 3px 0 rgba(0,0,0,.35)); cursor:pointer; animation:npcFloat 2s ease-in-out infinite; }
 /* Player is fixed to the viewport centre horizontally; only Y moves */
 /* "..." bubble above player when pressing talk away from NPC */
 .player-bubble {
@@ -501,6 +513,7 @@ html, body {
   position: absolute;
   z-index: 100;
   box-shadow: 1px 1px 0 rgba(0,0,0,.3);
+  left: -9999px;
 }
 .player-bubble::after {
   content: '';
@@ -523,18 +536,18 @@ html, body {
   background-image: url('./player.png');
   background-repeat: no-repeat;
   background-size: 768px 64px;
-  background-position: 0 0;
   image-rendering: pixelated;
   filter: drop-shadow(2px 3px 0 rgba(0,0,0,.4));
-  z-index: 10;
+  z-index: 20;
   font-size: 0;
   color: transparent;
+  left: -9999px;
 }
 .map-player.walk-down  { animation: walkDown  .32s steps(3) infinite; }
 .map-player.walk-up    { animation: walkUp    .32s steps(3) infinite; }
 .map-player.walk-left  { animation: walkLeft  .32s steps(3) infinite; }
 .map-player.walk-right { animation: walkRight .32s steps(3) infinite; }
-.map-player.idle       { animation: none; background-position-x: 0px; }
+.map-player.idle       { animation: none; }
 
 /* Talk hint that floats above player when near NPC */
 .map-talk-hint {
@@ -546,7 +559,7 @@ html, body {
   border: 2px solid var(--black);
   padding: 3px 6px;
   white-space: nowrap;
-  z-index: 11;
+  z-index: 50;
   animation: talkBubble .6s ease-in-out infinite;
   pointer-events: none;
 }
@@ -618,17 +631,24 @@ html, body {
 .choice-btn:active  { transform:translate(2px,2px); box-shadow:none; }
 
 /* D-pad / keyboard cursor highlight */
-.choice-btn.cursor  { animation:choiceCursor .7s ease-in-out infinite; border-color:var(--yellow) !important; background:#fffae0 !important; }
+.choice-btn.cursor:not(.confirm-btn)  { animation:choiceCursor .7s ease-in-out infinite; border-color:var(--yellow) !important; background:#fffae0 !important; }
+.choice-btn.confirm-btn.cursor { border-color:var(--yellow) !important; box-shadow:0 0 0 3px var(--yellow); }
 .choice-btn.correct { background:#c8ffc8; border-color:var(--green); animation:correctPulse .5s ease 3; pointer-events:none; }
 .choice-btn.wrong   { background:#ffc8c8; border-color:var(--red);   animation:wrongShake .35s ease;   pointer-events:none; }
 .choice-btn.disabled{ opacity:.5; pointer-events:none; }
+.choice-btn.selected{ background:#c0e0ff; border-color:var(--blue); border-width:4px; box-shadow:3px 3px 0 var(--blue); color:var(--black); }
+.choice-btn.selected::after { content:' ✔'; color:var(--blue); font-size:1.6em; vertical-align:middle; }
+.choice-btn.confirm-btn { background:var(--blue); color:#fff; border-color:#003080; text-align:center; grid-column: 1 / -1; }
+.choice-btn.confirm-btn:hover:not(:disabled) { background:#0050d0; }
+.choice-btn.confirm-inactive { opacity:.4; pointer-events:none; }
+.choice-btn.confirm-btn::before { content:''; }
 
 .battle-footer { background:var(--dark-bg); border-top:3px solid var(--black); padding:clamp(4px,1.2vw,6px) 12px max(4px,var(--safe-bottom)); display:flex; justify-content:space-between; align-items:center; font-size:clamp(5.5px,1.5vw,7px); color:var(--yellow); flex-shrink:0; }
 .kbd-hint { font-size:5px; color:rgba(255,255,255,.3); }
 @media (max-width:480px) { .kbd-hint { display:none; } }
 
 /* ─── RESULT ─────────────────────────────────────────────── */
-#screen-result { background:rgba(0,0,0,.86); align-items:center; justify-content:center; }
+#screen-result { background:var(--dark-bg); align-items:center; justify-content:center; }
 .result-box { background:var(--dialog-bg); border:4px solid var(--dialog-bd); padding:clamp(16px,4.5vw,26px) clamp(12px,3.5vw,20px); width:clamp(270px,88vw,390px); text-align:center; box-shadow:6px 6px 0 rgba(0,0,0,.5); animation:pop .4s cubic-bezier(.175,.885,.32,1.275); display:flex; flex-direction:column; gap:9px; }
 .result-icon  { font-size:clamp(26px,8vw,40px); }
 .result-label { font-size:clamp(11px,3.5vw,15px); }
@@ -678,3 +698,54 @@ html, body {
 /* ─── TOAST ──────────────────────────────────────────────── */
 .toast { position:absolute; bottom:max(20px,var(--safe-bottom)); left:50%; transform:translateX(-50%); background:var(--dark-bg); border:3px solid var(--yellow); color:var(--yellow); font-family:var(--font); font-size:clamp(6.5px,1.8vw,8px); padding:10px 18px; z-index:950; animation:slideUp .3s ease; white-space:nowrap; max-width:90%; overflow:hidden; text-overflow:ellipsis; }
 .hidden { display:none !important; }
+
+/* ─── LANDSCAPE CONTROLLER LAYOUT ───────────────────────── */
+@media (orientation: landscape) and (max-height: 500px) {
+  html, body { align-items: flex-start; justify-content: flex-start; }
+
+  #app {
+    width: 100vw; height: 100dvh;
+    border: none; border-radius: 0; box-shadow: none;
+    display: flex; flex-direction: row; align-items: stretch;
+  }
+
+  .screen { position: relative; flex: 1; inset: auto; height: 100dvh; overflow: hidden; min-width: 0; }
+
+  #gba-left, #gba-right {
+    position: relative !important;
+    bottom: auto !important; left: auto !important; right: auto !important;
+    height: 100dvh; width: clamp(150px, 22vw, 180px);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-top: none;
+    gap: 8px;
+    flex-shrink: 0;
+    background: linear-gradient(180deg, rgba(26,10,62,.82) 0%, rgba(14,6,36,.95) 100%);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  }
+
+  #gba-left  {
+    order: -1;
+    border-right: 2px solid rgba(120,80,255,.35);
+    border-left: none; border-top: none;
+    padding: 8px 8px 8px max(8px, env(safe-area-inset-left, 0px));
+  }
+  #gba-right {
+    order: 1;
+    border-left: 2px solid rgba(120,80,255,.35);
+    border-right: none; border-top: none;
+    padding: 8px max(8px, env(safe-area-inset-right, 0px)) 8px 8px;
+  }
+
+  .gba-controller.hidden { display: none; }
+
+  .dpad { width: clamp(90px, 20vh, 120px); height: clamp(90px, 20vh, 120px); }
+  .gba-mid-btns { margin-top: 16px; }
+  .ab-cluster { position: relative; width: clamp(90px, 21vw, 120px); height: clamp(90px, 21vw, 120px); flex: none; }
+  #gba-right .ab-btn { position: absolute; }
+  #gba-right .ab-b { bottom: 14%; left: 5%; top: auto; transform: none; }
+  #gba-right .ab-a { top: 14%; right: 5%; transform: none; }
+  .gba-mid-btns { flex-direction: column; gap: 5px; }
+  .gba-mid-btn  { min-width: 44px; width: 44px; font-size: 5px; padding: 6px 4px; }
+}
