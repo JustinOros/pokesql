@@ -495,6 +495,8 @@ html, body {
 .map-npc-wrap { position:absolute; text-align:center; z-index: 30; }
 .npc-bubble   { font-size:14px; font-family:var(--font); color:var(--black); background:var(--yellow); border:2px solid var(--black); width:20px; height:20px; display:flex; align-items:center; justify-content:center; margin:0 auto 2px; animation:bounce .7s ease-in-out infinite; }
 .map-npc      { font-size:clamp(36px,10vw,52px); filter:drop-shadow(2px 3px 0 rgba(0,0,0,.35)); cursor:pointer; animation:npcFloat 2s ease-in-out infinite; }
+.intro-npc img { height:clamp(44px,13vw,64px); width:auto; image-rendering:pixelated; display:block; }
+.map-npc img   { height:clamp(36px,10vw,52px); width:auto; image-rendering:pixelated; display:block; }
 /* Player is fixed to the viewport centre horizontally; only Y moves */
 /* "..." bubble above player when pressing talk away from NPC */
 .player-bubble {

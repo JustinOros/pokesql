@@ -16,8 +16,21 @@ const CONFIG = {
   namePrompt: "Hello there! Welcome to PokéSQL! My name is Professor Oak — the SQL Professor. Now tell me, what is your name?",
 };
 
+function setNPC(el, val) {
+  if (!el) return;
+  if (val && val.endsWith('.png')) {
+    el.innerHTML = '';
+    const img = document.createElement('img');
+    img.src = val;
+    img.style.cssText = 'height:1em;width:auto;image-rendering:pixelated;vertical-align:middle;';
+    el.appendChild(img);
+  } else {
+    el.textContent = val || '🧑';
+  }
+}
+
 const NPC = {
-  'Professor Oak':     '👴',
+  'Professor Oak':     './oak.png',
   'Rival Gary':        '😤',
   'Old Man Bob':       '🧓',
   'Nurse Joy':         '👩‍⚕️',
@@ -48,9 +61,9 @@ const CORRECT_FB = ["That's right!","Excellent work!","Perfect!","Outstanding!",
 const WRONG_FB   = ["Not quite...","Hmm, that's not it.","Try again next time!","Almost...","Not this time!"];
 
 const MILESTONES = {
-  25: { badge:'🥉 SQL INITIATE',   stars:'★ ★ ☆ ☆' },
-  50: { badge:'🥈 QUERY TRAINER',  stars:'★ ★ ★ ☆' },
-  75: { badge:'🥇 DATA WRANGLER',  stars:'★ ★ ★ ★' },
+  25: { badge:'🥉 CLOUD EXPLORER',   stars:'★ ★ ☆ ☆' },
+  50: { badge:'🥈 AZURE APPRENTICE',  stars:'★ ★ ★ ☆' },
+  75: { badge:'🥇 CLOUD PRACTITIONER',  stars:'★ ★ ★ ★' },
 };
 
 const SAVE_KEY = CONFIG.saveKey;
@@ -998,7 +1011,7 @@ class Game {
     const msg = INTRO_MSGS[this.state.introStep];
     if (!msg) return;
     const npcEl = document.getElementById('intro-npc');
-    if (npcEl) npcEl.textContent = NPC[msg.npc] || '👴';
+    if (npcEl) setNPC(npcEl, NPC[msg.npc] || '👴');
     document.getElementById('intro-speaker').textContent = msg.speaker;
     document.getElementById('intro-arrow').style.display = 'none';
     this.typeText('intro-text',
@@ -1133,7 +1146,7 @@ class Game {
 
       const q = this.state.questions[this.state.currentQ];
       const npcEl = document.getElementById('map-npc');
-      if (q && npcEl) npcEl.textContent = NPC[q.npc]||'🧑';
+      if (q && npcEl) setNPC(npcEl, NPC[q.npc]||'🧑');
 
       this._placeMapSprites();
       this._checkNPCProximity();
