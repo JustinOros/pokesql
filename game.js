@@ -47,7 +47,7 @@ const SAVE_KEY = 'pokesql_save_v1';
 
 /* ─── SAVE / LOAD ────────────────────────────────────────── */
 function saveGame(s) {
-  try { localStorage.setItem(SAVE_KEY, JSON.stringify({ playerName:s.playerName, currentQ:s.currentQ, score:s.score, streak:s.streak, maxStreak:s.maxStreak, correct:s.correct, wrong:s.wrong, savedAt:Date.now() })); } catch(_){}
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify({ playerName:s.playerName, currentQ:s.currentQ, score:s.score, streak:s.streak, maxStreak:s.maxStreak, correct:s.correct, wrong:s.wrong, questionOrder:s.questions.map(q=>q.id), savedAt:Date.now() })); } catch(_){}
 }
 function loadGame()  { try { const r=localStorage.getItem(SAVE_KEY); return r?JSON.parse(r):null; } catch(_){return null;} }
 function clearSave() { try { localStorage.removeItem(SAVE_KEY); } catch(_){} }
@@ -863,7 +863,16 @@ class Game {
       correct:save.correct, wrong:save.wrong,
       worldX:0, worldY:0, npcWorldX:0, npcWorldY:0,
     });
-    this.loadQuestions(() => this.showMap());
+    this.loadQuestions(() => {
+      if (save.questionOrder && save.questionOrder.length === this.state.questions.length) {
+        const idMap = Object.fromEntries(this.state.questions.map(q => [q.id, q]));
+        const restored = save.questionOrder.map(id => idMap[id]).filter(Boolean);
+        if (restored.length === this.state.questions.length) {
+          this.state.questions = restored;
+        }
+      }
+      this.showMap();
+    });
   }
 
   startFresh() {
