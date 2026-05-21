@@ -120,6 +120,13 @@ const SFX = (() => {
     return ctx;
   }
 
+  /* Resume AudioContext when user returns to the page on mobile */
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && ctx && ctx.state === 'suspended') {
+      ctx.resume();
+    }
+  });
+
   /* Core: play a tone with envelope */
   function tone(freq, type, vol, attack, sustain, release, when) {
     const c   = getCtx();
