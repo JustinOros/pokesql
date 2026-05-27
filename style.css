@@ -352,11 +352,11 @@ html, body {
 }
 
 /* ─── BOOT ───────────────────────────────────────────────── */
-#screen-boot { background: var(--white); align-items: center; justify-content: center; animation: fadeIn .4s ease; }
-.boot-logo { text-align: center; }
-.boot-gameboy { font-size: clamp(8px,2.5vw,11px); color: var(--black); letter-spacing: 4px; margin-bottom: 10px; }
-.boot-ding    { font-size: 28px; margin-bottom: 8px; animation: goldShimmer 1.5s ease-in-out infinite; }
-.boot-copy    { font-size: 6px; color: var(--gray); }
+#screen-boot { background: #f8f0ff; align-items: center; justify-content: center; animation: fadeIn .4s ease; }
+.boot-logo { text-align: center; display:flex; flex-direction:column; align-items:center; gap:12px; }
+.boot-gameboy { font-size: clamp(22px,7vw,36px); font-weight:bold; color: #4a0e8f; letter-spacing: 3px; text-shadow: 2px 2px 0 rgba(0,0,0,.1); }
+.boot-gameboy sup { font-size:50%; vertical-align:super; }
+.boot-ding    { font-size: 28px; animation: goldShimmer 1.5s ease-in-out infinite; }
 
 /* ─── TITLE ──────────────────────────────────────────────── */
 #screen-title { background: linear-gradient(180deg,#08031a 0%,#180a44 45%,#240e6a 75%,#120538 100%); overflow: hidden; }

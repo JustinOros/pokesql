@@ -1150,6 +1150,11 @@ class Game {
   boot() {
     this.show('boot');
     this._showController(true);
+    try {
+      const bootAudio = new Audio('./loading.mp3');
+      bootAudio.volume = 0.5;
+      bootAudio.play().catch(() => {});
+    } catch(e) {}
     setTimeout(() => this.showTitle(), 1800);
   }
 
