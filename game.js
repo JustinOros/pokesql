@@ -436,30 +436,6 @@ class Game {
     this.state.worldX += dx;
     this.state.worldY += dy;
 
-    if (this._rocks && this._rocks.length > 0) {
-      for (const rock of this._rocks) {
-        const rdx = this.state.worldX - rock.wx;
-        const rdy = this.state.worldY - rock.wy;
-        if (Math.abs(rdx) < rock.r && Math.abs(rdy) < rock.r) {
-          this.state.worldX -= dx;
-          this.state.worldY -= dy;
-          return;
-        }
-      }
-    }
-
-    if (this._trees && this._trees.length > 0) {
-      for (const tree of this._trees) {
-        const tdx = this.state.worldX - tree.wx;
-        const tdy = this.state.worldY - tree.wy;
-        if (Math.abs(tdx) < tree.r && Math.abs(tdy) < tree.r) {
-          this.state.worldX -= dx;
-          this.state.worldY -= dy;
-          return;
-        }
-      }
-    }
-
     this.state.lastDir = dir;
 
     this._applyCamera();
@@ -722,7 +698,19 @@ class Game {
       }
 
       if (s === 'title' && (e.key==='Enter'||e.key===' ')) { document.getElementById('screen-title').click(); return; }
-      if (s === 'continue' && (e.key==='Enter'||e.key===' ')) { document.getElementById('btn-continue-save')?.click(); return; }
+      if (s === 'continue') {
+        if (e.key==='ArrowUp'||e.key==='w'||e.key==='W'||e.key==='ArrowDown'||e.key==='s'||e.key==='S') {
+          this._contCursor = this._contCursor === 0 ? 1 : 0;
+          this._renderContCursor();
+          return;
+        }
+        if (e.key==='Enter'||e.key===' '||e.key==='e'||e.key==='E') {
+          if (this._contCursor === 1) document.getElementById('btn-new-game')?.click();
+          else document.getElementById('btn-continue-save')?.click();
+          return;
+        }
+        return;
+      }
       if (s === 'intro' && (e.key==='Enter'||e.key===' '||e.key==='e'||e.key==='E')) { this.advanceIntro(); return; }
 
       if (s === 'starter') {
@@ -918,18 +906,12 @@ class Game {
     } else {
 
       if (s === 'continue') {
-        if (this._gpContCursor === undefined) this._gpContCursor = 0;
-        const contBtn = document.getElementById('btn-continue-save');
-        const newBtn  = document.getElementById('btn-new-game');
-
         const movedUp   = gpDirs.up   && !this._gpPrev['axis_up'];
         const movedDown = gpDirs.down  && !this._gpPrev['axis_down'];
         if (movedUp || movedDown) {
-          this._gpContCursor = this._gpContCursor === 0 ? 1 : 0;
+          this._contCursor = this._contCursor === 0 ? 1 : 0;
+          this._renderContCursor();
         }
-
-        if (contBtn) contBtn.style.outline = this._gpContCursor === 0 ? '3px solid #f8c030' : '';
-        if (newBtn)  newBtn.style.outline  = this._gpContCursor === 1 ? '3px solid #f8c030' : '';
       }
 
       Object.entries(gpDirs).forEach(([dir, active]) => {
@@ -958,7 +940,7 @@ class Game {
         if      (s === 'boot')     { }
         else if (s === 'title')    { document.getElementById('screen-title')?.click(); }
         else if (s === 'continue') {
-          if (this._gpContCursor === 0) document.getElementById('btn-continue-save')?.click();
+          if (this._contCursor === 0) document.getElementById('btn-continue-save')?.click();
           else                          document.getElementById('btn-new-game')?.click();
         }
         else if (s === 'intro')    { this.advanceIntro(); }
@@ -1029,7 +1011,8 @@ class Game {
     const save = loadGame();
     if (save && save.playerName && save.currentQ > 0 && save.currentQ < 100 && save.party && save.party.length > 0) {
       this.show('continue');
-      this._showController(false);
+      this._showController(true);
+      this._contCursor = 0;
       const pct = Math.round((save.currentQ/100)*100);
       document.getElementById('save-name-disp').textContent  = save.playerName;
       document.getElementById('save-prog-disp').textContent  = `Q${save.currentQ}/100 (${pct}%)`;
@@ -1041,7 +1024,7 @@ class Game {
         document.getElementById('btn-new-game').textContent  = '✦ CONFIRM NEW GAME';
         document.getElementById('btn-new-game').onclick      = () => { clearSave(); this.startFresh(); };
       };
-      this._gpContCursor = 0;
+      this._contCursor = 0;
       setTimeout(() => {
         const c = document.getElementById('btn-continue-save');
         if (c) c.style.outline = '3px solid #f8c030';
@@ -1196,6 +1179,13 @@ class Game {
     btns.forEach((btn, i) => {
       btn.classList.toggle('catch-btn-selected', i === (this._catchCursor||0));
     });
+  }
+
+  _renderContCursor() {
+    const contBtn = document.getElementById('btn-continue-save');
+    const newBtn = document.getElementById('btn-new-game');
+    if (contBtn) contBtn.style.outline = this._contCursor === 0 ? '3px solid #f8c030' : '';
+    if (newBtn) newBtn.style.outline = this._contCursor === 1 ? '3px solid #f8c030' : '';
   }
 
   pickStarter(index) {
@@ -1401,7 +1391,7 @@ class Game {
       container.appendChild(span);
     }
     const grassEmojis = ['🌾'];
-    for (let i = 0; i < 360; i++) {
+    for (let i = 0; i < 600; i++) {
       let x, y, tries = 0, tooClose;
       do {
         x = cx + (Math.random() - 0.5) * spread * 1.8;
@@ -1412,7 +1402,7 @@ class Game {
       if (tooClose) continue;
       const span = document.createElement('span');
       span.className = 'tall-grass';
-      const size = 12 + Math.random() * 8;
+      const size = 8 + Math.random() * 6;
       span.textContent             = grassEmojis[Math.floor(Math.random() * grassEmojis.length)];
       span.style.fontSize          = size + 'px';
       span.style.left              = x + 'px';
