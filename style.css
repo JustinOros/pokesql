@@ -291,14 +291,16 @@ html, body {
   color: rgba(255,255,255,.6);
   font-family: var(--font);
   font-size: clamp(4.5px, 1.2vw, 6px);
-  padding: clamp(8px, 2vw, 11px) clamp(10px, 2.5vw, 14px);
+  padding: clamp(8px, 2vw, 11px) clamp(6px, 1.5vw, 10px);
   cursor: pointer;
   letter-spacing: .5px;
   -webkit-tap-highlight-color: transparent;
   transition: background .08s;
-  min-width: 52px;
-  width: 52px;
+  min-width: 56px;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .gba-mid-btn:active { background: #3d2f99; }
 
