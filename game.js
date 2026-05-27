@@ -1306,7 +1306,7 @@ class Game {
 
     const throwBtn = document.createElement('button');
     throwBtn.className = 'catch-action-btn btn-pixel btn-red';
-    throwBtn.textContent = '⚪ THROW BALL';
+    throwBtn.innerHTML = '<img src="./favicon.ico" class="pokeball-icon"> THROW BALL';
     throwBtn.disabled = this.state.pokeballs <= 0;
     if (this.state.pokeballs <= 0) throwBtn.style.opacity = '0.4';
     throwBtn.addEventListener('click', () => this.throwPokeball(wild, canCatch));
