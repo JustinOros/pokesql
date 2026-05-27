@@ -1266,3 +1266,39 @@ html, body {
   display:inline-block;
   margin-right:2px;
 }
+
+/* ─── POKEBALL THROW ANIMATION ───────────────────────────── */
+.pokeball-throw {
+  position:absolute;
+  width:32px;
+  height:32px;
+  bottom:10%;
+  right:10%;
+  z-index:200;
+  image-rendering:pixelated;
+  animation:pokeThrow .7s cubic-bezier(.2,.8,.3,1) forwards;
+}
+@keyframes pokeThrow {
+  0%   { transform:translate(0, 0) rotate(0deg) scale(1); opacity:1; }
+  30%  { transform:translate(calc(var(--target-x) * 0.3 - 80px), calc(var(--target-y) * 0.5 - 180px)) rotate(-180deg) scale(1.2); }
+  60%  { transform:translate(calc(var(--target-x) * 0.7 - 40px), calc(var(--target-y) * 0.8 - 100px)) rotate(-360deg) scale(1); }
+  100% { transform:translate(calc(var(--target-x) - 100%), calc(var(--target-y) - 90%)) rotate(-540deg) scale(0.8); opacity:1; }
+}
+
+.pokeball-burst {
+  position:absolute;
+  width:64px;
+  height:64px;
+  margin-left:-32px;
+  margin-top:-32px;
+  z-index:200;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,200,.8) 30%, rgba(255,200,100,.4) 60%, transparent 80%);
+  animation:burstAnim .6s ease-out forwards;
+  pointer-events:none;
+}
+@keyframes burstAnim {
+  0%   { transform:scale(0.3); opacity:1; }
+  40%  { transform:scale(2.5); opacity:.9; }
+  100% { transform:scale(4); opacity:0; }
+}

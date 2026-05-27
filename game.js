@@ -1329,6 +1329,45 @@ class Game {
     this.state.pokeballs--;
     SFX.pokeball();
 
+    const catchScreen = document.getElementById('screen-catch');
+    const pokemonEl = document.getElementById('catch-wild-pokemon');
+
+    const ball = document.createElement('img');
+    ball.src = './favicon.ico';
+    ball.className = 'pokeball-throw';
+    catchScreen.appendChild(ball);
+
+    const pokemonRect = pokemonEl.getBoundingClientRect();
+    const screenRect = catchScreen.getBoundingClientRect();
+    const targetX = pokemonRect.left - screenRect.left + pokemonRect.width / 2 - 16;
+    const targetY = pokemonRect.top - screenRect.top + pokemonRect.height / 2 - 16;
+
+    ball.style.setProperty('--target-x', targetX + 'px');
+    ball.style.setProperty('--target-y', targetY + 'px');
+
+    setTimeout(() => {
+      const burst = document.createElement('div');
+      burst.className = 'pokeball-burst';
+      burst.style.left = targetX + 'px';
+      burst.style.top = targetY + 'px';
+      catchScreen.appendChild(burst);
+
+      ball.remove();
+      pokemonEl.style.opacity = '0';
+      pokemonEl.style.transform = 'scale(0.3)';
+      pokemonEl.style.transition = 'opacity .3s, transform .3s';
+
+      setTimeout(() => {
+        burst.remove();
+        pokemonEl.style.opacity = '1';
+        pokemonEl.style.transform = '';
+        pokemonEl.style.transition = '';
+        this._showCatchResult(wild, canCatch);
+      }, 600);
+    }, 700);
+  }
+
+  _showCatchResult(wild, canCatch) {
     this.show('catch-result');
     this._showController(true);
 
