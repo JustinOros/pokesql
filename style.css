@@ -1333,3 +1333,95 @@ html, body {
   background-position:-48px 0;
   image-rendering:pixelated;
 }
+
+/* ─── PARTY SELECT SCREEN ────────────────────────────────── */
+#screen-party-select {
+  background:linear-gradient(180deg,#1a1a2e 0%,#16213e 100%);
+  flex-direction:column;
+  align-items:center;
+  padding:12px 10px;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.party-select-header {
+  font-family:var(--font);
+  font-size:clamp(10px,3vw,14px);
+  color:var(--yellow);
+  text-shadow:2px 2px 0 #604000;
+  text-align:center;
+  padding:8px 0 12px;
+  flex-shrink:0;
+}
+.party-select-list {
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  width:100%;
+  max-width:380px;
+  padding-bottom:max(16px, calc(var(--safe-bottom) + 160px));
+}
+.party-select-entry {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px;
+  background:var(--dialog-bg);
+  border:3px solid var(--dialog-bd);
+  cursor:pointer;
+  font-family:var(--font);
+  transition:transform .1s, box-shadow .1s;
+  box-shadow:3px 3px 0 rgba(0,0,0,.4);
+  position:relative;
+}
+.party-select-entry:hover,
+.party-select-entry.party-selected {
+  transform:translateX(6px);
+  box-shadow:3px 3px 0 rgba(0,0,0,.4);
+  border-color:var(--yellow);
+  background:#fff8e0;
+}
+.party-select-entry.fainted {
+  opacity:.5;
+  cursor:not-allowed;
+}
+.party-select-entry.fainted:hover {
+  transform:none;
+  border-color:var(--dialog-bd);
+  background:var(--dialog-bg);
+}
+.party-select-emoji {
+  font-size:clamp(28px,8vw,40px);
+  position:relative;
+  flex-shrink:0;
+}
+.party-select-zzz {
+  position:absolute;
+  top:-8px;
+  right:-8px;
+  font-family:var(--font);
+  font-size:clamp(6px,1.8vw,8px);
+  color:var(--lightgray);
+  animation:bounce 1.5s ease-in-out infinite;
+}
+.party-select-info {
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.party-select-name {
+  font-size:clamp(8px,2.5vw,11px);
+  color:var(--black);
+}
+.party-select-detail {
+  font-size:clamp(5.5px,1.5vw,7px);
+  color:var(--gray);
+}
+.party-select-badge {
+  margin-left:auto;
+  font-size:clamp(5px,1.3vw,6.5px);
+  color:var(--green);
+  font-family:var(--font);
+}
+.party-select-badge.badge-fainted {
+  color:var(--red);
+}

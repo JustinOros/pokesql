@@ -375,6 +375,7 @@ class Game {
     if (s === 'map')                             { this._talkToNPC(); return; }
     if (s === 'battle' && !this.state.answering) { this._confirmCursor(); return; }
     if (s === 'intro')   { this.advanceIntro(); return; }
+    if (s === 'party-select') { this._partySelectConfirm(); return; }
     if (s === 'starter') { this.pickStarter(this._starterCursor||0); return; }
     if (s === 'starter-confirm') { document.getElementById('btn-starter-continue')?.click(); return; }
     if (s === 'catch')   { const btns = document.querySelectorAll('.catch-action-btn'); if (btns[0]) btns[0].click(); return; }
@@ -398,6 +399,13 @@ class Game {
 
   _dpadStart(dir) {
     const s = this.state.screen;
+    if (s === 'party-select' && (dir === 'up' || dir === 'down')) {
+      const max = (this._partySelectOrdered || []).length - 1;
+      this._partySelectCursor = dir === 'up' ? Math.max(0, this._partySelectCursor - 1) : Math.min(max, this._partySelectCursor + 1);
+      this._renderPartySelectCursor();
+      SFX.select();
+      return;
+    }
     if (s === 'continue' && (dir === 'up' || dir === 'down')) {
       this._contCursor = this._contCursor === 0 ? 1 : 0;
       this._renderContCursor();
@@ -660,7 +668,83 @@ class Game {
     const bub = document.getElementById('player-bubble');
     if (bub) bub.classList.remove('visible');
     SFX.encounter();
-    this.startQuestion();
+    const conscious = this.state.party.filter(p => !p.fainted);
+    if (conscious.length > 1) {
+      this.showPartySelect();
+    } else {
+      this.state.activePokemon = conscious[0] || this.state.party[0];
+      this.startQuestion();
+    }
+  }
+
+  showPartySelect() {
+    this.show('party-select');
+    this._showController(true);
+    this._partySelectCursor = 0;
+
+    const list = document.getElementById('party-select-list');
+    list.innerHTML = '';
+
+    const ordered = [...this.state.party].reverse();
+
+    ordered.forEach((poke, i) => {
+      const entry = document.createElement('div');
+      entry.className = 'party-select-entry' + (poke.fainted ? ' fainted' : '');
+      if (i === 0 && !poke.fainted) entry.classList.add('party-selected');
+
+      const emojiWrap = document.createElement('div');
+      emojiWrap.className = 'party-select-emoji';
+      emojiWrap.textContent = poke.emoji;
+      if (poke.fainted) {
+        const zzz = document.createElement('span');
+        zzz.className = 'party-select-zzz';
+        zzz.textContent = 'zZz';
+        emojiWrap.appendChild(zzz);
+      }
+
+      const info = document.createElement('div');
+      info.className = 'party-select-info';
+      info.innerHTML = `<div class="party-select-name">${poke.name.toUpperCase()}</div><div class="party-select-detail">${poke.type} · Lv ${poke.level}</div>`;
+
+      const badge = document.createElement('div');
+      badge.className = 'party-select-badge' + (poke.fainted ? ' badge-fainted' : '');
+      badge.textContent = poke.fainted ? 'FAINTED' : 'READY';
+
+      entry.appendChild(emojiWrap);
+      entry.appendChild(info);
+      entry.appendChild(badge);
+
+      if (!poke.fainted) {
+        entry.addEventListener('click', () => {
+          this.state.activePokemon = poke;
+          SFX.confirm();
+          this.startQuestion();
+        });
+      }
+
+      list.appendChild(entry);
+    });
+
+    this._partySelectOrdered = ordered;
+    this._renderPartySelectCursor();
+  }
+
+  _renderPartySelectCursor() {
+    const entries = document.querySelectorAll('.party-select-entry');
+    entries.forEach((e, i) => {
+      e.classList.toggle('party-selected', i === this._partySelectCursor && !e.classList.contains('fainted'));
+    });
+  }
+
+  _partySelectConfirm() {
+    const ordered = this._partySelectOrdered;
+    if (!ordered) return;
+    const poke = ordered[this._partySelectCursor];
+    if (poke && !poke.fainted) {
+      this.state.activePokemon = poke;
+      SFX.confirm();
+      this.startQuestion();
+    }
   }
 
   _placeMapSprites() {
@@ -729,6 +813,26 @@ class Game {
       }
 
       if (s === 'title' && (e.key==='Enter'||e.key===' ')) { document.getElementById('screen-title').click(); return; }
+      if (s === 'party-select') {
+        if (e.key==='ArrowUp'||e.key==='w'||e.key==='W') {
+          this._partySelectCursor = Math.max(0, this._partySelectCursor - 1);
+          this._renderPartySelectCursor();
+          SFX.select();
+          return;
+        }
+        if (e.key==='ArrowDown'||e.key==='s'||e.key==='S') {
+          const max = (this._partySelectOrdered || []).length - 1;
+          this._partySelectCursor = Math.min(max, this._partySelectCursor + 1);
+          this._renderPartySelectCursor();
+          SFX.select();
+          return;
+        }
+        if (e.key==='Enter'||e.key===' '||e.key==='e'||e.key==='E') {
+          this._partySelectConfirm();
+          return;
+        }
+        return;
+      }
       if (s === 'continue') {
         if (e.key==='ArrowUp'||e.key==='w'||e.key==='W'||e.key==='ArrowDown'||e.key==='s'||e.key==='S') {
           this._contCursor = this._contCursor === 0 ? 1 : 0;
@@ -953,6 +1057,12 @@ class Game {
             if (!this._walkLoop) this._startWalkLoop();
           }
           if (s === 'battle') this._moveCursor(dir);
+          if (s === 'party-select' && (dir === 'up' || dir === 'down')) {
+            const max = (this._partySelectOrdered || []).length - 1;
+            this._partySelectCursor = dir === 'up' ? Math.max(0, this._partySelectCursor - 1) : Math.min(max, this._partySelectCursor + 1);
+            this._renderPartySelectCursor();
+            SFX.select();
+          }
           if (s === 'starter' && (dir === 'left' || dir === 'right')) {
             this._starterCursor = dir === 'left' ? Math.max(0, (this._starterCursor||0) - 1) : Math.min(2, (this._starterCursor||0) + 1);
             this._renderStarterCursor();
@@ -980,6 +1090,7 @@ class Game {
         else if (s === 'levelup')  { document.getElementById('btn-lu-cont')?.click(); }
         else if (s === 'complete') { document.getElementById('btn-play-again')?.click(); }
         else if (s === 'starter-confirm') { document.getElementById('btn-starter-continue')?.click(); }
+        else if (s === 'party-select') { this._partySelectConfirm(); }
         else if (s === 'starter') { this.pickStarter(this._starterCursor||0); }
         else if (s === 'catch') { const cbtns = document.querySelectorAll('.catch-action-btn'); if (cbtns[this._catchCursor||0]) cbtns[this._catchCursor||0].click(); }
         else if (s === 'catch-result') { document.getElementById('btn-catch-continue')?.click(); }
@@ -1601,6 +1712,9 @@ class Game {
   }
 
   _getActivePokemon() {
+    if (this.state.activePokemon && !this.state.activePokemon.fainted) return this.state.activePokemon;
+    const conscious = this.state.party.filter(p => !p.fainted);
+    if (conscious.length > 0) return conscious[0];
     if (this.state.party.length === 0) return { name:'MissingNo', emoji:'❓', type:'???', level:1 };
     return this.state.party[0];
   }
@@ -1848,6 +1962,11 @@ class Game {
         playerSprite.style.opacity = '0.3';
         playerSprite.style.transform = 'translateY(20px) scale(0.5)';
         SFX.battleLose();
+        playerPoke.fainted = true;
+        const conscious = this.state.party.filter(p => !p.fainted);
+        if (conscious.length === 0) {
+          this.state.party[0].fainted = false;
+        }
       }, 1400);
       setTimeout(() => {
         playerSprite.style.opacity = '1';
