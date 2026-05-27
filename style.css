@@ -830,8 +830,8 @@ html, body {
 }
 #screen-starter .overworld-bg {
   flex:0 0 auto;
-  min-height:35%;
-  max-height:45%;
+  min-height:30%;
+  max-height:38%;
 }
 .starter-dialog {
   margin:0 8px;
