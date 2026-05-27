@@ -1301,3 +1301,35 @@ html, body {
   40%  { transform:scale(2.5); opacity:.9; }
   100% { transform:scale(4); opacity:0; }
 }
+
+/* ─── BATTLE ANIM TRAINER PEEK ───────────────────────────── */
+.battle-anim-trainer-npc,
+.battle-anim-trainer-player {
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:5;
+  opacity:.7;
+  font-size:clamp(50px,15vw,72px);
+}
+.battle-anim-trainer-npc {
+  left:-28px;
+}
+.battle-anim-trainer-npc img {
+  height:clamp(72px,20vw,100px);
+  width:auto;
+  image-rendering:pixelated;
+  display:block;
+}
+.battle-anim-trainer-player {
+  right:-28px;
+}
+.anim-player-sprite-sheet {
+  width:48px;
+  height:96px;
+  background-image:url('./player.png');
+  background-repeat:no-repeat;
+  background-size:1152px 96px;
+  background-position:-48px 0;
+  image-rendering:pixelated;
+}

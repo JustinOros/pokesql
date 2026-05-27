@@ -1789,6 +1789,14 @@ class Game {
     const playerPoke = this._getActivePokemon();
     const npcPoke = this.state.currentNPCPokemon || { name:'???', emoji:'❓', level:1 };
 
+    const npcTrainer = document.getElementById('anim-npc-trainer');
+    if (npcTrainer) {
+      const npcQ = this.state.questions[this.state.currentQ];
+      setNPC(npcTrainer, NPC[npcQ?.npc] || '🧑');
+    }
+    const playerTrainer = document.getElementById('anim-player-trainer');
+    if (playerTrainer) playerTrainer.innerHTML = '<div class="anim-player-sprite-sheet"></div>';
+
     document.getElementById('anim-player-pokemon-name').textContent = playerPoke.name.toUpperCase();
     document.getElementById('anim-player-pokemon').textContent = playerPoke.emoji;
     document.getElementById('anim-npc-pokemon-name').textContent = npcPoke.name.toUpperCase();
