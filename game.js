@@ -1816,7 +1816,7 @@ class Game {
 
   showResult(correct,q) {
     this.show('result');
-    this._showController(false);
+    this._showController(true);
     Music.stopBattle();
     Music.pause();
 
