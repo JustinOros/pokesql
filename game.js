@@ -1137,7 +1137,7 @@ class Game {
 
   boot() {
     this.show('boot');
-    this._showController(false);
+    this._showController(true);
     setTimeout(() => this.showTitle(), 1800);
   }
 
