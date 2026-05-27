@@ -1555,7 +1555,7 @@ class Game {
     if(bar){ bar.style.width=pct+'%'; bar.style.background=pct<40?'var(--hp-green)':pct<75?'var(--hp-yellow)':'#60c8ff'; }
 
     const pbEl = document.getElementById('pokeball-count');
-    if (pbEl) pbEl.textContent = `⚪ ${this.state.pokeballs}`;
+    if (pbEl) pbEl.innerHTML = `<img src="./favicon.ico" class="pokeball-icon"> ${this.state.pokeballs}`;
 
     this.state.playerLevel = getPlayerLevel(this.state);
   }

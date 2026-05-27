@@ -1256,3 +1256,13 @@ html, body {
   align-items:center;
   gap:1px;
 }
+
+/* ─── POKEBALL ICON ──────────────────────────────────────── */
+.pokeball-icon {
+  width:14px;
+  height:14px;
+  vertical-align:middle;
+  image-rendering:pixelated;
+  display:inline-block;
+  margin-right:2px;
+}
