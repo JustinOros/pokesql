@@ -1445,6 +1445,7 @@ class Game {
       span.style.top               = y + 'px';
       span.style.animationDelay    = (Math.random() * 4).toFixed(2) + 's';
       span.style.animationDuration = (2 + Math.random() * 2).toFixed(1) + 's';
+      if (Math.random() > 0.5) span.style.transform = 'scaleX(-1)';
       container.appendChild(span);
     }
     this._rocks = [];
