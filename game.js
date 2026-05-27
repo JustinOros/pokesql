@@ -366,10 +366,18 @@ class Game {
 
   _pressA() {
     const s = this.state.screen;
+    if (s === 'title')   { document.getElementById('screen-title')?.click(); return; }
+    if (s === 'continue') {
+      if (this._contCursor === 1) document.getElementById('btn-new-game')?.click();
+      else document.getElementById('btn-continue-save')?.click();
+      return;
+    }
     if (s === 'map')                             { this._talkToNPC(); return; }
     if (s === 'battle' && !this.state.answering) { this._confirmCursor(); return; }
     if (s === 'intro')   { this.advanceIntro(); return; }
+    if (s === 'starter') { this.pickStarter(this._starterCursor||0); return; }
     if (s === 'starter-confirm') { document.getElementById('btn-starter-continue')?.click(); return; }
+    if (s === 'catch')   { const btns = document.querySelectorAll('.catch-action-btn'); if (btns[this._catchCursor||0]) btns[this._catchCursor||0].click(); return; }
     if (s === 'catch-result') { document.getElementById('btn-catch-continue')?.click(); return; }
     if (s === 'result')  { document.getElementById('btn-result-cont')?.click(); return; }
     if (s === 'levelup') { document.getElementById('btn-lu-cont')?.click(); return; }
@@ -379,15 +387,34 @@ class Game {
     const s = this.state.screen;
     if (s === 'map')                            { this._talkToNPC(); return; }
     if (s === 'battle' && this.state.answering) { return; }
+    if (s === 'battle' && !this.state.answering) { this._confirmCursor(); return; }
     if (s === 'intro')  { this.advanceIntro(); return; }
     if (s === 'result') { document.getElementById('btn-result-cont')?.click(); return; }
+    if (s === 'starter-confirm') { document.getElementById('btn-starter-continue')?.click(); return; }
+    if (s === 'catch-result') { document.getElementById('btn-catch-continue')?.click(); return; }
+    if (s === 'levelup') { document.getElementById('btn-lu-cont')?.click(); return; }
   }
 
   _dpadStart(dir) {
+    const s = this.state.screen;
+    if (s === 'continue' && (dir === 'up' || dir === 'down')) {
+      this._contCursor = this._contCursor === 0 ? 1 : 0;
+      this._renderContCursor();
+      return;
+    }
+    if (s === 'starter' && (dir === 'left' || dir === 'right')) {
+      this._starterCursor = dir === 'left' ? Math.max(0, (this._starterCursor||0) - 1) : Math.min(2, (this._starterCursor||0) + 1);
+      this._renderStarterCursor();
+      return;
+    }
+    if (s === 'catch' && (dir === 'left' || dir === 'right')) {
+      this._catchCursor = dir === 'left' ? 0 : 1;
+      this._renderCatchCursor();
+      return;
+    }
+    if (s === 'battle') { this._moveCursor(dir); }
     this._heldKeys.add(dir);
     if (!this._walkLoop) this._startWalkLoop();
-    const s = this.state.screen;
-    if (s === 'battle') { this._moveCursor(dir); }
   }
 
   _dpadEnd(dir) {
