@@ -268,6 +268,9 @@ const SFX = (() => {
     catch()          { seq([{f:330,d:.08},{f:440,d:.08},{f:523,d:.08},{f:659,d:.15},{f:784,d:.25}], 'square', 0.2); },
     pokeball()       { seq([{f:600,d:.06},{f:500,d:.06},{f:400,d:.06},{f:300,d:.1}], 'triangle', 0.15); },
     escape()         { seq([{f:400,d:.08},{f:350,d:.08},{f:250,d:.15}], 'sawtooth', 0.12); },
+    attack()         { seq([{f:200,d:.04},{f:400,d:.04},{f:600,d:.04},{f:800,d:.03},{f:1000,d:.03},{f:600,d:.06}], 'sawtooth', 0.2); },
+    battleWin()      { seq([{f:523,d:.1},{f:659,d:.1},{f:784,d:.12},{f:1047,d:.15},{f:1319,d:.25}], 'square', 0.22); },
+    battleLose()     { seq([{f:400,d:.12},{f:350,d:.12},{f:300,d:.14},{f:200,d:.25}], 'sawtooth', 0.18); },
   };
 })();
 
@@ -1741,12 +1744,14 @@ class Game {
 
     if (correct) {
       msg.textContent = `${playerPoke.name} used SQL KNOWLEDGE!`;
+      SFX.attack();
       setTimeout(() => {
         npcHp.style.width = '0%';
         npcHp.style.background = 'var(--red)';
         msg.textContent = `It's super effective! ${npcPoke.name} fainted!`;
         npcSprite.style.opacity = '0.3';
         npcSprite.style.transform = 'translateY(20px) scale(0.5)';
+        SFX.battleWin();
       }, 800);
       setTimeout(() => {
         npcSprite.style.opacity = '1';
@@ -1755,8 +1760,10 @@ class Game {
       }, 2200);
     } else {
       msg.textContent = `${playerPoke.name} used SQL QUERY... but it missed!`;
+      SFX.attack();
       setTimeout(() => {
         msg.textContent = `${npcPoke.name} used COUNTER ATTACK!`;
+        SFX.attack();
       }, 800);
       setTimeout(() => {
         playerHp.style.width = '0%';
@@ -1764,6 +1771,7 @@ class Game {
         msg.textContent = `${playerPoke.name} fainted!`;
         playerSprite.style.opacity = '0.3';
         playerSprite.style.transform = 'translateY(20px) scale(0.5)';
+        SFX.battleLose();
       }, 1400);
       setTimeout(() => {
         playerSprite.style.opacity = '1';
