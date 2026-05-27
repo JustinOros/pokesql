@@ -1199,6 +1199,7 @@ class Game {
   }
 
   _renderStarterCursor() {
+    SFX.select();
     const btns = document.querySelectorAll('.starter-btn');
     btns.forEach((btn, i) => {
       btn.classList.toggle('starter-btn-selected', i === (this._starterCursor||0));
