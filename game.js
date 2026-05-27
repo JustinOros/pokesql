@@ -255,6 +255,7 @@ const SFX = (() => {
     encounter()      { seq([{f:523,d:.1},{f:659,d:.18}], 'square', 0.22); },
     type()           { tone(880 + Math.random()*200, 'square', 0.03, 0.005, 0.01, 0.02); },
     select()         { const c = getCtx(); tone(440, 'square', 0.12, 0.005, 0.03, 0.04, c.currentTime + 0.05); },
+    backspace()      { seq([{f:350,d:.05},{f:250,d:.08}], 'triangle', 0.12); },
     correct()        { seq([{f:523,d:.08},{f:659,d:.08},{f:784,d:.08},{f:1047,d:.2}], 'square', 0.18); },
     streak()         { seq([{f:523,d:.06},{f:659,d:.06},{f:784,d:.06},{f:1047,d:.06},{f:1319,d:.2}], 'square', 0.18); },
     wrong()          { seq([{f:330,d:.1},{f:277,d:.1},{f:233,d:.18}], 'sawtooth', 0.15); },
@@ -1289,7 +1290,7 @@ class Game {
   }
 
   addChar(ch) { if (this.state.playerName.length<10){ this.state.playerName+=ch; this.refreshNameDisplay(); SFX.select(); } }
-  delChar()   { this.state.playerName=this.state.playerName.slice(0,-1); this.refreshNameDisplay(); }
+  delChar()   { this.state.playerName=this.state.playerName.slice(0,-1); this.refreshNameDisplay(); SFX.backspace(); }
   refreshNameDisplay() {
     const el=document.getElementById('name-display');
     if(el) el.textContent=this.state.playerName+(this.state.playerName.length<10?'_':'');
