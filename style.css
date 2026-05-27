@@ -822,7 +822,7 @@ html, body {
 
 /* ─── STARTER SELECTION ──────────────────────────────────── */
 #screen-starter {
-  background:linear-gradient(180deg,#90c8f0 0%,#70b0e0 55%,#c8b880 55%,#b09860 100%);
+  background:linear-gradient(180deg, #6cb84e 0%, #58a83e 100%);
   flex-direction:column;
   justify-content:flex-start;
   overflow-y:auto;
