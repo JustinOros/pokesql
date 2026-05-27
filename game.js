@@ -1229,7 +1229,7 @@ class Game {
     SFX.catch();
 
     this.show('starter-confirm');
-    this._showController(false);
+    this._showController(true);
 
     document.getElementById('starter-chosen-emoji').textContent = chosen.emoji;
     document.getElementById('starter-chosen-name').textContent = chosen.name.toUpperCase();
