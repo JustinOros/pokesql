@@ -1338,10 +1338,12 @@ class Game {
     catchScreen.appendChild(ball);
 
     setTimeout(() => {
+      const pokeRect = pokemonEl.getBoundingClientRect();
+      const screenRect = catchScreen.getBoundingClientRect();
       const burst = document.createElement('div');
       burst.className = 'pokeball-burst';
-      burst.style.left = '50%';
-      burst.style.top = '25%';
+      burst.style.left = (pokeRect.left - screenRect.left + pokeRect.width / 2) + 'px';
+      burst.style.top = (pokeRect.top - screenRect.top + pokeRect.height / 2) + 'px';
       catchScreen.appendChild(burst);
 
       ball.remove();
