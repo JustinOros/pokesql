@@ -492,7 +492,7 @@ html, body {
   display: inline-block;
   filter: drop-shadow(1px 2px 0 rgba(0,0,0,.3));
   line-height: 1;
-  z-index: 60;
+  z-index: 80;
 }
 .tree:nth-child(even) { }
 .tall-grass {
@@ -523,7 +523,7 @@ html, body {
   bottom: -9999px;
 }
 /* NPC lives inside .map-inner, positioned in world-px via JS */
-.map-npc-wrap { position:absolute; text-align:center; z-index: 30; }
+.map-npc-wrap { position:absolute; text-align:center; z-index: 70; }
 .npc-bubble   { font-size:14px; font-family:var(--font); color:var(--black); background:var(--yellow); border:2px solid var(--black); width:20px; height:20px; display:flex; align-items:center; justify-content:center; margin:0 auto 2px; animation:bounce .7s ease-in-out infinite; }
 .map-npc      { font-size:clamp(36px,10vw,52px); filter:drop-shadow(2px 3px 0 rgba(0,0,0,.35)); cursor:pointer; animation:npcFloat 2s ease-in-out infinite; }
 .intro-npc img { height:clamp(56px,16vw,80px); width:auto; image-rendering:pixelated; display:block; }
@@ -572,7 +572,7 @@ html, body {
   background-size: 768px 64px;
   image-rendering: pixelated;
   filter: drop-shadow(2px 3px 0 rgba(0,0,0,.4));
-  z-index: 20;
+  z-index: 70;
   font-size: 0;
   color: transparent;
   left: -9999px;
@@ -1080,7 +1080,7 @@ html, body {
 .map-wild-wrap {
   position:absolute;
   text-align:center;
-  z-index:25;
+  z-index:70;
   cursor:pointer;
 }
 .wild-bubble {
