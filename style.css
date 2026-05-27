@@ -511,6 +511,14 @@ html, body {
   50%  { transform: rotate(2deg) scaleY(1.05); }
   100% { transform: rotate(-3deg) scaleY(1); }
 }
+.tall-grass-flip {
+  animation: grassSwayFlip 2s ease-in-out infinite alternate;
+}
+@keyframes grassSwayFlip {
+  0%   { transform: scaleX(-1) rotate(-3deg) scaleY(1); }
+  50%  { transform: scaleX(-1) rotate(2deg) scaleY(1.05); }
+  100% { transform: scaleX(-1) rotate(-3deg) scaleY(1); }
+}
 /* Directional nudge arrow */
 .map-dir-arrow {
   position: absolute;
