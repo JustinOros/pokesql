@@ -686,7 +686,7 @@ class Game {
     const list = document.getElementById('party-select-list');
     list.innerHTML = '';
 
-    const ordered = [...this.state.party].reverse();
+    const ordered = [...this.state.party].reverse().sort((a, b) => (a.fainted ? 1 : 0) - (b.fainted ? 1 : 0));
 
     ordered.forEach((poke, i) => {
       const entry = document.createElement('div');
