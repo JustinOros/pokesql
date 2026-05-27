@@ -379,7 +379,7 @@ class Game {
     if (s === 'party-select') { this._partySelectConfirm(); return; }
     if (s === 'starter') { this.pickStarter(this._starterCursor||0); return; }
     if (s === 'starter-confirm') { document.getElementById('btn-starter-continue')?.click(); return; }
-    if (s === 'catch')   { const btns = document.querySelectorAll('.catch-action-btn'); if (btns[0]) btns[0].click(); return; }
+    if (s === 'catch')   { const btns = document.querySelectorAll('.catch-action-btn'); if (btns[this._catchCursor||0]) btns[this._catchCursor||0].click(); return; }
     if (s === 'catch-result') { document.getElementById('btn-catch-continue')?.click(); return; }
     if (s === 'result')  { document.getElementById('btn-result-cont')?.click(); return; }
     if (s === 'levelup') { document.getElementById('btn-lu-cont')?.click(); return; }
@@ -391,7 +391,7 @@ class Game {
     if (s === 'battle' && this.state.answering) { return; }
     if (s === 'battle' && !this.state.answering) { this._confirmCursor(); return; }
     if (s === 'intro')  { this.advanceIntro(); return; }
-    if (s === 'catch')  { const btns = document.querySelectorAll('.catch-action-btn'); if (btns[1]) btns[1].click(); return; }
+    if (s === 'catch')  { const btns = document.querySelectorAll('.catch-action-btn'); if (btns[this._catchCursor||0]) btns[this._catchCursor||0].click(); return; }
     if (s === 'result') { document.getElementById('btn-result-cont')?.click(); return; }
     if (s === 'starter-confirm') { document.getElementById('btn-starter-continue')?.click(); return; }
     if (s === 'catch-result') { document.getElementById('btn-catch-continue')?.click(); return; }
