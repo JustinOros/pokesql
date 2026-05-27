@@ -1215,7 +1215,7 @@ class Game {
 
   showNameEntry() {
     this.show('name');
-    this._showController(false);
+    this._showController(true);
     this._gpKeyCursor = 0;
     this.buildKeyboard();
     this.typeText('name-prompt-text', CONFIG.namePrompt);
