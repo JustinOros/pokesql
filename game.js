@@ -1438,6 +1438,7 @@ class Game {
       this.showMap();
     });
     actions.appendChild(runBtn);
+    this._renderCatchCursor();
   }
 
   throwPokeball(wild, canCatch) {
