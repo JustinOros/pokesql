@@ -1313,7 +1313,7 @@ html, body {
   font-size:clamp(50px,15vw,72px);
 }
 .battle-anim-trainer-npc {
-  left:-28px;
+  left:12px;
 }
 .battle-anim-trainer-npc img {
   height:clamp(72px,20vw,100px);
@@ -1322,7 +1322,7 @@ html, body {
   display:block;
 }
 .battle-anim-trainer-player {
-  right:-28px;
+  right:12px;
 }
 .anim-player-sprite-sheet {
   width:48px;
