@@ -1272,17 +1272,16 @@ html, body {
   position:absolute;
   width:32px;
   height:32px;
-  bottom:10%;
-  right:10%;
+  bottom:15%;
+  right:8%;
   z-index:200;
   image-rendering:pixelated;
+  offset-path:path('M 0 0 C -60 -120, -120 -220, -140 -300');
   animation:pokeThrow .7s cubic-bezier(.2,.8,.3,1) forwards;
 }
 @keyframes pokeThrow {
-  0%   { transform:translate(0, 0) rotate(0deg) scale(1); opacity:1; }
-  30%  { transform:translate(calc(var(--target-x) * 0.3 - 80px), calc(var(--target-y) * 0.5 - 180px)) rotate(-180deg) scale(1.2); }
-  60%  { transform:translate(calc(var(--target-x) * 0.7 - 40px), calc(var(--target-y) * 0.8 - 100px)) rotate(-360deg) scale(1); }
-  100% { transform:translate(calc(var(--target-x) - 100%), calc(var(--target-y) - 90%)) rotate(-540deg) scale(0.8); opacity:1; }
+  0%   { offset-distance:0%; transform:rotate(0deg) scale(1); opacity:1; }
+  100% { offset-distance:100%; transform:rotate(-540deg) scale(0.7); opacity:1; }
 }
 
 .pokeball-burst {
