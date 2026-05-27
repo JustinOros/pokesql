@@ -1244,6 +1244,7 @@ class Game {
     );
 
     document.getElementById('btn-starter-continue').onclick = () => {
+      if (this.state.twTimer) { clearInterval(this.state.twTimer); this.state.twTimer = null; }
       this.loadQuestions(() => this.showMap());
     };
   }
