@@ -823,6 +823,13 @@ html, body {
   background:linear-gradient(180deg,#90c8f0 0%,#70b0e0 55%,#c8b880 55%,#b09860 100%);
   flex-direction:column;
   justify-content:flex-start;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+#screen-starter .overworld-bg {
+  flex:0 0 auto;
+  min-height:35%;
+  max-height:45%;
 }
 .starter-dialog {
   margin:0 8px;
@@ -834,6 +841,7 @@ html, body {
   justify-content:center;
   gap:clamp(6px,2vw,12px);
   padding:8px 10px;
+  padding-bottom:max(16px, calc(var(--safe-bottom) + 160px));
   flex-shrink:0;
 }
 .starter-btn {
@@ -954,6 +962,7 @@ html, body {
   display:flex;
   gap:8px;
   padding:6px 12px;
+  padding-bottom:max(16px, calc(var(--safe-bottom) + 160px));
   justify-content:center;
   flex-shrink:0;
 }
