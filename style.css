@@ -1425,3 +1425,24 @@ html, body {
 .party-select-badge.badge-fainted {
   color:var(--red);
 }
+
+/* ─── POKEBALL REST + BOUNCE ─────────────────────────────── */
+.pokeball-rest {
+  position:absolute;
+  width:40px;
+  height:40px;
+  z-index:200;
+  image-rendering:pixelated;
+}
+.pokeball-bounce-anim {
+  animation:pokeballBounce .5s ease-out;
+}
+@keyframes pokeballBounce {
+  0%   { transform:translateY(0); }
+  20%  { transform:translateY(-24px) rotate(-10deg); }
+  40%  { transform:translateY(0) rotate(0deg); }
+  55%  { transform:translateY(-12px) rotate(8deg); }
+  70%  { transform:translateY(0) rotate(0deg); }
+  82%  { transform:translateY(-5px) rotate(-4deg); }
+  100% { transform:translateY(0) rotate(0deg); }
+}

@@ -267,6 +267,7 @@ const SFX = (() => {
     confirm()        { seq([{f:523,d:.08},{f:784,d:.15}], 'square', 0.18); },
     catch()          { seq([{f:330,d:.08},{f:440,d:.08},{f:523,d:.08},{f:659,d:.15},{f:784,d:.25}], 'square', 0.2); },
     pokeball()       { seq([{f:600,d:.06},{f:500,d:.06},{f:400,d:.06},{f:300,d:.1}], 'triangle', 0.15); },
+    pokeballBounce() { seq([{f:300,d:.04},{f:500,d:.06},{f:200,d:.08}], 'triangle', 0.12); },
     escape()         { seq([{f:400,d:.08},{f:350,d:.08},{f:250,d:.15}], 'sawtooth', 0.12); },
     attack()         { seq([{f:200,d:.04},{f:400,d:.04},{f:600,d:.04},{f:800,d:.03},{f:1000,d:.03},{f:600,d:.06}], 'sawtooth', 0.2); },
     battleWin()      { seq([{f:523,d:.1},{f:659,d:.1},{f:784,d:.12},{f:1047,d:.15},{f:1319,d:.25}], 'square', 0.22); },
@@ -1445,6 +1446,8 @@ class Game {
 
     const catchScreen = document.getElementById('screen-catch');
     const pokemonEl = document.getElementById('catch-wild-pokemon');
+    const nameEl = document.getElementById('catch-wild-name');
+    const levelEl = document.getElementById('catch-wild-level');
 
     const ball = document.createElement('img');
     ball.src = './favicon.ico';
@@ -1454,24 +1457,53 @@ class Game {
     setTimeout(() => {
       const pokeRect = pokemonEl.getBoundingClientRect();
       const screenRect = catchScreen.getBoundingClientRect();
+      const burstX = pokeRect.left - screenRect.left + pokeRect.width / 2;
+      const burstY = pokeRect.top - screenRect.top + pokeRect.height * 0.25;
+
       const burst = document.createElement('div');
       burst.className = 'pokeball-burst';
-      burst.style.left = (pokeRect.left - screenRect.left + pokeRect.width / 2) + 'px';
-      burst.style.top = (pokeRect.top - screenRect.top + pokeRect.height * 0.25) + 'px';
+      burst.style.left = burstX + 'px';
+      burst.style.top = burstY + 'px';
       catchScreen.appendChild(burst);
 
       ball.remove();
       pokemonEl.style.opacity = '0';
-      pokemonEl.style.transform = 'scale(0.3)';
-      pokemonEl.style.transition = 'opacity .3s, transform .3s';
+      pokemonEl.style.transform = 'scale(0)';
+      pokemonEl.style.transition = 'opacity .2s, transform .2s';
+      if (nameEl) nameEl.style.display = 'none';
+      if (levelEl) levelEl.style.display = 'none';
 
-      setTimeout(() => {
-        burst.remove();
-        pokemonEl.style.opacity = '1';
-        pokemonEl.style.transform = '';
-        pokemonEl.style.transition = '';
-        this._showCatchResult(wild, canCatch);
-      }, 600);
+      const restBall = document.createElement('img');
+      restBall.src = './favicon.ico';
+      restBall.className = 'pokeball-rest';
+      restBall.style.left = (burstX - 20) + 'px';
+      restBall.style.top = (burstY + 20) + 'px';
+      catchScreen.appendChild(restBall);
+
+      setTimeout(() => burst.remove(), 500);
+
+      let bounceCount = 0;
+      const doBounce = () => {
+        const maxBounces = canCatch ? 3 : 2;
+        if (bounceCount >= maxBounces) {
+          restBall.remove();
+          pokemonEl.style.opacity = '1';
+          pokemonEl.style.transform = '';
+          pokemonEl.style.transition = '';
+          if (nameEl) nameEl.style.display = '';
+          if (levelEl) levelEl.style.display = '';
+          this._showCatchResult(wild, canCatch);
+          return;
+        }
+        bounceCount++;
+        SFX.pokeballBounce();
+        restBall.classList.remove('pokeball-bounce-anim');
+        void restBall.offsetWidth;
+        restBall.classList.add('pokeball-bounce-anim');
+        setTimeout(doBounce, 600);
+      };
+
+      setTimeout(doBounce, 600);
     }, 700);
   }
 
