@@ -1391,7 +1391,7 @@ class Game {
       container.appendChild(span);
     }
     const grassEmojis = ['🌾'];
-    for (let i = 0; i < 600; i++) {
+    for (let i = 0; i < 2400; i++) {
       let x, y, tries = 0, tooClose;
       do {
         x = cx + (Math.random() - 0.5) * spread * 1.8;
@@ -1402,7 +1402,7 @@ class Game {
       if (tooClose) continue;
       const span = document.createElement('span');
       span.className = 'tall-grass';
-      const size = 8 + Math.random() * 6;
+      const size = 5 + Math.random() * 4;
       span.textContent             = grassEmojis[Math.floor(Math.random() * grassEmojis.length)];
       span.style.fontSize          = size + 'px';
       span.style.left              = x + 'px';

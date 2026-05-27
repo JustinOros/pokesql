@@ -1229,3 +1229,11 @@ html, body {
   line-height: 1;
   z-index: 15;
 }
+
+/* ─── BATTLE POKEMON FLOAT (name+level above sprite) ───── */
+.battle-pokemon-float {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:1px;
+}
