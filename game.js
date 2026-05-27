@@ -733,6 +733,9 @@ class Game {
     const entries = document.querySelectorAll('.party-select-entry');
     entries.forEach((e, i) => {
       e.classList.toggle('party-selected', i === this._partySelectCursor && !e.classList.contains('fainted'));
+      if (i === this._partySelectCursor) {
+        e.scrollIntoView({ block:'nearest', behavior:'smooth' });
+      }
     });
   }
 
