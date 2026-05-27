@@ -368,6 +368,7 @@ class Game {
   _pressA() {
     const s = this.state.screen;
     if (s === 'title')   { document.getElementById('screen-title')?.click(); return; }
+    if (s === 'name')    { this._nameKeyConfirm(); return; }
     if (s === 'continue') {
       if (this._contCursor === 1) document.getElementById('btn-new-game')?.click();
       else document.getElementById('btn-continue-save')?.click();
@@ -387,6 +388,7 @@ class Game {
 
   _pressB() {
     const s = this.state.screen;
+    if (s === 'name')   { this.delChar(); return; }
     if (s === 'map')                            { this._talkToNPC(); return; }
     if (s === 'battle' && this.state.answering) { return; }
     if (s === 'battle' && !this.state.answering) { this._confirmCursor(); return; }
@@ -400,6 +402,20 @@ class Game {
 
   _dpadStart(dir) {
     const s = this.state.screen;
+    if (s === 'name') {
+      const COLS = 10;
+      const keys = this._getNameKeys();
+      const total = keys.length;
+      let c = this._gpKeyCursor;
+      if (dir === 'right') c = Math.min(c + 1, total - 1);
+      if (dir === 'left')  c = Math.max(c - 1, 0);
+      if (dir === 'down')  c = Math.min(c + COLS, total - 1);
+      if (dir === 'up')    c = Math.max(c - COLS, 0);
+      this._gpKeyCursor = c;
+      this._renderNameCursor();
+      SFX.select();
+      return;
+    }
     if (s === 'party-select' && (dir === 'up' || dir === 'down')) {
       const max = (this._partySelectOrdered || []).length - 1;
       this._partySelectCursor = dir === 'up' ? Math.max(0, this._partySelectCursor - 1) : Math.min(max, this._partySelectCursor + 1);
@@ -1233,6 +1249,36 @@ class Game {
       b.addEventListener('pointerdown', (e)=>{ e.preventDefault(); this.addChar(ch); });
       grid.appendChild(b);
     });
+    this._gpKeyCursor = 0;
+    this._renderNameCursor();
+  }
+
+  _getNameKeys() {
+    const letterKeys = Array.from(document.querySelectorAll('.key-btn'));
+    const delBtn = document.getElementById('btn-backspace');
+    const okBtn = document.getElementById('btn-confirm-name');
+    return [...letterKeys, delBtn, okBtn].filter(Boolean);
+  }
+
+  _renderNameCursor() {
+    const keys = this._getNameKeys();
+    keys.forEach((k, i) => {
+      k.style.outline = i === this._gpKeyCursor ? '3px solid #f8c030' : '';
+      k.style.outlineOffset = i === this._gpKeyCursor ? '-2px' : '';
+    });
+  }
+
+  _nameKeyConfirm() {
+    const keys = this._getNameKeys();
+    const key = keys[this._gpKeyCursor];
+    if (!key) return;
+    if (key.classList.contains('key-btn')) {
+      this.addChar(key.textContent);
+    } else if (key.id === 'btn-backspace') {
+      this.delChar();
+    } else if (key.id === 'btn-confirm-name') {
+      this.confirmName();
+    }
   }
 
   addChar(ch) { if (this.state.playerName.length<10){ this.state.playerName+=ch; this.refreshNameDisplay(); SFX.select(); } }
