@@ -1430,7 +1430,7 @@ class Game {
       this._rocks.push({ wx, wy, r: 22 });
       const span = document.createElement('span');
       span.className = 'map-rock';
-      const size = 22 + Math.random() * 12;
+      const size = 11 + Math.random() * 6;
       span.textContent             = '🪨';
       span.style.fontSize          = size + 'px';
       span.style.left              = x + 'px';
