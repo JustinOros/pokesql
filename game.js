@@ -1130,7 +1130,7 @@ class Game {
 
   showIntro() {
     this.show('intro');
-    this._showController(false);
+    this._showController(true);
     this.state.introStep = 0;
     this.renderIntroMsg();
 

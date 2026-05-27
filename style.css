@@ -417,7 +417,7 @@ html, body {
 .intro-npc.intro-npc-centered {
   right:auto !important;
   left:50% !important;
-  bottom:50% !important;
+  bottom:40% !important;
   transform:translate(-50%, 50%);
   font-size:clamp(80px,25vw,120px);
   text-align:center;
@@ -807,8 +807,8 @@ html, body {
   .gba-mid-btns { flex-direction: column; gap: 5px; }
   .gba-mid-btn  { min-width: 44px; width: 44px; font-size: 5px; padding: 6px 4px; }
 
-  .intro-npc-centered img { height: clamp(80px, 25vh, 120px) !important; }
-  .intro-npc-centered { font-size: clamp(50px, 18vh, 80px); }
+  .intro-npc-centered img { height: clamp(60px, 20vh, 100px) !important; }
+  .intro-npc-centered { font-size: clamp(40px, 14vh, 70px); bottom: 30% !important; }
   .starter-choices { gap: 6px; padding: 4px 6px; }
   .starter-btn { padding: 6px 4px; }
   .starter-btn .starter-emoji { font-size: clamp(24px, 8vh, 36px); }
