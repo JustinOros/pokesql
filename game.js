@@ -1144,7 +1144,7 @@ class Game {
   showTitle() {
     this.show('title');
     SFX.boot();
-    this._showController(false);
+    this._showController(true);
     const go = () => {
       document.getElementById('screen-title').removeEventListener('click', go);
       Music.unblock();
