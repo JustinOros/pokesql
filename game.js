@@ -361,7 +361,7 @@ class Game {
     bBtn.addEventListener('pointerup',   (e)=>{ e.preventDefault(); bBtn.classList.remove('pressed'); });
     bBtn.addEventListener('pointercancel',(e)=>{ bBtn.classList.remove('pressed'); });
 
-    document.getElementById('btn-start').addEventListener('pointerdown', (e)=>{ e.preventDefault(); this._pressA(); });
+    document.getElementById('btn-start').addEventListener('pointerdown', (e)=>{ e.preventDefault(); if (this.state.screen === 'name') { this.confirmName(); } else { this._pressA(); } });
     document.getElementById('btn-select').addEventListener('pointerdown', (e)=>{ e.preventDefault(); });
   }
 
