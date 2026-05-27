@@ -419,7 +419,7 @@ html, body {
 .intro-npc.intro-npc-centered {
   right:auto !important;
   left:50% !important;
-  bottom:40% !important;
+  bottom:30% !important;
   transform:translate(-50%, 50%);
   font-size:clamp(80px,25vw,120px);
   text-align:center;
