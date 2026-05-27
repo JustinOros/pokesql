@@ -403,10 +403,21 @@ class Game {
       const keys = this._getNameKeys();
       const total = keys.length;
       let c = this._gpKeyCursor;
-      if (dir === 'right') c = Math.min(c + 1, total - 1);
-      if (dir === 'left')  c = Math.max(c - 1, 0);
-      if (dir === 'down')  c = Math.min(c + COLS, total - 1);
-      if (dir === 'up')    c = Math.max(c - COLS, 0);
+      const row = Math.floor(c / COLS);
+      const col = c % COLS;
+      const totalRows = Math.ceil(total / COLS);
+      if (dir === 'right') {
+        c = (col + 1 >= COLS || c + 1 >= total) ? row * COLS : c + 1;
+      }
+      if (dir === 'left') {
+        c = (col - 1 < 0) ? Math.min(row * COLS + COLS - 1, total - 1) : c - 1;
+      }
+      if (dir === 'down') {
+        c = c + COLS >= total ? col : c + COLS;
+      }
+      if (dir === 'up') {
+        c = c - COLS < 0 ? Math.min((totalRows - 1) * COLS + col, total - 1) : c - COLS;
+      }
       this._gpKeyCursor = c;
       this._renderNameCursor();
       SFX.select();
@@ -1150,11 +1161,6 @@ class Game {
   boot() {
     this.show('boot');
     this._showController(true);
-    try {
-      const bootAudio = new Audio('./loading.mp3');
-      bootAudio.volume = 0.5;
-      bootAudio.play().catch(() => {});
-    } catch(e) {}
     setTimeout(() => this.showTitle(), 1800);
   }
 
