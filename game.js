@@ -1328,10 +1328,12 @@ class Game {
     SFX.pokeball();
 
     this.show('catch-result');
-    this._showController(false);
+    this._showController(true);
 
     const resultEmoji = document.getElementById('catch-result-emoji');
     const resultMsg = document.getElementById('catch-result-msg');
+    const continueBtn = document.getElementById('btn-catch-continue');
+    if (continueBtn) continueBtn.style.display = 'none';
 
     if (canCatch) {
       setTimeout(() => SFX.catch(), 500);
@@ -1358,10 +1360,12 @@ class Game {
     const wildWrap = document.getElementById('map-wild-wrap');
     if (wildWrap) wildWrap.style.display = 'none';
 
-    document.getElementById('btn-catch-continue').onclick = () => {
-      saveGame(this.state);
-      this.showMap();
-    };
+    setTimeout(() => {
+      if (this.state.screen === 'catch-result') {
+        saveGame(this.state);
+        this.showMap();
+      }
+    }, 3000);
   }
 
   loadQuestions(cb) {
