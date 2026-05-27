@@ -6,12 +6,8 @@ const CONFIG = {
   saveKey:     'pokesql_save_v2',
   introLines: [
     "Hello {name}! Welcome to PokéSQL, the world of SQL training! My name is Professor Oak, the SQL Professor!",
-    "This world is powered by Databases, Tables, Queries, Indexes, and Transactions, mastered through knowledge!",
-    "Your mission? Journey through each town, challenge SQL masters, and conquer every database concept!",
-    "But first... every trainer needs a partner Pokémon! I have three special Pokémon waiting for you in my lab!",
-    "Start in SQL Town then travel the SQL world to master JOINs, Aggregations, Indexing, and beyond!",
-    "100 questions await you. Each correct answer earns you SQL EXP and you'll learn something real!",
-    "Your progress is saved automatically in your browser so you can pick up right where you left off. Now, {name}... let's choose your partner!",
+    "Your mission? Journey through SQL Town, challenge SQL masters, and conquer 100 database questions to become the ultimate SQL Trainer!",
+    "But first... every trainer needs a partner Pokémon! Let's choose yours, {name}!",
   ],
   namePrompt: "Hello there! Welcome to PokéSQL! My name is Professor Oak — the SQL Professor. Now tell me, what is your name?",
 };
