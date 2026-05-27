@@ -140,7 +140,7 @@ const Music = (() => {
     if (!audio) {
       audio          = new Audio('./music.mp3');
       audio.loop     = true;
-      audio.volume   = 0.5;
+      audio.volume   = 0.375;
       audio.preload  = 'auto';
       audio.addEventListener('canplaythrough', () => {
         if (wantPlay && !muted) audio.play().catch(() => {});
@@ -153,7 +153,7 @@ const Music = (() => {
     if (!rival) {
       rival         = new Audio('./music-rival.mp3');
       rival.loop    = true;
-      rival.volume  = 0.5;
+      rival.volume  = 0.375;
       rival.preload = 'auto';
     }
     return rival;
