@@ -1455,6 +1455,7 @@ class Game {
   showCatchScreen() {
     const wild = this.state.currentWild;
     if (!wild) return;
+    this._throwing = false;
 
     this.show('catch');
     this._showController(true);
@@ -1496,6 +1497,9 @@ class Game {
   }
 
   throwPokeball(wild, canCatch) {
+    if (this._throwing) return;
+    if (this.state.pokeballs <= 0) return;
+    this._throwing = true;
     this.state.pokeballs--;
     SFX.pokeball();
 
@@ -1563,6 +1567,7 @@ class Game {
   }
 
   _showCatchResult(wild, canCatch) {
+    this._throwing = false;
     this.show('catch-result');
     this._showController(true);
 
