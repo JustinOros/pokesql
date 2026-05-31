@@ -15,6 +15,7 @@ pokesql/
 ├── index.html        ← Game screens & structure
 ├── style.css         ← GBA Pokémon aesthetic, fully responsive
 ├── game.js           ← Game engine, controller, walking, save system
+├── config.js         ← Game-specific config (name, text, badges, milestones)
 ├── questions.json    ← 100 T-SQL questions & answers
 ├── player.png        ← Player sprite sheet (24 frames, 16×32px)
 ├── oak.png           ← Professor Oak NPC sprite
@@ -181,6 +182,12 @@ const NPC = {
 ```
 
 Then reference `"npc": "Your NPC Name"` in `questions.json`. PNG files are auto-prefixed with `./` so just use the filename.
+
+---
+
+## ⚙️ Customising the Game
+
+All game-specific text lives in **`config.js`** — the only file that differs between PokéSQL and its sister game PokéAzure. Edit it to change the game name, town name, intro dialog, badge names, battle move names, and more without touching `game.js` or `index.html`.
 
 ---
 
