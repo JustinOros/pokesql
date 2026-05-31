@@ -1150,11 +1150,11 @@ class Game {
 
   showTitle() {
     this.show('title');
-    SFX.boot();
     this._showController(true);
     const go = () => {
       document.getElementById('screen-title').removeEventListener('click', go);
-      Music.unblock();
+      Music.play();
+      SFX.boot();
       this.showContinueOrName();
     };
     document.getElementById('screen-title').addEventListener('click', go);
