@@ -1,16 +1,3 @@
-const CONFIG = {
-  gameName:    'PokéSQL',
-  subject:     'SQL',
-  examName:    'SQL',
-  townName:    'SQL Town',
-  saveKey:     'pokesql_save_v2',
-  introLines: [
-    "Hello {name}! Welcome to PokéSQL, the world of SQL training! My name is Professor Oak, the SQL Professor!",
-    "Your mission? Journey through SQL Town, challenge SQL masters, and conquer 100 database questions to become the ultimate SQL Trainer!",
-    "But first... every trainer needs a partner Pokémon! Let's choose yours, {name}!",
-  ],
-  namePrompt: "Hello there! Welcome to PokéSQL! My name is Professor Oak — the SQL Professor. Now tell me, what is your name?",
-};
 
 const ALL_POKEMON = [
   { name:'Charmander',  emoji:'🔥', type:'Fire' },
@@ -106,13 +93,9 @@ const INTRO_MSGS = CONFIG.introLines.map(text => ({ speaker:'PROFESSOR OAK', npc
 const CORRECT_FB = ["That's right!","Excellent work!","Perfect!","Outstanding!","Correct!","You're a natural!","Great answer!","Spot on!","Impressive!","Well done!"];
 const WRONG_FB   = ["Not quite...","Hmm, that's not it.","Try again next time!","Almost...","Not this time!"];
 
-const MILESTONES = {
-  25: { badge:'🥉 CLOUD EXPLORER',   stars:'★ ★ ☆ ☆' },
-  50: { badge:'🥈 AZURE APPRENTICE',  stars:'★ ★ ★ ☆' },
-  75: { badge:'🥇 CLOUD PRACTITIONER',  stars:'★ ★ ★ ★' },
-};
 
 const SAVE_KEY = CONFIG.saveKey;
+const MILESTONES = CONFIG.milestones;
 
 function saveGame(s) {
   try { localStorage.setItem(SAVE_KEY, JSON.stringify({
@@ -2028,7 +2011,7 @@ class Game {
     const msg = document.getElementById('battle-anim-msg');
 
     if (correct) {
-      msg.textContent = `${playerPoke.name} used SQL KNOWLEDGE!`;
+      msg.textContent = `${playerPoke.name} used ${CONFIG.battleMove}!`;
       SFX.attack();
       setTimeout(() => {
         npcHp.style.width = '0%';
@@ -2044,7 +2027,7 @@ class Game {
         this.showResult(true, q);
       }, 2200);
     } else {
-      msg.textContent = `${playerPoke.name} used SQL QUERY... but it missed!`;
+      msg.textContent = `${playerPoke.name} used ${CONFIG.battleMiss}... but it missed!`;
       SFX.attack();
       setTimeout(() => {
         msg.textContent = `${npcPoke.name} used COUNTER ATTACK!`;

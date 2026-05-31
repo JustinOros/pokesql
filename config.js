@@ -1,0 +1,33 @@
+const CONFIG = {
+  gameName:     'PokéSQL',
+  subject:      'SQL',
+  examName:     'SQL',
+  townName:     'SQL Town',
+  saveKey:      'pokesql_save_v2',
+  titleText:    'SQL',
+  titleEdition: '★ SQL TRAINER ★',
+  titleFooter:  'PokéSQL v1.0 · SQL · github.com/JustinOros',
+  townNameUpper:'SQL TOWN',
+  continueLogoSuffix: 'SQL',
+  expLabel:     'SQL EXP',
+  battleMove:   'SQL KNOWLEDGE',
+  battleMiss:   'SQL QUERY',
+  completeMsg:  "You've conquered SQL Town and mastered Microsoft T-SQL! Your SQL journey is just beginning — more towns and exams await!",
+  badges: [
+    '🥉 SQL EXPLORER — Q25',
+    '🥈 SQL APPRENTICE — Q50',
+    '🥇 SQL PRACTITIONER — Q75',
+    '🏆 SQL CHAMPION — Q100',
+  ],
+  milestones: {
+    25: { badge: '🥉 SQL EXPLORER',      stars: '★ ★ ☆ ☆' },
+    50: { badge: '🥈 SQL APPRENTICE',    stars: '★ ★ ★ ☆' },
+    75: { badge: '🥇 SQL PRACTITIONER',  stars: '★ ★ ★ ★' },
+  },
+  introLines: [
+    "Hello {name}! Welcome to PokéSQL, the world of SQL training! My name is Professor Oak, the SQL Professor!",
+    "Your mission? Journey through SQL Town, challenge SQL masters, and conquer 100 database questions to become the ultimate SQL Trainer!",
+    "But first... every trainer needs a partner Pokémon! Let's choose yours, {name}!",
+  ],
+  namePrompt: "Hello there! Welcome to PokéSQL! My name is Professor Oak — the SQL Professor. Now tell me, what is your name?",
+};

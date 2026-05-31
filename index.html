@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0a0520">
-<title>PokéSQL — Lean SQL</title>
+<title id="page-title">PokéSQL — Learn SQL</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -28,19 +28,19 @@
       <div class="title-stars"></div>
       <div class="title-main">
         <div class="title-logo">
-          <span class="title-poke">POKÉ</span><span class="title-sql">SQL</span>
+          <span class="title-poke">POKÉ</span><span class="title-game" id="title-game-text">SQL</span>
         </div>
-        <div class="title-edition">★ SQL TRAINER ★</div>
+        <div class="title-edition" id="title-edition-text">★ SQL TRAINER ★</div>
         <div class="title-tap blink">PRESS START</div>
       </div>
-      <div class="title-footer">PokéSQL v1.0 · SQL · github.com/JustinOros</div>
+      <div class="title-footer" id="title-footer-text">PokéSQL v1.0 · SQL · github.com/JustinOros</div>
     </div>
   </div>
 
   <!-- CONTINUE OR NEW GAME -->
   <div id="screen-continue" class="screen">
     <div class="continue-bg">
-      <div class="continue-logo">POKÉ<span>SQL</span></div>
+      <div class="continue-logo">POKÉ<span id="continue-logo-text">SQL</span></div>
       <div class="continue-card" id="continue-card">
         <div class="continue-card-header">📂 CONTINUE</div>
         <div class="save-row"><span class="save-lbl">TRAINER</span><span class="save-val" id="save-name-disp">—</span></div>
@@ -142,7 +142,7 @@
     <div class="map-header">
       <div class="map-left">
         <span class="map-pin">📍</span>
-        <span class="map-town-name">SQL TOWN</span>
+        <span class="map-town-name" id="map-town-name-text">SQL TOWN</span>
       </div>
       <div class="map-center">
         <div class="prog-bar-outer"><div class="prog-bar-inner" id="map-prog-bar"></div></div>
@@ -260,7 +260,7 @@
     <div class="levelup-box">
       <div class="lu-stars blink" id="lu-stars">★ BADGE EARNED! ★</div>
       <div class="lu-sprite"><div class="lu-player-sprite"></div></div>
-      <div class="lu-text"><span id="lu-name">ASH</span> gained SQL EXP!</div>
+      <div class="lu-text"><span id="lu-name">ASH</span> gained <span id="exp-label-text">SQL EXP</span>!</div>
       <div class="lu-badge" id="lu-badge">🏅 CLOUD TRAINEE</div>
       <div class="lu-prog-wrap">
         <div class="lu-prog-outer"><div class="lu-prog-inner" id="lu-prog-inner"></div></div>
@@ -277,14 +277,14 @@
         <div class="complete-trophy">🏆</div>
         <div class="complete-title">CHAMPION!</div>
         <div class="complete-name" id="complete-name">ASH</div>
-        <p class="complete-msg">You've conquered SQL Town and mastered Microsoft T-SQL! Your SQL journey is just beginning — more towns and exams await!</p>
+        <p class="complete-msg"><span id="complete-msg-text">You've conquered SQL Town and mastered Microsoft T-SQL! Your SQL journey is just beginning — more towns and exams await!</span></p>
         <div class="complete-stats" id="complete-stats"></div>
         <div class="complete-pokemon" id="complete-pokemon"></div>
         <div class="complete-badges">
-          <div class="badge-row">🥉 SQL EXPLORER — Q25</div>
-          <div class="badge-row">🥈 SQL APPRENTICE — Q50</div>
-          <div class="badge-row">🥇 SQL PRACTITIONER — Q75</div>
-          <div class="badge-row">🏆 SQL CHAMPION — Q100</div>
+          <div class="badge-row"><span id="badge-1">🥉 SQL EXPLORER — Q25</span></div>
+          <div class="badge-row"><span id="badge-2">🥈 SQL APPRENTICE — Q50</span></div>
+          <div class="badge-row"><span id="badge-3">🥇 SQL PRACTITIONER — Q75</span></div>
+          <div class="badge-row"><span id="badge-4">🏆 SQL CHAMPION — Q100</span></div>
           <div class="badge-row">🗺️ More towns & exams coming soon...</div>
         </div>
         <button class="btn-pixel btn-red btn-full" id="btn-play-again">▶ PLAY AGAIN</button>
@@ -316,6 +316,25 @@
 </div>
 
 <div id="toast" class="toast hidden"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  set('title-game-text',    CONFIG.titleText);
+  set('title-edition-text', CONFIG.titleEdition);
+  set('title-footer-text',  CONFIG.titleFooter);
+  set('continue-logo-text', CONFIG.continueLogoSuffix);
+  set('map-town-name-text', CONFIG.townNameUpper);
+  set('exp-label-text',     CONFIG.expLabel);
+  set('complete-msg-text',  CONFIG.completeMsg);
+  if (CONFIG.badges) {
+    CONFIG.badges.forEach((b, i) => set(`badge-${i+1}`, b));
+  }
+  set('page-title', CONFIG.gameName + ' — Learn ' + CONFIG.subject);
+  document.title = CONFIG.gameName + ' — Learn ' + CONFIG.subject;
+});
+</script>
+<script src="config.js"></script>
 <script src="game.js"></script>
 </body>
 </html>

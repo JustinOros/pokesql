@@ -379,7 +379,7 @@ html, body {
 .title-main { text-align:center; z-index:1; padding:24px 16px; }
 .title-logo { margin-bottom:16px; line-height:1; }
 .title-poke { font-size:clamp(22px,7.5vw,38px); color:var(--yellow); text-shadow:4px 4px 0 #7a5800,0 0 24px rgba(248,192,48,.5); animation:goldShimmer 3s ease-in-out infinite; display:inline-block; }
-.title-sql  { font-size:clamp(22px,7.5vw,38px); color:#60c8ff; text-shadow:4px 4px 0 #003d70,0 0 24px rgba(96,200,255,.5); display:inline-block; animation:blueShimmer 3s ease-in-out infinite; }
+.title-game  { font-size:clamp(22px,7.5vw,38px); color:#60c8ff; text-shadow:4px 4px 0 #003d70,0 0 24px rgba(96,200,255,.5); display:inline-block; animation:blueShimmer 3s ease-in-out infinite; }
 .title-sub  { font-size:clamp(6px,1.8vw,8px); color:rgba(255,255,255,.75); letter-spacing:1px; margin:10px 0 6px; }
 .title-edition { font-size:clamp(5.5px,1.6vw,7px); color:var(--yellow); margin-bottom:24px; animation:goldShimmer 3s ease-in-out infinite; }
 .title-deco { font-size:clamp(22px,6vw,32px); margin-bottom:28px; display:flex; gap:16px; justify-content:center; }
